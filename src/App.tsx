@@ -96,9 +96,10 @@ const validity = (constraint: Constraint, value: ConstraintSelectedState): Const
         if (typeof childValue !== 'string') {
             if ('length' in childValue) {
                 if (typeof childValue[1] !== 'string') {
-                    if (!('candidates' in childValue)) {
+                    if (!('candidates' in childValue[0])) {
                         throw new Error();
                     }
+
                     result = (validity(childValue[0], childValue[1]));
                 }
             } else {
@@ -245,10 +246,11 @@ function IsOKButton(props: { value: ConstraintSelectValidity, disabled: boolean 
         <div className="is-ok-button"
             data-value={props.value}
             data-disabled={props.disabled}>{
-                props.value === ConstraintSelectValidity.registration ?
-                    '履修OK' :
-                    props.value === ConstraintSelectValidity.acquisition ?
-                        '修得OK' : '履修不足'
+                props.disabled ? '無効' :
+                    props.value === ConstraintSelectValidity.registration ?
+                        '履修OK' :
+                        props.value === ConstraintSelectValidity.acquisition ?
+                            '修得OK' : '履修不足'
             }</div>
     );
 }
