@@ -1,0 +1,1727 @@
+[
+  {
+    "code": "GA10101",
+    "title": "情報社会と法制度",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GA10201",
+    "title": "知的財産概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GA11102",
+    "title": "グローバルチャレンジ演習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GA40103",
+    "title": "体験型システム開発A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GA40203",
+    "title": "体験型システム開発B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GA40303",
+    "title": "ビジネスシステムデザインA",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GA40403",
+    "title": "ビジネスシステムデザインB",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB00231",
+    "title": "化学A",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB00241",
+    "title": "化学A",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB00251",
+    "title": "化学B",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB00261",
+    "title": "化学B",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB10114",
+    "title": "線形代数I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10124",
+    "title": "線形代数I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10214",
+    "title": "線形代数II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10224",
+    "title": "線形代数II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10314",
+    "title": "解析学I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10324",
+    "title": "解析学I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10414",
+    "title": "解析学II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10424",
+    "title": "解析学II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10504",
+    "title": "解析学III",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10615",
+    "title": "コンピュータリテラシ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10625",
+    "title": "コンピュータリテラシ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10664",
+    "title": "プログラミング入門A",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB10684",
+    "title": "プログラミング入門B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB10754",
+    "title": "情報科学基礎実験",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB10804",
+    "title": "論理回路",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10914",
+    "title": "離散構造",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10924",
+    "title": "離散構造",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10981",
+    "title": "情報科学概論I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB10991",
+    "title": "情報科学概論II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB11214",
+    "title": "力学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB11404",
+    "title": "電磁気学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB11514",
+    "title": "シミュレーション物理",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB11601",
+    "title": "確率論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB11701",
+    "title": "複素関数論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB11814",
+    "title": "コンピュータ数学",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB11931",
+    "title": "データ構造とアルゴリズム",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB11936",
+    "title": "データ構造とアルゴリズム実験",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB11946",
+    "title": "データ構造とアルゴリズム実験",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB11954",
+    "title": "システムプログラミング序論",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB12016",
+    "title": "論理回路実験",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB12201",
+    "title": "電気回路",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB12301",
+    "title": "数値計算法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB12401",
+    "title": "システム制御概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB12501",
+    "title": "情報理論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB12601",
+    "title": "論理と形式化",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB12801",
+    "title": "論理システム",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB12901",
+    "title": "ソフトウェア技法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB13013",
+    "title": "オブジェクト指向プログラミング実習",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB13106",
+    "title": "論理システム実験",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB13312",
+    "title": "情報特別演習I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB13322",
+    "title": "情報特別演習II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB13604",
+    "title": "Mathematics for Computer Science",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB13704",
+    "title": "コンピュータグラフィックス基礎",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB13804",
+    "title": "ソフトウェア品質保証",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB13903",
+    "title": "インターンシップI",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB13913",
+    "title": "インターンシップII",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17001",
+    "title": "情報科学特別講義A",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17101",
+    "title": "情報科学特別講義B",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17201",
+    "title": "情報科学特別講義C",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17301",
+    "title": "情報科学特別講義D",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17401",
+    "title": "情報科学特別講義E",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17601",
+    "title": "情報科学特別講義G",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17701",
+    "title": "情報科学特別講義H",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB17801",
+    "title": "情報科学特別講義W",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB19041",
+    "title": "専門語学A",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB19051",
+    "title": "専門語学B",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB19848",
+    "title": "特別卒業研究A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB19858",
+    "title": "特別卒業研究B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB19948",
+    "title": "卒業研究A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB19958",
+    "title": "卒業研究B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB19968",
+    "title": "特別研究A",
+    "creditsCount": 4.0
+  },
+  {
+    "code": "GB19978",
+    "title": "特別研究B",
+    "creditsCount": 4.0
+  },
+  {
+    "code": "GB20111",
+    "title": "プログラム言語論I",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB20201",
+    "title": "数理アルゴリズムとシミュレーション",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB20301",
+    "title": "人工知能",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB21111",
+    "title": "プログラム理論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB21504",
+    "title": "計算モデル論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB21601",
+    "title": "オートマトンと形式言語",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB21802",
+    "title": "プログラミングチャレンジ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB21911",
+    "title": "プログラム言語論II",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB22011",
+    "title": "システム数理I",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB22021",
+    "title": "システム数理II",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB22031",
+    "title": "システム数理III",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB22101",
+    "title": "数理メディア情報学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB22401",
+    "title": "インタラクティブCG",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB22501",
+    "title": "情報線形代数",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB22611",
+    "title": "情報可視化",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GB26403",
+    "title": "ソフトウェアサイエンス実験A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB26503",
+    "title": "ソフトウェアサイエンス実験B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB27001",
+    "title": "ソフトウェアサイエンス特別講義A",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB27101",
+    "title": "ソフトウェアサイエンス特別講義C",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB27201",
+    "title": "ソフトウェアサイエンス特別講義D",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB27401",
+    "title": "ソフトウェアサイエンス特別講義B",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB30101",
+    "title": "コンピュータネットワーク",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB30201",
+    "title": "計算機アーキテクチャ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB30301",
+    "title": "データベース概論I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB30401",
+    "title": "オペレーティングシステムI",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31111",
+    "title": "並列処理アーキテクチャI",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB31121",
+    "title": "並列処理アーキテクチャII",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB31201",
+    "title": "VLSI工学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31301",
+    "title": "プログラム言語処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31401",
+    "title": "システムプログラム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31501",
+    "title": "ソフトウェア工学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31601",
+    "title": "データベース概論II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31701",
+    "title": "情報検索概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB31801",
+    "title": "オペレーティングシステムII",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB31901",
+    "title": "分散システム",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB32001",
+    "title": "システム評価技法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB32201",
+    "title": "電子回路",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB36403",
+    "title": "情報システム実験A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB36503",
+    "title": "情報システム実験B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB37001",
+    "title": "情報システム特別講義A",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB37101",
+    "title": "情報システム特別講義B",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB37201",
+    "title": "情報システム特別講義C",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB37301",
+    "title": "情報システム特別講義D",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB40101",
+    "title": "信号処理概論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB40201",
+    "title": "パターン認識",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB40301",
+    "title": "ヒューマンインタフェース",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB41101",
+    "title": "認知科学概論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB41204",
+    "title": "統計学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB41301",
+    "title": "信号解析",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB41401",
+    "title": "ディジタル信号処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB41501",
+    "title": "音声聴覚情報処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB41611",
+    "title": "自然言語処理",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB41711",
+    "title": "視覚情報科学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB41911",
+    "title": "知識処理概論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB42101",
+    "title": "情報セキュリティ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB42201",
+    "title": "画像メディア工学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB42301",
+    "title": "画像認識工学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB42404",
+    "title": "機械学習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GB46403",
+    "title": "知能情報メディア実験A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB46503",
+    "title": "知能情報メディア実験B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GB47001",
+    "title": "知能情報メディア特別講義A",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB47101",
+    "title": "知能情報メディア特別講義B",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB47201",
+    "title": "知能情報メディア特別講義C",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GB47301",
+    "title": "知能情報メディア特別講義D",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC10112",
+    "title": "教養と科学-1",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC10122",
+    "title": "教養と科学-2",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC11101",
+    "title": "解析I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC11201",
+    "title": "解析II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC11301",
+    "title": "線形代数I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC11401",
+    "title": "線形代数II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC11501",
+    "title": "情報数学I",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC11601",
+    "title": "確率と統計",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC12101",
+    "title": "コンピュータリテラシ",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC12103",
+    "title": "コンピュータリテラシ実習",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC12301",
+    "title": "プログラミングII",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC12303",
+    "title": "プログラミング実習II",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC12401",
+    "title": "データ構造とアルゴリズム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC12403",
+    "title": "データ構造とアルゴリズム実習",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC12501",
+    "title": "プログラミングIA",
+    "creditsCount": 0.5
+  },
+  {
+    "code": "GC12503",
+    "title": "プログラミング実習IA",
+    "creditsCount": 0.5
+  },
+  {
+    "code": "GC12601",
+    "title": "プログラミングIB",
+    "creditsCount": 0.5
+  },
+  {
+    "code": "GC12603",
+    "title": "プログラミング実習IB",
+    "creditsCount": 0.5
+  },
+  {
+    "code": "GC13101",
+    "title": "コンピュータシステムとOS",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC13201",
+    "title": "データ工学概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC14301",
+    "title": "コンテンツ応用論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC14401",
+    "title": "コンテンツ流通基盤概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC15101",
+    "title": "情報メディア概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC15201",
+    "title": "ネットワークメディア概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC16101",
+    "title": "認知科学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC20101",
+    "title": "メディア社会学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC20201",
+    "title": "コンテンツビジネス・マーケティング",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC21201",
+    "title": "情報数学II",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC21301",
+    "title": "情報数学III",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC21401",
+    "title": "統計分析法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC22101",
+    "title": "Webプログラミング",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC22201",
+    "title": "プログラム言語論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC23101",
+    "title": "信号とシステム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC23201",
+    "title": "情報理論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC23304",
+    "title": "CG基礎",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC23401",
+    "title": "パターン認識",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC23501",
+    "title": "画像・映像情報処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC23601",
+    "title": "音声・音響学基礎",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC24101",
+    "title": "情報デザインI",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC24312",
+    "title": "コンテンツ表現演習-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC24401",
+    "title": "コンテンツ概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC25101",
+    "title": "情報通信概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC26101",
+    "title": "人間計測の方法",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC27102",
+    "title": "情報メディア特別演習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC27701",
+    "title": "ACPC連携講座: ライブ・コンテンツ論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC34502",
+    "title": "ハイブリッドアート演習",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GC41103",
+    "title": "情報メディア実験A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GC41203",
+    "title": "情報メディア実験B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GC48808",
+    "title": "卒業研究A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GC48908",
+    "title": "卒業研究B",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GC50201",
+    "title": "オートマトンと形式言語",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC50501",
+    "title": "通信ネットワーク",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC50601",
+    "title": "情報通信プラットフォーム論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC50701",
+    "title": "インタラクティブCG",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC51101",
+    "title": "音楽・音響情報処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC51401",
+    "title": "システム運用・管理",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC51701",
+    "title": "実世界指向システム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC51901",
+    "title": "マークアップ言語",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC52001",
+    "title": "データベースシステムI",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC52101",
+    "title": "データベースシステムII",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC52201",
+    "title": "情報数学IV",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC52301",
+    "title": "先端技術とメディア表現",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC52401",
+    "title": "コンテンツプロデュース論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC52501",
+    "title": "映像表現論",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC52603",
+    "title": "映像表現実習",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC52701",
+    "title": "ソフトウェア構成",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC52801",
+    "title": "情報デザインII",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC52901",
+    "title": "インタラクションデザイン",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC53303",
+    "title": "ディジタルコンテンツ表現実習",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC53401",
+    "title": "ディジタルドキュメント",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC53502",
+    "title": "エンタテインメントコンピューティング演習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC53601",
+    "title": "視覚情報科学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC53701",
+    "title": "システム数理I",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC53801",
+    "title": "システム数理II",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC53901",
+    "title": "知識・自然言語処理",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC54001",
+    "title": "情報可視化",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GC54101",
+    "title": "知覚心理学",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GC54301",
+    "title": "システム数理III",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC54401",
+    "title": "映像メディア論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC59101",
+    "title": "情報メディア創成特別講義A",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC59201",
+    "title": "情報メディア創成特別講義B",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC59301",
+    "title": "情報メディア創成特別講義C",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC59501",
+    "title": "情報メディア創成特別講義E",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC59601",
+    "title": "情報メディア創成特別講義F",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE10101",
+    "title": "知識情報概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10201",
+    "title": "哲学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10301",
+    "title": "情報基礎",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10413",
+    "title": "情報基礎実習-1",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE10423",
+    "title": "情報基礎実習-2",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE10612",
+    "title": "プログラミング演習I-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10622",
+    "title": "プログラミング演習I-2",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10712",
+    "title": "プログラミング演習II-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10722",
+    "title": "プログラミング演習II-2",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10732",
+    "title": "プログラミング演習II-3",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10801",
+    "title": "情報数学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE10911",
+    "title": "統計",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11012",
+    "title": "知識情報演習I-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11022",
+    "title": "知識情報演習I-2",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11112",
+    "title": "知識情報演習II-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11122",
+    "title": "知識情報演習II-2",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11212",
+    "title": "知識情報演習III-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11222",
+    "title": "知識情報演習III-2",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE11512",
+    "title": "専門英語A-1",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE11522",
+    "title": "専門英語A-2",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE11532",
+    "title": "専門英語A-3",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE11542",
+    "title": "専門英語A-4",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE20101",
+    "title": "情報システム概説",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20201",
+    "title": "基礎数学A",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20301",
+    "title": "基礎数学B",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20401",
+    "title": "量的調査法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20511",
+    "title": "多変量解析",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20601",
+    "title": "情報探索論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20701",
+    "title": "質的調査法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20801",
+    "title": "情報行動論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE20901",
+    "title": "知識発見基礎論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21001",
+    "title": "知識資源組織化論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21101",
+    "title": "データベース概説",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21201",
+    "title": "コンピュータシステムとネットワーク",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21301",
+    "title": "自然言語解析基礎",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21401",
+    "title": "メディア社会学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21601",
+    "title": "公共経済学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21701",
+    "title": "生涯学習と図書館",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21812",
+    "title": "テクスト解釈-1",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE21832",
+    "title": "テクスト解釈-3",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE22001",
+    "title": "図書館概論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE22101",
+    "title": "経営・組織論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE31013",
+    "title": "知的探求の世界I-1",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE31023",
+    "title": "知的探求の世界I-2",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE31053",
+    "title": "知的探求の世界I-5",
+    "creditsCount": 1.5
+  },
+  {
+    "code": "GE32013",
+    "title": "知的探求の世界II-1",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE32023",
+    "title": "知的探求の世界II-2",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE32053",
+    "title": "知的探求の世界II-5",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE40201",
+    "title": "学習指導と学校図書館",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE40301",
+    "title": "学校図書館メディアの構成",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE40401",
+    "title": "読書と豊かな人間性",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE40501",
+    "title": "情報メディアの活用",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE40603",
+    "title": "インターンシップ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE40703",
+    "title": "国際インターンシップ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE50301",
+    "title": "知識情報特論I",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50401",
+    "title": "知識情報特論II",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50501",
+    "title": "知識情報特論III",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50601",
+    "title": "知識情報特論IV",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50712",
+    "title": "専門英語B-1",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50722",
+    "title": "専門英語B-2",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50732",
+    "title": "専門英語B-3",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50812",
+    "title": "専門英語C-1",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50822",
+    "title": "専門英語C-2",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE50832",
+    "title": "専門英語C-3",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE51018",
+    "title": "卒業研究",
+    "creditsCount": 6.0
+  },
+  {
+    "code": "GE51028",
+    "title": "卒業研究",
+    "creditsCount": 6.0
+  },
+  {
+    "code": "GE51038",
+    "title": "卒業研究",
+    "creditsCount": 6.0
+  },
+  {
+    "code": "GE60103",
+    "title": "知識科学実習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE60201",
+    "title": "テクニカルコミュニケーション",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE60501",
+    "title": "知識論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE60601",
+    "title": "知識形成論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE60701",
+    "title": "レファレンスサイエンス",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE60801",
+    "title": "学術メディア論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61001",
+    "title": "コミュニティ情報論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61101",
+    "title": "図書館建築論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61201",
+    "title": "知識構造化法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61301",
+    "title": "情報評価",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61501",
+    "title": "データマイニング",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61701",
+    "title": "サイエンスコミュニケーション",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GE61801",
+    "title": "データ構造とアルゴリズム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE61901",
+    "title": "情報検索システム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE62001",
+    "title": "生命情報学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE62101",
+    "title": "知識コミュニケーション",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE62201",
+    "title": "メディア社会文化論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE62301",
+    "title": "ソーシャルメディア分析",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70103",
+    "title": "知識情報システム実習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70201",
+    "title": "情報サービスシステム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70301",
+    "title": "ディジタルドキュメント",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70401",
+    "title": "ディジタルライブラリ",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70501",
+    "title": "情報検索システム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70601",
+    "title": "Webプログラミング",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70701",
+    "title": "マルチメディアシステム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70801",
+    "title": "データ表現と処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE70901",
+    "title": "データベース技術",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71001",
+    "title": "情報デザインとインタフェース",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71101",
+    "title": "ヒューマンインタフェース",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71201",
+    "title": "知識資源の分析",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71501",
+    "title": "クラウドコンピューティング",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71701",
+    "title": "テキスト処理",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71801",
+    "title": "データ構造とアルゴリズム",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE71901",
+    "title": "マークアップ言語",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE72001",
+    "title": "ソフトウェア工学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE72101",
+    "title": "経営情報システム論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE72201",
+    "title": "アーカイブズの利用",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE72301",
+    "title": "アーカイブズの構築",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE72501",
+    "title": "メディアアート",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80103",
+    "title": "情報資源経営実習",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80201",
+    "title": "図書館論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80301",
+    "title": "学術情報基盤論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80401",
+    "title": "経営情報システム論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80501",
+    "title": "情報サービス経営論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80801",
+    "title": "情報サービス構成論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80901",
+    "title": "コレクションとアクセス",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE81001",
+    "title": "教育文化政策",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE81101",
+    "title": "メディア教育の実践と評価",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE81201",
+    "title": "学校図書館論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE81301",
+    "title": "情報法",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE81401",
+    "title": "知的財産権論A",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE81901",
+    "title": "図書館文化史論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE82101",
+    "title": "日本図書学",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE82201",
+    "title": "アーカイブズの構築",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE82401",
+    "title": "アーカイブズの利用",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE82501",
+    "title": "映像メディア論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE82601",
+    "title": "パブリックガバナンス",
+    "creditsCount": 2.0
+  }
+]
