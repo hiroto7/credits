@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import './App.css';
 import courses1 from './courses1.json';
-import constraint1 from './constraint1.json';
+import c1 from './c1.json';
 import { P1, P3, P2 } from './P';
 import Course, { isCourse } from './Course';
 import { C2, C1, isC1, MinMax, isMinMax } from './C';
@@ -59,7 +59,7 @@ export default class App extends Component<any, AppState> {
         super(props);
         const coursesMap = new Map(courses1.map(value => [value.code, value as Course]));
 
-        const c = new ConstraintCreater(coursesMap).create(constraint1);
+        const c = new ConstraintCreater(coursesMap).create(c1);
         this.state = {
             c,
             p: new P1(c, new Map()),
