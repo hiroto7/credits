@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import './App.css';
 import courses1 from './courses1.json';
-import c1 from './c1.json';
+import c1 from './coins17.json';
 import { P1, P3, P2 } from './P';
 import Course, { isCourse } from './Course';
 import { C2, C1, isC1, MinMax, isMinMax } from './C';
