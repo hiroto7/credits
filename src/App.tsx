@@ -2,11 +2,11 @@ import React, { Component, ReactNode } from 'react';
 import './App.css';
 import courses1 from './courses1.json';
 import constraint1 from './constraint1.json';
-import Constraint, { MinMax } from './Constraint';
-import Course from './Course';
+import { MinMax, C1, P1, isC1, P3, Level, P2, C2, isMinMax } from './Constraint';
+import Course, { isCourse } from './Course';
 
 interface ConstraintJSON {
-    candidates: (string | ConstraintJSON | (string | ConstraintJSON)[])[];
+    children: (string | ConstraintJSON | { candidates: ConstraintJSON[] })[];
     title: string;
     subtitle?: string;
     creditsCount: number | MinMax;
@@ -25,135 +25,74 @@ class ConstraintCreater {
         return course;
     }
 
-    create(json: ConstraintJSON): Constraint {
+    create(json: ConstraintJSON): C1 {
         return {
             title: json.title,
             subtitle: json.subtitle,
             creditsCount: json.creditsCount,
-            candidates: json.candidates.map((value): Course | Constraint | (Course | Constraint)[] => {
-                if (typeof value === 'string') {
-                    return this.getCourse(value);
-                } else if (value instanceof Array) {
-                    return value.map(value => {
-                        if (typeof value === 'string') {
-                            return this.getCourse(value);
-                        } else {
-                            return this.create(value);
-                        }
-                    });
+            children: json.children.map((child): Course | C1 | C2 => {
+                if (typeof child === 'string') {
+                    return this.getCourse(child);
+                } else if ('children' in child) {
+                    return this.create(child);
                 } else {
-                    return this.create(value);
+                    return {
+                        candidates: child.candidates.map(value => {
+                            return this.create(value);
+                        })
+                    }
                 }
             })
         }
     }
 }
 
-const creditsSum = (constraint: Constraint, value: ConstraintSelectedState,
-    isCounted: (state: CourseSelectedState) => boolean) => Math.min(
-        typeof constraint.creditsCount === 'number' ? constraint.creditsCount : constraint.creditsCount.max,
-        [...value].reduce((previous, current): number => {
-            if ('candidates' in current[0]) {
-                if (!(current[1] instanceof Map)) {
-                    throw new Error();
-                }
-                return previous + creditsSum(current[0], current[1], isCounted);
-            } else if ('creditsCount' in current[0]) {
-                if (typeof current[1] !== 'string') {
-                    throw new Error();
-                }
-                return previous + (isCounted(current[1]) ? current[0].creditsCount : 0);
-            } else {
-                if (typeof current[1] === 'string' || !('length' in current[1])) {
-                    throw new Error();
-                }
-
-                if ('candidates' in current[1][0]) {
-                    if (!(current[1][1] instanceof Map)) {
-                        throw new Error();
-                    }
-                    return previous + creditsSum(current[1][0], current[1][1], isCounted);
-                } else {
-                    if (typeof current[1][1] !== 'string') {
-                        throw new Error();
-                    }
-                    return previous + (isCounted(current[1][1]) ? current[1][0].creditsCount : 0);
-                }
-            }
-        }, 0));
-
-const validity = (constraint: Constraint, value: ConstraintSelectedState): ConstraintSelectValidity => {
-    let result;
-    if (constraint.creditsCount <= creditsSum(constraint, value, state => state === CourseSelectedState.acquired)) {
-        result = ConstraintSelectValidity.acquisition;
-    } else if (constraint.creditsCount <= creditsSum(constraint, value, state => state === CourseSelectedState.registered || state === CourseSelectedState.acquired)) {
-        result = ConstraintSelectValidity.registration;
-    } else {
-        result = ConstraintSelectValidity.none;
-    }
-
-    for (const [childConstraint, childValue] of value) {
-        if (typeof childValue !== 'string') {
-            if ('length' in childValue) {
-                if (typeof childValue[1] !== 'string') {
-                    if (!('candidates' in childValue[0])) {
-                        throw new Error();
-                    }
-
-                    result = (validity(childValue[0], childValue[1]));
-                }
-            } else {
-                result = (validity(childConstraint as Constraint, childValue));
-            }
-        }
-    }
-
-    return result;
-}
-
-
-interface ConstraintSelectedState extends ReadonlyMap<
-    Constraint | Course | Iterable<Constraint | Course>,
-    CourseSelectedState | ConstraintSelectedState |
-    readonly [Course, CourseSelectedState] | readonly [Constraint, ConstraintSelectedState]> { }
-
 interface AppState {
-    constraint: Constraint;
-    value: ConstraintSelectedState
+    c: C1,
+    p: P1
 }
 export default class App extends Component<any, AppState> {
     constructor(props: any) {
         super(props);
         const coursesMap = new Map(courses1.map(value => [value.code, value as Course]));
 
+        const c = new ConstraintCreater(coursesMap).create(constraint1);
         this.state = {
-            constraint: new ConstraintCreater(coursesMap).create(constraint1),
-            value: new Map()
+            c,
+            p: new P1(c, new Map())
         };
     }
 
     render() {
-        console.log(this.state.value);
         return (
             <div className="App">
-                <Planner constraint={this.state.constraint} value={this.state.value} open disabled={false}
-                    onClick={value => {
-                        this.setState({ value });
+                <h1>卒業要件を満たしたい</h1>
+                <p>
+                    某大学の卒業要件を満たすための履修計画を支援するためのツールです。
+                    このツールで得られた結果を利用する場合，<strong>必ずご自身の履修要覧やシラバス，または支援室などで確認されるよう</strong>お願いいたします。
+                    </p>
+                <ul>
+                    <li>各科目の単位数や卒業要件の定義が誤っている可能性があります</li>
+                    <li>禁止されている科目の組み合わせが存在する可能性があります</li>
+                </ul>
+                <P1Editor c={this.state.c} p={this.state.p} open isDisabled={false}
+                    onClick={p => {
+                        this.setState({ p });
                     }} />
             </div>
         );
     }
 }
 
-interface PlannerProps {
-    constraint: Constraint,
+interface P1EditorProps {
+    c: C1,
+    p: P1,
     open?: boolean,
-    disabled: boolean,
-    value: ConstraintSelectedState,
-    onClick: (value: ConstraintSelectedState) => void
+    isDisabled: boolean,
+    onClick: (p: P1) => void
 }
-class Planner extends Component<PlannerProps, { open: boolean }> {
-    constructor(props: PlannerProps) {
+class P1Editor extends Component<P1EditorProps, { open: boolean }> {
+    constructor(props: P1EditorProps) {
         super(props);
         this.state = { open: !!props.open };
     }
@@ -161,44 +100,48 @@ class Planner extends Component<PlannerProps, { open: boolean }> {
     render(): ReactNode {
         const candidates: ReactNode[] = [];
 
-        for (const candidate of this.props.constraint.candidates) {
-            if ('candidates' in candidate) {
-                const value = this.props.value.get(candidate);
-                if (value !== undefined && !(value instanceof Map)) {
+        for (const child of this.props.c.children) {
+            if (isC1(child)) {
+                const p = this.props.p.children.get(child);
+
+                if (p !== undefined && !(p instanceof P1)) {
                     throw new Error();
                 }
 
-                candidates.push(<Planner constraint={candidate} disabled={this.props.disabled}
-                    value={value || new Map()}
+                candidates.push(<P1Editor c={child} isDisabled={this.props.isDisabled}
+                    p={p || new P1(child, new Map())}
                     onClick={
-                        value => this.props.onClick(new Map([...this.props.value, [candidate, value]]))
+                        p => this.props.onClick(new P1(this.props.c, [...this.props.p.children, [child, p]]))
                     } />);
-            } else if ('code' in candidate) {
-                const value = this.props.value.get(candidate);
-                if (value !== undefined && typeof value !== 'string') {
+            } else if (isCourse(child)) {
+                const p = this.props.p.children.get(child);
+
+                if (p !== undefined && !(p instanceof P3)) {
                     throw new Error();
                 }
 
-                candidates.push(<CourseViewer course={candidate}
-                    value={value || unselected}
-                    disabled={this.props.disabled}
+                candidates.push(<P3Editor course={child}
+                    p={p || new P3(child, Level.none)}
+                    isDisabled={this.props.isDisabled}
                     onClick={
-                        value => this.props.onClick(new Map([...this.props.value, [candidate, value]]))
+                        p => this.props.onClick(new P1(this.props.c, [...this.props.p.children, [child, p]]))
                     } />)
             } else {
-                const value = this.props.value.get(candidate);
+                const p = this.props.p.children.get(child);
 
-                if (value !== undefined && (typeof value === 'string' || !('length' in value))) {
+                if (p !== undefined && !(p instanceof P2)) {
                     throw new Error();
                 }
 
-                candidates.push(<Selector options={candidate}
-                    value={value}
+                candidates.push(<P2Editor c={child}
+                    p={p || new P2(null, null)}
                     onClick={
-                        value => this.props.onClick(new Map([...this.props.value, [candidate, value]]))
+                        p => this.props.onClick(new P1(this.props.c, [...this.props.p.children, [child, p]]))
                     } />);
             }
         }
+
+        const max: number = isMinMax(this.props.c.creditsCount) ? this.props.c.creditsCount.max : this.props.c.creditsCount;
 
         return (
             <div className="planner">
@@ -207,32 +150,38 @@ class Planner extends Component<PlannerProps, { open: boolean }> {
                         {this.state.open ? '▼' : '▶︎'}
                     </div>
                     <div className="constraint-title">
-                        <h1>{this.props.constraint.title}</h1>
-                        {this.props.constraint.subtitle !== undefined ? (<h2>{this.props.constraint.subtitle}</h2>) : ""}
+                        <h1>{this.props.c.title}</h1>
+                        {this.props.c.subtitle !== undefined ? (<h2>{this.props.c.subtitle}</h2>) : ""}
                     </div>
                     <div className="constraint-credits-count">
                         <div className="acquired-credits-count">
-                            <strong>{
-                                creditsSum(this.props.constraint, this.props.value, state => state === CourseSelectedState.acquired)
-                            }</strong>
+                            <strong>{this.props.p.creditsCount(Level.acquired, false)}</strong>{
+                                this.props.p.creditsCount(Level.acquired, true) > max ?
+                                    `(+${
+                                    this.props.p.creditsCount(Level.acquired, true) - this.props.p.creditsCount(Level.acquired, false)
+                                    })` : ''
+                            }
                             修得
                         </div>
                         <div className="registered-credits-count">
-                            <strong>{
-                                creditsSum(this.props.constraint, this.props.value, state => state !== CourseSelectedState.unselected)
-                            }</strong>
+                            <strong>{this.props.p.creditsCount(Level.registered, false)}</strong>{
+                                this.props.p.creditsCount(Level.registered, true) > max ?
+                                    `(+${
+                                    this.props.p.creditsCount(Level.registered, true) - this.props.p.creditsCount(Level.registered, false)
+                                    })` : ''
+                            }
                             履修
                         </div>
                         <div className="required-credits-count">
                             <strong>{
-                                typeof this.props.constraint.creditsCount === 'number' ?
-                                    this.props.constraint.creditsCount :
-                                    `${this.props.constraint.creditsCount.min}-${this.props.constraint.creditsCount.max}`
+                                isMinMax(this.props.c.creditsCount) ?
+                                    `${this.props.c.creditsCount.min}-${this.props.c.creditsCount.max}` :
+                                    this.props.c.creditsCount
                             }</strong>
                             必要
                         </div>
                     </div>
-                    <IsOKButton value={validity(this.props.constraint, this.props.value)} disabled={this.props.disabled} />
+                    <P1LevelIndicator level={this.props.p.level} isDisabled={this.props.isDisabled} />
                 </div>
                 {this.state.open ? (<div className="planner-body">{candidates}</div>) : ''}
             </div>
@@ -240,122 +189,85 @@ class Planner extends Component<PlannerProps, { open: boolean }> {
     }
 }
 
-enum ConstraintSelectValidity { none = 0, registration = 1, acquisition = 2 }
-function IsOKButton(props: { value: ConstraintSelectValidity, disabled: boolean }) {
-    return (
-        <div className="is-ok-button"
-            data-value={props.value}
-            data-disabled={props.disabled}>{
-                props.disabled ? '無効' :
-                    props.value === ConstraintSelectValidity.registration ?
-                        '履修OK' :
-                        props.value === ConstraintSelectValidity.acquisition ?
-                            '修得OK' : '履修不足'
-            }</div>
-    );
-}
-
-function Selector(props: {
-    options: Iterable<Constraint | Course>,
-    onClick: (value: readonly [Constraint, ConstraintSelectedState] | readonly [Course, CourseSelectedState]) => void,
-    value: readonly [Constraint, ConstraintSelectedState] | readonly [Course, CourseSelectedState] | undefined
+function P2Editor(props: {
+    c: C2,
+    onClick: (p: P2) => void,
+    p: P2
 }) {
     return (
         <div className="selector">
             <h1></h1>
             <div className="selector-body">
-                {[...props.options].map(option => {
-                    let contents: JSX.Element;
-                    if ('candidates' in option) {
-                        if (props.value === undefined) {
-                            contents = (<Planner constraint={option}
-                                onClick={value => props.onClick([option, value])}
-                                disabled={true}
-                                value={new Map()} />);
-                        } else {
-                            if (!(props.value[1] instanceof Map)) {
-                                throw new Error();
-                            }
-
-                            contents = (<Planner constraint={option}
-                                onClick={value => props.onClick([option, value])}
-                                disabled={props.value === undefined || props.value[0] !== option}
-                                value={props.value[0] === option ? props.value[1] : new Map()} />)
-                        }
-                    } else {
-                        if (props.value === undefined) {
-                            contents = (<CourseViewer course={option}
-                                value={unselected}
-                                disabled={true}
-                                onClick={value => props.onClick([option, value])} />);
-                        } else {
-                            if (!(typeof props.value[1] === 'string')) {
-                                throw new Error();
-                            }
-
-                            contents = (<CourseViewer course={option}
-                                value={props.value[0] === option ? props.value[1] : unselected}
-                                disabled={props.value[0] !== option}
-                                onClick={value => props.onClick([option, value])} />);
-                        }
-                    }
-
-                    return (
-                        <div className="option" data-selected={props.value !== undefined && props.value[0] === option}>
-                            <div onClick={() => { props.onClick('candidates' in option ? [option, new Map()] : [option, unselected]) }} className="option-select-button"></div>
-                            <div className="option-contents">{contents}</div>
+                {[...props.c.candidates].map(candidate => (
+                    <div className="option" data-is-selected={props.p.selected === candidate}>
+                        <div onClick={() => props.onClick(new P2(candidate, new P1(candidate, new Map())))} className="option-select-button"></div>
+                        <div className="option-contents">
+                            <P1Editor c={candidate}
+                                onClick={p => props.onClick(new P2(candidate, p))}
+                                isDisabled={props.p === undefined || props.p.selected !== candidate}
+                                p={props.p.selected === candidate && props.p.child !== null ?
+                                    props.p.child :
+                                    new P1(candidate, new Map())} />
                         </div>
-                    )
-                })}
+                    </div>
+                ))}
             </div>
         </div>
     );
 }
 
-enum CourseSelectedState { unselected = 'unselected', registered = 'registered', acquired = 'acquired' }
-const unselected = CourseSelectedState.unselected
-function CourseViewer(props: {
+function P3Editor(props: {
     course: Course,
-    value: CourseSelectedState,
-    disabled: boolean,
-    onClick: (value: CourseSelectedState) => void
+    p: P3,
+    isDisabled: boolean,
+    onClick: (value: P3) => void
 }) {
-    const value = props.value || unselected;
-    const disabled = props.disabled || false;
-
     return (
         <div className="course" onClick={() => {
-            if (props.value == CourseSelectedState.acquired) {
-                props.onClick(CourseSelectedState.unselected);
-            } else if (props.value == CourseSelectedState.registered) {
-                props.onClick(CourseSelectedState.acquired);
+            if (props.p.level == Level.acquired) {
+                props.onClick(new P3(props.course, Level.none));
+            } else if (props.p.level == Level.registered) {
+                props.onClick(new P3(props.course, Level.acquired));
             } else {
-                props.onClick(CourseSelectedState.registered);
+                props.onClick(new P3(props.course, Level.registered));
             }
         }}
-            data-value={props.value}
-            data-disabled={props.disabled}>
+            data-value={props.p.level}
+            data-is-disabled={props.isDisabled}>
             <span className="course-code"><code>{props.course.code}</code></span>
             <h1 className="course-title">{props.course.title}</h1>
             <span className="course-credits-count"><strong>{props.course.creditsCount}</strong>単位</span>
-            <TakeCourseButton
-                value={value}
-                disabled={disabled} />
+            <P3LevelIndicator
+                level={props.p.level}
+                isDisabled={props.isDisabled} />
         </div>
     );
 }
 
-function TakeCourseButton(props: { value: CourseSelectedState, disabled: boolean }) {
+function P1LevelIndicator(props: { level: Level, isDisabled: boolean }) {
     return (
-        <div className="take-course-button"
-            data-value={props.value}
-            data-disabled={props.disabled}></div>
-    )
+        <div className="p1-level-indicator"
+            data-value={props.level}
+            data-is-disabled={props.isDisabled}>{
+                props.isDisabled ? '不要' :
+                    props.level === Level.registered ?
+                        '履修OK' :
+                        props.level === Level.acquired ?
+                            '修得OK' : '不足'
+            }</div>
+    );
 }
 
-/*
-interface Plan {
-        constraint: Constraint;
-contents: Set<Course | Plan>
+function P3LevelIndicator(props: { level: Level, isDisabled: boolean }) {
+    return (
+        <div className="p3-level-indicator"
+            data-value={props.level}
+            data-is-disabled={props.isDisabled}>{
+                props.isDisabled ? '選択不可' :
+                    props.level === Level.registered ?
+                        '履修する' :
+                        props.level === Level.acquired ?
+                            '修得済み' : '履修しない'
+            }</div>
+    )
 }
-*/

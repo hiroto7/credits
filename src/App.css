@@ -84,7 +84,7 @@
     color: orangered;
 }
 
-.is-ok-button, .take-course-button {
+.p1-level-indicator, .p3-level-indicator {
     margin: 0 0 0 4px;
     border-width: 1px;
     border-style: solid;
@@ -94,19 +94,19 @@
     padding: 4px;
 }
 
-.is-ok-button[data-value="0"] {
+.p1-level-indicator[data-value="0"] {
     border-color: rgba(0, 0, 0, 0.5);
     border-style: dashed;
     color: gray;
 }
 
-.is-ok-button[data-value="1"], .take-course-button[data-value="registered"] {
+.p1-level-indicator[data-value="1"], .p3-level-indicator[data-value="1"] {
     background-color: orange;
     border-color: orange;
     color: white;
 }
 
-.is-ok-button[data-value="2"], .take-course-button[data-value="acquired"] {
+.p1-level-indicator[data-value="2"], .p3-level-indicator[data-value="2"] {
     background-color: orangered;
     border-color: orangered;
     color: white;
@@ -122,23 +122,23 @@
     padding: 8px;
 }
 
-.course[data-value="unselected"] {
+.course[data-value="0"] {
     border-style: dashed;
 }
 
-.course[data-value="registered"] {
+.course[data-value="1"] {
     border-color: orange;
 }
 
-.course[data-value="acquired"] {
+.course[data-value="2"] {
     border-color: orangered;
 }
 
-.course[data-disabled="true"] {
+.course[data-is-disabled="true"] {
     filter: grayscale(1);
 }
 
-.option[data-selected="false"]>.option-contents .course {
+.option[data-is-selected="false"]>.option-contents .course {
     pointer-events: none;
 }
 
@@ -162,29 +162,13 @@
     font-size: 2em;
 }
 
-.course[data-value="acquired"]>.course-credits-count>strong {
+.course[data-value="2"]>.course-credits-count>strong {
     color: orangered;
 }
 
-.take-course-button {
+.p3-level-indicator {
     border-color: rgba(255, 165, 0, 0.5);
     color: orange;
-}
-
-.take-course-button::after {
-    content: '履修しない';
-}
-
-.take-course-button[data-value="registered"]::after {
-    content: '履修する'
-}
-
-.take-course-button[data-value="acquired"]::after {
-    content: '修得済み'
-}
-
-.take-course-button[data-disabled="true"]::after {
-    content: '無効'
 }
 
 .selector {
@@ -201,7 +185,7 @@
     content: '1つ選択してください';
 }
 
-.option[data-selected="false"]>.option-contents {
+.option[data-is-selected="false"]>.option-contents {
     filter: brightness(0.5) grayscale(1);
 }
 
@@ -230,12 +214,9 @@
     filter: brightness(0.9);
 }
 
-[data-selected="true"]>.option-select-button {
+[data-is-selected="true"]>.option-select-button {
     background-color: orange;
     border-color: oange;
-}
-
-.option[data-selected="true"]>.option-select-button {
     pointer-events: none;
 }
 
