@@ -1,4 +1,4 @@
-import { C1, C2 } from "./Constraint";
+import { C1, C2 } from "./C";
 
 export default interface Course {
     title: string;

@@ -2,8 +2,10 @@ import React, { Component, ReactNode } from 'react';
 import './App.css';
 import courses1 from './courses1.json';
 import constraint1 from './constraint1.json';
-import { MinMax, C1, P1, isC1, P3, Level, P2, C2, isMinMax } from './Constraint';
+import { P1, P3, P2 } from './P';
 import Course, { isCourse } from './Course';
+import { C2, C1, isC1, MinMax, isMinMax } from './C';
+import Level from './Level';
 
 interface ConstraintJSON {
     children: (string | ConstraintJSON | { candidates: ConstraintJSON[] })[];
