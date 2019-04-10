@@ -43,7 +43,7 @@ export class P1 implements P {
         const creditsCount = [...this.children.values()].reduce(
             (previous, child): number => previous + child.creditsCount(level, includesExcess), 0);
         const max: number = isMinMax(this.c.creditsCount) ? this.c.creditsCount.max : this.c.creditsCount;
-        return Math.min(max, creditsCount);
+        return includesExcess ? creditsCount : Math.min(max, creditsCount);
     }
 }
 

@@ -49,7 +49,8 @@ class ConstraintCreater {
 
 interface AppState {
     c: C1,
-    p: P1
+    p: P1,
+    titlesOfRegisteredCourse: ReadonlySet<string>
 }
 export default class App extends Component<any, AppState> {
     constructor(props: any) {
@@ -59,7 +60,8 @@ export default class App extends Component<any, AppState> {
         const c = new ConstraintCreater(coursesMap).create(constraint1);
         this.state = {
             c,
-            p: new P1(c, new Map())
+            p: new P1(c, new Map()),
+            titlesOfRegisteredCourse: new Set()
         };
     }
 
@@ -76,6 +78,7 @@ export default class App extends Component<any, AppState> {
                     <li>禁止されている科目の組み合わせが存在する可能性があります</li>
                 </ul>
                 <P1Editor c={this.state.c} p={this.state.p} open isDisabled={false}
+                    titlesOfRegisteredCourse={this.state.titlesOfRegisteredCourse}
                     onClick={p => {
                         this.setState({ p });
                     }} />
@@ -89,7 +92,8 @@ interface P1EditorProps {
     p: P1,
     open?: boolean,
     isDisabled: boolean,
-    onClick: (p: P1) => void
+    onClick: (p: P1) => void,
+    titlesOfRegisteredCourse: ReadonlySet<string>
 }
 class P1Editor extends Component<P1EditorProps, { open: boolean }> {
     constructor(props: P1EditorProps) {
@@ -110,6 +114,7 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
 
                 candidates.push(<P1Editor c={child} isDisabled={this.props.isDisabled}
                     p={p || new P1(child, new Map())}
+                    titlesOfRegisteredCourse={this.props.titlesOfRegisteredCourse}
                     onClick={
                         p => this.props.onClick(new P1(this.props.c, [...this.props.p.children, [child, p]]))
                     } />);
@@ -123,6 +128,7 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
                 candidates.push(<P3Editor course={child}
                     p={p || new P3(child, Level.none)}
                     isDisabled={this.props.isDisabled}
+                    titlesOfRegisteredCourse={this.props.titlesOfRegisteredCourse}
                     onClick={
                         p => this.props.onClick(new P1(this.props.c, [...this.props.p.children, [child, p]]))
                     } />)
@@ -135,6 +141,7 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
 
                 candidates.push(<P2Editor c={child}
                     p={p || new P2(null, null)}
+                    titlesOfRegisteredCourse={this.props.titlesOfRegisteredCourse}
                     onClick={
                         p => this.props.onClick(new P1(this.props.c, [...this.props.p.children, [child, p]]))
                     } />);
@@ -192,7 +199,8 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
 function P2Editor(props: {
     c: C2,
     onClick: (p: P2) => void,
-    p: P2
+    p: P2,
+    titlesOfRegisteredCourse: ReadonlySet<string>
 }) {
     return (
         <div className="selector">
@@ -205,9 +213,11 @@ function P2Editor(props: {
                             <P1Editor c={candidate}
                                 onClick={p => props.onClick(new P2(candidate, p))}
                                 isDisabled={props.p === undefined || props.p.selected !== candidate}
+                                titlesOfRegisteredCourse={props.titlesOfRegisteredCourse}
                                 p={props.p.selected === candidate && props.p.child !== null ?
                                     props.p.child :
                                     new P1(candidate, new Map())} />
+                            titlesOfRegisteredCourse={props.titlesOfRegisteredCourse}
                         </div>
                     </div>
                 ))}
@@ -220,7 +230,8 @@ function P3Editor(props: {
     course: Course,
     p: P3,
     isDisabled: boolean,
-    onClick: (value: P3) => void
+    onClick: (value: P3) => void,
+    titlesOfRegisteredCourse: ReadonlySet<string>
 }) {
     return (
         <div className="course" onClick={() => {
@@ -233,7 +244,10 @@ function P3Editor(props: {
             }
         }}
             data-value={props.p.level}
-            data-is-disabled={props.isDisabled}>
+            data-is-disabled={
+                props.isDisabled ||
+                props.p.level === Level.none && props.titlesOfRegisteredCourse.has(props.course.title)
+            }>
             <span className="course-code"><code>{props.course.code}</code></span>
             <h1 className="course-title">{props.course.title}</h1>
             <span className="course-credits-count"><strong>{props.course.creditsCount}</strong>単位</span>
