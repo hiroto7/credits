@@ -3,6 +3,7 @@ import Course, { isCourse } from "./Course";
 export interface P {
     level: Level;
     creditsCount(level: Level, includesExcess: boolean): number;
+    titles(): IterableIterator<string>
 }
 
 export class P1 implements P {
@@ -45,11 +46,19 @@ export class P1 implements P {
         const max: number = isMinMax(this.c.creditsCount) ? this.c.creditsCount.max : this.c.creditsCount;
         return includesExcess ? creditsCount : Math.min(max, creditsCount);
     }
+
+    *titles(): IterableIterator<string> {
+        yield* [...this.children.values()].reduce<Set<string>>((previous, child) => {
+            for (const title of child.titles()) {
+                previous.add(title);
+            }
+            return previous;
+        }, new Set())
+    }
 }
 
 export class P2 implements P {
     constructor(
-        // private readonly c: C2,
         readonly selected: C1 | null,
         readonly child: P1 | null) { }
 
@@ -60,6 +69,14 @@ export class P2 implements P {
     creditsCount(level: Level, includesExcess: boolean): number {
         return this.child === null ? 0 : this.child.creditsCount(level, includesExcess);
     }
+
+    *titles(): IterableIterator<string> {
+        if (this.child === null) {
+            return;
+        } else {
+            yield* this.child.titles();
+        }
+    }
 }
 
 export class P3 implements P {
@@ -67,6 +84,14 @@ export class P3 implements P {
 
     creditsCount(level: Level, _: boolean): number {
         return level <= this.level ? this.course.creditsCount : Level.none;
+    }
+
+    *titles(): IterableIterator<string> {
+        if (this.level === Level.none) {
+            return;
+        } else {
+            yield this.course.title;
+        }
     }
 }
 

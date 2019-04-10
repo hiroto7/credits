@@ -69,18 +69,19 @@ export default class App extends Component<any, AppState> {
         return (
             <div className="App">
                 <h1>卒業要件を満たしたい</h1>
+                <p>某大学の卒業要件を満たすための履修計画を支援するためのツールです。 </p>
                 <p>
-                    某大学の卒業要件を満たすための履修計画を支援するためのツールです。
                     このツールで得られた結果を利用する場合，<strong>必ずご自身の履修要覧やシラバス，または支援室などで確認されるよう</strong>お願いいたします。
-                    </p>
-                <ul>
-                    <li>各科目の単位数や卒業要件の定義が誤っている可能性があります</li>
-                    <li>禁止されている科目の組み合わせが存在する可能性があります</li>
-                </ul>
+                    <i>（各科目の単位数や卒業要件の定義が誤っている可能性があります。また，禁止されている科目の組み合わせが存在する可能性があります。）</i>
+                </p>
+                <p>
+                    お問い合わせは<a href="https://twitter.com/_n017">Twitter</a>
+                    もしくは<a href="https://github.com/hiroto7/credits">GitHub</a>へお願いいたします。
+                </p>
                 <P1Editor c={this.state.c} p={this.state.p} open isDisabled={false}
                     titlesOfRegisteredCourse={this.state.titlesOfRegisteredCourse}
                     onClick={p => {
-                        this.setState({ p });
+                        this.setState({ p, titlesOfRegisteredCourse: new Set(p.titles()) });
                     }} />
             </div>
         );
@@ -217,7 +218,6 @@ function P2Editor(props: {
                                 p={props.p.selected === candidate && props.p.child !== null ?
                                     props.p.child :
                                     new P1(candidate, new Map())} />
-                            titlesOfRegisteredCourse={props.titlesOfRegisteredCourse}
                         </div>
                     </div>
                 ))}
@@ -233,6 +233,8 @@ function P3Editor(props: {
     onClick: (value: P3) => void,
     titlesOfRegisteredCourse: ReadonlySet<string>
 }) {
+    const isDisabled = props.isDisabled ||
+        props.p.level === Level.none && props.titlesOfRegisteredCourse.has(props.course.title);
     return (
         <div className="course" onClick={() => {
             if (props.p.level == Level.acquired) {
@@ -244,16 +246,13 @@ function P3Editor(props: {
             }
         }}
             data-value={props.p.level}
-            data-is-disabled={
-                props.isDisabled ||
-                props.p.level === Level.none && props.titlesOfRegisteredCourse.has(props.course.title)
-            }>
+            data-is-disabled={isDisabled}>
             <span className="course-code"><code>{props.course.code}</code></span>
             <h1 className="course-title">{props.course.title}</h1>
             <span className="course-credits-count"><strong>{props.course.creditsCount}</strong>単位</span>
             <P3LevelIndicator
                 level={props.p.level}
-                isDisabled={props.isDisabled} />
+                isDisabled={isDisabled} />
         </div>
     );
 }

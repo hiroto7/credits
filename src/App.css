@@ -136,6 +136,7 @@
 
 .course[data-is-disabled="true"] {
     filter: grayscale(1);
+    pointer-events: none;
 }
 
 .option[data-is-selected="false"]>.option-contents .course {
