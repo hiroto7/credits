@@ -215,7 +215,9 @@ function P2Editor(props: {
                             if (props.p.child === null || props.p.selected === null ||
                                 props.p.child.creditsCount(Level.registered, true) === 0 ||
                                 window.confirm(
-                                    `「${candidate.title}」に切り替えると，「${props.p.selected.title}」内で設定した履修計画情報は失われます。` +
+                                    `「${candidate.title}」に切り替えると，「${props.p.selected.title}」に設定された次の情報は失われます。\n` +
+                                    `・履修${props.p.child.creditsCount(Level.registered, true)}単位\n` +
+                                    `・修得${props.p.child.creditsCount(Level.acquired, true)}単位\n` +
                                     '続けますか？')) {
                                 props.onClick(new P2(candidate, new P1(candidate, new Map())))
                             }
