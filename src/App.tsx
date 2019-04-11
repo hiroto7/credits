@@ -211,7 +211,15 @@ function P2Editor(props: {
             <div className="selector-body">
                 {[...props.c.candidates].map(candidate => (
                     <div className="option" data-is-selected={props.p.selected === candidate}>
-                        <div onClick={() => props.onClick(new P2(candidate, new P1(candidate, new Map())))} className="option-select-button"></div>
+                        <div onClick={() => {
+                            if (props.p.child === null || props.p.selected === null ||
+                                props.p.child.creditsCount(Level.registered, true) === 0 ||
+                                window.confirm(
+                                    `「${candidate.title}」に切り替えると，「${props.p.selected.title}」内で設定した履修計画情報は失われます。` +
+                                    '続けますか？')) {
+                                props.onClick(new P2(candidate, new P1(candidate, new Map())))
+                            }
+                        }} className="option-select-button"></div>
                         <div className="option-contents">
                             <P1Editor c={candidate}
                                 onClick={p => props.onClick(new P2(candidate, p))}

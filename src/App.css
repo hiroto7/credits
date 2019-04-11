@@ -198,6 +198,7 @@
 }
 
 .option-select-button {
+    background: white;
     border-color: rgba(255, 165, 0, 0.5);
     border-radius: 50%;
     border-width: 1px;
