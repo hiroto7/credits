@@ -159,36 +159,38 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
                     <div className="planner-expand-button">
                         {this.state.open ? '▼' : '▶︎'}
                     </div>
-                    <div className="constraint-title">
-                        <h1>{this.props.c.title}</h1>
-                        {this.props.c.subtitle !== undefined ? (<h2>{this.props.c.subtitle}</h2>) : ""}
-                    </div>
-                    <div className="constraint-credits-count">
-                        <div className="acquired-credits-count">
-                            <strong>{this.props.p.creditsCount(Level.acquired, false)}</strong>{
-                                this.props.p.creditsCount(Level.acquired, true) > max ?
-                                    `(+${
-                                    this.props.p.creditsCount(Level.acquired, true) - this.props.p.creditsCount(Level.acquired, false)
-                                    })` : ''
-                            }
-                            修得
+                    <div className="constraint-title-and-credits-count">
+                        <div className="constraint-title">
+                            <h1>{this.props.c.title}</h1>
+                            {this.props.c.subtitle !== undefined ? (<h2>{this.props.c.subtitle}</h2>) : ""}
                         </div>
-                        <div className="registered-credits-count">
-                            <strong>{this.props.p.creditsCount(Level.registered, false)}</strong>{
-                                this.props.p.creditsCount(Level.registered, true) > max ?
-                                    `(+${
-                                    this.props.p.creditsCount(Level.registered, true) - this.props.p.creditsCount(Level.registered, false)
-                                    })` : ''
-                            }
-                            履修
-                        </div>
-                        <div className="required-credits-count">
-                            <strong>{
-                                isMinMax(this.props.c.creditsCount) ?
-                                    `${this.props.c.creditsCount.min}-${this.props.c.creditsCount.max}` :
-                                    this.props.c.creditsCount
-                            }</strong>
-                            必要
+                        <div className="constraint-credits-count">
+                            <div className="acquired-credits-count">
+                                <strong>{this.props.p.creditsCount(Level.acquired, false)}</strong>{
+                                    this.props.p.creditsCount(Level.acquired, true) > max ?
+                                        `(+${
+                                        this.props.p.creditsCount(Level.acquired, true) - this.props.p.creditsCount(Level.acquired, false)
+                                        })` : ''
+                                }
+                                修得
+                            </div>
+                            <div className="registered-credits-count">
+                                <strong>{this.props.p.creditsCount(Level.registered, false)}</strong>{
+                                    this.props.p.creditsCount(Level.registered, true) > max ?
+                                        `(+${
+                                        this.props.p.creditsCount(Level.registered, true) - this.props.p.creditsCount(Level.registered, false)
+                                        })` : ''
+                                }
+                                履修
+                            </div>
+                            <div className="required-credits-count">
+                                <strong>{
+                                    isMinMax(this.props.c.creditsCount) ?
+                                        `${this.props.c.creditsCount.min}-${this.props.c.creditsCount.max}` :
+                                        this.props.c.creditsCount
+                                }</strong>
+                                必要
+                            </div>
                         </div>
                     </div>
                     <P1LevelIndicator level={this.props.p.level} isDisabled={this.props.isDisabled} />
@@ -259,9 +261,11 @@ function P3Editor(props: {
         }}
             data-value={props.p.level}
             data-is-disabled={isDisabled}>
-            <span className="course-code"><code>{props.course.code}</code></span>
-            <h1 className="course-title">{props.course.title}</h1>
-            <span className="course-credits-count"><strong>{props.course.creditsCount}</strong>単位</span>
+            <div className="course-info">
+                <span className="course-code"><code>{props.course.code}</code></span>
+                <h1 className="course-title">{props.course.title}</h1>
+                <span className="course-credits-count"><strong>{props.course.creditsCount}</strong>単位</span>
+            </div>
             <P3LevelIndicator
                 level={props.p.level}
                 isDisabled={isDisabled} />

@@ -43,6 +43,10 @@
     margin: 0 4px 0 0;
 }
 
+.constraint-title-and-credits-count {
+    display: contents;
+}
+
 .constraint-title {
     flex-grow: 1;
     margin: 0 4px;
@@ -145,6 +149,10 @@
     pointer-events: none;
 }
 
+.course-info {
+    display: contents;
+}
+
 .course-code {
     color: gray;
     margin: 0 4px 0 0;
@@ -226,4 +234,22 @@
 
 .option-contents {
     flex-grow: 1;
+}
+
+@media screen and (max-width: 480px) {
+    .constraint-title-and-credits-count, .course-info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        margin: 0 4px 0 0;
+    }
+    .constraint-credits-count {
+        justify-content: flex-start;
+    }
+    .registered-credits-count>strong, .acquired-credits-count>strong, .required-credits-count>strong, .course-credits-count>strong {
+        font-size: 1em;
+    }
+    .constraint-title, .constraint-credits-count, .course-title, .course-credits-count {
+        margin: 0;
+    }
 }
