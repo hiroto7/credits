@@ -173,7 +173,7 @@
     font-size: 2em;
 }
 
-.course[data-value="2"]>.course-credits-count>strong {
+.course[data-value="2"]>.course-info>.course-credits-count>strong {
     color: orangered;
 }
 
