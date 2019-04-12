@@ -151,8 +151,6 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
             }
         }
 
-        const max: number = isMinMax(this.props.c.creditsCount) ? this.props.c.creditsCount.max : this.props.c.creditsCount;
-
         return (
             <div className="planner">
                 <div className="planner-header" onClick={() => this.setState({ open: !this.state.open })}>
@@ -167,7 +165,7 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
                         <div className="constraint-credits-count">
                             <div className="acquired-credits-count">
                                 <strong>{this.props.p.creditsCount(Level.acquired, false)}</strong>{
-                                    this.props.p.creditsCount(Level.acquired, true) > max ?
+                                    this.props.p.creditsCount(Level.acquired, true) > this.props.p.creditsCount(Level.acquired, false) ?
                                         `(+${
                                         this.props.p.creditsCount(Level.acquired, true) - this.props.p.creditsCount(Level.acquired, false)
                                         })` : ''
@@ -176,7 +174,7 @@ class P1Editor extends Component<P1EditorProps, { open: boolean }> {
                             </div>
                             <div className="registered-credits-count">
                                 <strong>{this.props.p.creditsCount(Level.registered, false)}</strong>{
-                                    this.props.p.creditsCount(Level.registered, true) > max ?
+                                    this.props.p.creditsCount(Level.registered, true) > this.props.p.creditsCount(Level.registered, false) ?
                                         `(+${
                                         this.props.p.creditsCount(Level.registered, true) - this.props.p.creditsCount(Level.registered, false)
                                         })` : ''
