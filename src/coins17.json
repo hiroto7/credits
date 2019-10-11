@@ -1,13 +1,12 @@
 {
     "title": "卒業に必要な履修科目",
-    "subtitle": "基礎科目を除く",
-    "creditsCount": 104,
+    "description": "基礎科目を除く",
     "children": [
         {
             "title": "専門科目 - 必修科目",
-            "subtitle": "主専攻実験を除く",
+            "description": "主専攻実験を除く",
             "creditsCount": 28,
-            "children": [
+            "courses": [
                 "GB10615", "GB10625", 
                 "GB10664", "GB10684", "GB10754", "GB10804",
                 "GB10981", "GB10991", "GB11931",
@@ -18,7 +17,7 @@
         {
             "title": "専門基礎科目 - 必修科目",
             "creditsCount": 16,
-            "children": [
+            "courses": [
                 "GB10114", "GB10124", "GB10214", "GB10224",
                 "GB10314", "GB10324", "GB10414", "GB10424",
                 "GB10914", "GB10924", "GB11404", "GB11514",
@@ -28,16 +27,16 @@
         {
             "title": "専門基礎科目 - 選択科目",
             "creditsCount": 8,
-            "children": [
+            "courses": [
                 "GB10504", "GB11701", "GB11814", "GB11601",
                 "GB11214", "GB13312", "GB13322", "GB13604"
             ]
         },
         {
             "title": "主専攻共通科目",
-            "subtitle": "GB20、GB30若しくはGB40で始まる授業科目又は情報セキュリティ",
+            "description": "GB20、GB30若しくはGB40で始まる授業科目又は情報セキュリティ",
             "creditsCount": 12,
-            "children": [
+            "courses": [
                 "GB20111", "GB20201", "GB20301", "GB30101",
                 "GB30201", "GB30301", "GB30401", "GB40101",
                 "GB40201", "GB40301", "GB42101"
@@ -45,9 +44,9 @@
         },
         {
             "title": "GB1で始まる授業科目 / 情報学群で開設する学群共通の授業科目",
-            "subtitle": "専門基礎科目の選択科目で掲げられている科目を含む / GA1で始まる科目",
+            "description": "専門基礎科目の選択科目で掲げられている科目を含む / GA1で始まる科目",
             "creditsCount": 12,
-            "children": [
+            "courses": [
                 "GA10101", "GA10201", "GA11102", "GA40103",
                 "GA40203", "GA40303", "GA40403",
                 "GB10114", "GB10124", "GB10214", "GB10224",
@@ -71,7 +70,8 @@
             ]
         },
         {
-            "candidates": [
+            "title": "主専攻",
+            "choices": [
                 {
                     "title": "ソフトウェアサイエンス主専攻",
                     "creditsCount": 16,
@@ -79,14 +79,14 @@
                         {
                             "title": "ソフトウェアサイエンス実験",
                             "creditsCount": 6,
-                            "children": [
+                            "courses": [
                                 "GB26403", "GB26503"
                             ]
                         },
                         {
                             "title": "GB2で始まる授業科目",
                             "creditsCount": 10,
-                            "children": [
+                            "courses": [
                                 "GB20111", "GB20201", "GB20301", "GB21111",
                                 "GB21504", "GB21601", "GB21802", "GB21911",
                                 "GB22011", "GB22021", "GB22031", "GB22101",
@@ -104,14 +104,14 @@
                         {
                             "title": "情報システム実験",
                             "creditsCount": 6,
-                            "children": [
+                            "courses": [
                                 "GB36403", "GB36503"
                             ]
                         },
                         {
                             "title": "GB3で始まる授業科目",
                             "creditsCount": 10,
-                            "children": [
+                            "courses": [
                                 "GB30101", "GB30201", "GB30301", "GB30401",
                                 "GB31111", "GB31121", "GB31201", "GB31301",
                                 "GB31401", "GB31501", "GB31601", "GB31701",
@@ -129,14 +129,14 @@
                         {
                             "title": "知能情報メディア実験",
                             "creditsCount": 6,
-                            "children": [
+                            "courses": [
                                 "GB46403", "GB46503"
                             ]
                         },
                         {
                             "title": "GB4で始まる授業科目",
                             "creditsCount": 10,
-                            "children": [
+                            "courses": [
                                 "GB40101", "GB40201", "GB40301", "GB41101",
                                 "GB41204", "GB41301", "GB41401", "GB41501",
                                 "GB41611", "GB41711", "GB41911", "GB42101",
@@ -152,7 +152,7 @@
         {
             "title": "GB2、GB3又はGB4で始まる授業科目",
             "creditsCount": 8,
-            "children": [
+            "courses": [
                 "GB20111", "GB20201", "GB20301", "GB21111",
                 "GB21504", "GB21601", "GB21802", "GB21911",
                 "GB22011", "GB22021", "GB22031", "GB22101",
@@ -173,9 +173,9 @@
         },
         {
             "title": "GBで始まる授業科目 / 情報学群で開設する学群共通の授業科目",
-            "subtitle": "専門基礎科目の選択科目で掲げられている科目を含み、GB0で始まる科目を除く / GA1で始まる科目",
+            "description": "専門基礎科目の選択科目で掲げられている科目を含み、GB0で始まる科目を除く / GA1で始まる科目",
             "creditsCount": 4,
-            "children": [
+            "courses": [
                 "GA10101", "GA10201", "GA11102", "GA40103",
                 "GA40203", "GA40303", "GA40403",
                 "GB10114", "GB10124", "GB10214", "GB10224",

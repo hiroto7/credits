@@ -1,58 +1,98 @@
-import { $array, $number, $object, $string } from '@hiroto/json-type-checker';
+import { $array, $number, $object, $optional, $string, isCompatible } from '@hiroto/json-type-checker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { ListGroup, Container, Col, Row, Badge } from 'react-bootstrap';
-import Course from './Course';
+import { Col, Container, Row } from 'react-bootstrap';
 import './App.css';
-
+import requirements0 from './coins17.json';
+import Course from './Course';
 import courses0 from './courses1.json';
 import CourseStatus from './CourseStatus';
+import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
+import RequirementView from './RequirementView';
+import CourseList from './CourseList';
+
 const courses: unknown = courses0;
 
-if (!$array($object({
+if (!isCompatible(courses, $array($object({
     title: $string,
     code: $string,
     creditsCount: $number,
-})).isCompatible(courses)) {
-    console.log(courses)
+})))) {
     throw new Error('科目定義が不正です');
 }
 
-const CourseListItem = ({ course, status, onClick }: { course: Course, status: CourseStatus, onClick?: (nextStatus: CourseStatus) => void }) => (
-    <ListGroup.Item action onClick={() => onClick && onClick((status + 1) % 3)}>
-        <div className="d-flex justify-content-between align-items-center">
-            <div>
-                <div>{course.title}</div>
-                <code>{course.code}</code>
-            </div>
-            <div className="text-right flex-shrink-0">
-                <Badge variant={status === CourseStatus.Acquired ? 'success' : status === CourseStatus.Registered ? 'primary' : 'secondary'}>
-                    {status === CourseStatus.Acquired ? '修得済み' : status === CourseStatus.Registered ? '履修する' : '履修しない'}
-                </Badge>
-                <div><span className="text-muted">単位数</span> <strong>{course.creditsCount}</strong></div>
-            </div>
-        </div>
-    </ListGroup.Item>
-);
+const codeToCourse = new Map<string, Course>();
+for (const course of courses) {
+    codeToCourse.set(course.code, course);
+}
+
+const convertJSONToRichRequirement = (json: unknown): Requirements => {
+    if (isCompatible(json, $object({
+        title: $string,
+        description: $optional($string),
+        creditsCount: $number,
+        courses: $array($string),
+    }))) {
+        return new RequirementWithCourses({
+            title: json.title,
+            description: json.description,
+            creditsCount: json.creditsCount,
+            courses: json.courses.map(courseCode => {
+                const course = codeToCourse.get(courseCode);
+                if (course === undefined) { throw new Error(`要件定義が不正です。科目番号 ${courseCode} は定義されていません。`); }
+                return course;
+            })
+        });
+    } else if (isCompatible(json, $object({
+        title: $string,
+        description: $optional($string),
+        children: $array($object({})),
+        creditsCount: $optional($number),
+    }))) {
+        return new RequirementWithChildren({
+            title: json.title,
+            description: json.description,
+            children: json.children.map(child => convertJSONToRichRequirement(child)),
+            creditsCount: json.creditsCount,
+        });
+    } else if (isCompatible(json, $object({
+        title: $string,
+        description: $optional($string),
+        choices: $array($object({})),
+    }))) {
+        return new SelectionRequirement({
+            title: json.title,
+            description: json.description,
+            choices: json.choices.map(choice => convertJSONToRichRequirement(choice)),
+        })
+    } else {
+        throw new Error('要件定義が不正です。')
+    }
+}
+
+const requirement = convertJSONToRichRequirement(requirements0);
+
+console.log(requirement);
 
 const App = () => {
     const [courseToStatus, setCourseToStatus] = useState(new Map<Course, CourseStatus>());
+    const [courseToRequirement, setCourseToRequirement] = useState(new Map<Course, Requirements>());
 
     return (
         <Container>
             <Row>
-                <Col>
-                    <ListGroup>
-                        {
-                            courses.map((course: Course) => (
-                                <CourseListItem course={course} status={courseToStatus.get(course) || CourseStatus.Unregistered} onClick={
-                                    (nextStatus) => setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]))
-                                }></CourseListItem>
-                            ))
-                        }
-                    </ListGroup>
+                <Col md={4}>
+                    <CourseList courses={courses} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
+                        onCourseClick={(course: Course, nextStatus: CourseStatus) => setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]))} />
                 </Col>
-                <Col></Col>
+                <Col md={8}>
+                    <RequirementView onCourseClick={
+                        (course: Course, nextStatus: CourseStatus, requirement: Requirements) => {
+                            setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
+                            setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+                        }
+                    } requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} />
+                </Col>
             </Row>
         </Container>
     );

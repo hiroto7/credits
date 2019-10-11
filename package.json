@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@hiroto/json-type-checker": "^1.0.3",
+    "@hiroto/json-type-checker": "^1.0.5",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.12",
     "@types/react": "^16.9.5",
@@ -33,5 +33,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "homepage": "https://hiroto7.github.io/credits/"
+  "homepage": "./"
 }

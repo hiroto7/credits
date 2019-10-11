@@ -1,5 +1,8 @@
 import Course from "./Course";
 
+type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
+export default Requirements;
+
 abstract class Requirement {
     constructor(readonly title: string, readonly description?: string) { }
 }
@@ -7,12 +10,12 @@ abstract class Requirement {
 export interface RequirementWithChildrenInit {
     readonly title: string;
     readonly description?: string;
-    readonly children: Iterable<Requirement>;
+    readonly children: Iterable<Requirements>;
     readonly creditsCount?: number;
 }
 
 export class RequirementWithChildren extends Requirement implements RequirementWithChildrenInit {
-    readonly children: readonly Requirement[];
+    readonly children: readonly Requirements[];
     readonly creditsCount?: number;
     constructor({ title, description, children, creditsCount }: RequirementWithChildrenInit) {
         super(title, description);
@@ -41,15 +44,15 @@ export class RequirementWithCourses extends Requirement {
     }
 }
 
-export interface SelectionRequirementsInit {
+export interface SelectionRequirementInit {
     readonly title: string;
     readonly description?: string;
-    readonly choices: Iterable<Requirement>
+    readonly choices: Iterable<Requirements>
 }
 
-export class SelectionRequirements extends Requirement implements SelectionRequirementsInit {
-    readonly choices: readonly Requirement[]
-    constructor({ title, description, choices }: SelectionRequirementsInit) {
+export class SelectionRequirement extends Requirement implements SelectionRequirementInit {
+    readonly choices: readonly Requirements[]
+    constructor({ title, description, choices }: SelectionRequirementInit) {
         super(title, description);
         this.choices = [...choices];
     }
