@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
-import { Badge, ListGroup, Button, Accordion } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Accordion, Badge, Button, ListGroup } from "react-bootstrap";
 import Course from "./Course";
 import CourseList from "./CourseList";
-import CourseStatus from "./CourseStatus";
+import RegistrationStatus from "./RegistrationStatus";
 import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
 const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
     requirement: Requirements,
-    courseToStatus: Map<Course, CourseStatus>,
+    courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
 }) => {
-    const acquiredCreditsCount = requirement.getRegisteredCreditsCount({ status: CourseStatus.Acquired, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: false });
-    const exceededAcquiredCreditsCount = requirement.getRegisteredCreditsCount({ status: CourseStatus.Acquired, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: true });
-    const registeredCreditsCount = requirement.getRegisteredCreditsCount({ status: CourseStatus.Registered, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: false });
-    const exceededRegisteredCreditsCount = requirement.getRegisteredCreditsCount({ status: CourseStatus.Registered, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: true });
+    const acquiredCreditsCount = requirement.getRegisteredCreditsCount({ status: RegistrationStatus.Acquired, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: false });
+    const exceededAcquiredCreditsCount = requirement.getRegisteredCreditsCount({ status: RegistrationStatus.Acquired, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: true });
+    const registeredCreditsCount = requirement.getRegisteredCreditsCount({ status: RegistrationStatus.Registered, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: false });
+    const exceededRegisteredCreditsCount = requirement.getRegisteredCreditsCount({ status: RegistrationStatus.Registered, courseToRequirement, courseToStatus, selectionToRequirement, includesExcess: true });
     const requiredCreditsCount = requirement.getRequiredCreditsCount(selectionToRequirement);
     return (
         <div>
@@ -43,15 +43,17 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
 
 const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
     requirement: Requirements,
-    courseToStatus: Map<Course, CourseStatus>,
+    courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-}) => (
+}) => {
+    const status = requirement.getStatus({ courseToStatus, courseToRequirement, selectionToRequirement });
+    return (
         <>
             <h5 className="d-flex justify-content-between align-items-center">
                 <div>{requirement.title}</div>
-                <Badge className="flex-shrink-0" variant={CourseStatus.Acquired ? 'success' : CourseStatus.Registered ? 'primary' : 'secondary'}>
-                    {CourseStatus.Acquired ? '修得OK' : CourseStatus.Registered ? '履修OK' : '不足'}
+                <Badge className="flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
+                    {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
                 </Badge>
             </h5>
             <div>
@@ -60,13 +62,14 @@ const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequireme
             </div>
         </>
     );
+}
 
 const RequirementWithChildrenView = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement, onCourseClick, onSelectionChange }: {
     requirement: RequirementWithChildren,
-    courseToStatus: Map<Course, CourseStatus>,
+    courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, nextStatus: CourseStatus, requirement: Requirements) => void,
+    onCourseClick: (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
@@ -86,10 +89,10 @@ const RequirementWithChildrenView = ({ requirement, courseToStatus, courseToRequ
 
 const RequirementWithCoursesView = ({ requirement, courseToStatus, courseToRequirement, onCourseClick, selectionToRequirement }: {
     requirement: RequirementWithCourses,
-    courseToStatus: Map<Course, CourseStatus>,
+    courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, nextStatus: CourseStatus, requirement: Requirements) => void,
+    onCourseClick: (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -118,10 +121,10 @@ const RequirementWithCoursesView = ({ requirement, courseToStatus, courseToRequi
 
 const SelectionRequirementView = ({ requirement, courseToStatus, courseToRequirement, onCourseClick, selectionToRequirement, onSelectionChange }: {
     requirement: SelectionRequirement,
-    courseToStatus: Map<Course, CourseStatus>,
+    courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, nextStatus: CourseStatus, requirement: Requirements) => void,
+    onCourseClick: (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
@@ -135,10 +138,10 @@ const SelectionRequirementView = ({ requirement, courseToStatus, courseToRequire
 
 const RequirementView = ({ requirement, courseToStatus, courseToRequirement, onCourseClick, onSelectionChange, selectionToRequirement }: {
     requirement: Requirements,
-    courseToStatus: Map<Course, CourseStatus>,
+    courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, nextStatus: CourseStatus, requirement: Requirements) => void,
+    onCourseClick: (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) =>
     requirement instanceof RequirementWithChildren ? (<RequirementWithChildrenView onCourseClick={onCourseClick} requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />) :

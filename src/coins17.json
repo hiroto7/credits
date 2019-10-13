@@ -74,7 +74,6 @@
             "choices": [
                 {
                     "title": "ソフトウェアサイエンス主専攻",
-                    "creditsCount": 16,
                     "children": [
                         {
                             "title": "ソフトウェアサイエンス実験",
@@ -99,7 +98,6 @@
                 },
                 {
                     "title": "情報システム主専攻",
-                    "creditsCount": 16,
                     "children": [
                         {
                             "title": "情報システム実験",
@@ -124,7 +122,6 @@
                 },
                 {
                     "title": "知能情報メディア主専攻",
-                    "creditsCount": 16,
                     "children": [
                         {
                             "title": "知能情報メディア実験",

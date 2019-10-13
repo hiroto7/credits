@@ -1,5 +1,5 @@
 import Course from "./Course";
-import CourseStatus from "./CourseStatus";
+import RegistrationStatus from "./RegistrationStatus";
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;
@@ -7,13 +7,25 @@ export default Requirements;
 abstract class Requirement {
     constructor(readonly title: string, readonly description?: string) { }
     abstract getRegisteredCreditsCount({ status, includesExcess, courseToStatus, courseToRequirement, selectionToRequirement }: {
-        status: CourseStatus,
+        status: RegistrationStatus,
         includesExcess: boolean
-        courseToStatus: Map<Course, CourseStatus>,
+        courseToStatus: Map<Course, RegistrationStatus>,
         courseToRequirement: Map<Course, Requirements>,
         selectionToRequirement: Map<SelectionRequirement, Requirement>,
     }): number;
     abstract getRequiredCreditsCount(selectionToRequirement: Map<SelectionRequirement, Requirement>): number;
+    getStatus({ courseToStatus, courseToRequirement, selectionToRequirement }: {
+        courseToStatus: Map<Course, RegistrationStatus>,
+        courseToRequirement: Map<Course, Requirements>,
+        selectionToRequirement: Map<SelectionRequirement, Requirement>,
+    }): RegistrationStatus {
+        const requiredCreditsCount = this.getRequiredCreditsCount(selectionToRequirement);
+        return this.getRegisteredCreditsCount({ status: RegistrationStatus.Acquired, includesExcess: false, courseToStatus, courseToRequirement, selectionToRequirement }) >= requiredCreditsCount ?
+            RegistrationStatus.Acquired :
+            this.getRegisteredCreditsCount({ status: RegistrationStatus.Registered, includesExcess: false, courseToStatus, courseToRequirement, selectionToRequirement }) >= requiredCreditsCount ?
+                RegistrationStatus.Registered :
+                RegistrationStatus.Unregistered;
+    };
 }
 
 export interface RequirementWithChildrenInit {
@@ -32,9 +44,9 @@ export class RequirementWithChildren extends Requirement implements RequirementW
         this.creditsCount = creditsCount;
     }
     getRegisteredCreditsCount({ status, includesExcess, courseToStatus, courseToRequirement, selectionToRequirement }: {
-        status: CourseStatus,
+        status: RegistrationStatus,
         includesExcess: boolean
-        courseToStatus: Map<Course, CourseStatus>,
+        courseToStatus: Map<Course, RegistrationStatus>,
         courseToRequirement: Map<Course, Requirements>,
         selectionToRequirement: Map<SelectionRequirement, Requirement>,
     }): number {
@@ -69,9 +81,9 @@ export class RequirementWithCourses extends Requirement {
         this.allowsOthers = allowsOthers;
     }
     getRegisteredCreditsCount({ status, includesExcess, courseToStatus, courseToRequirement }: {
-        status: CourseStatus,
+        status: RegistrationStatus,
         includesExcess: boolean
-        courseToStatus: Map<Course, CourseStatus>,
+        courseToStatus: Map<Course, RegistrationStatus>,
         courseToRequirement: Map<Course, Requirements>,
     }): number {
         const creditsCount = this.courses.reduce(
@@ -100,9 +112,9 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
         this.choices = [...choices];
     }
     getRegisteredCreditsCount({ status, includesExcess, courseToStatus, courseToRequirement, selectionToRequirement }: {
-        status: CourseStatus,
+        status: RegistrationStatus,
         includesExcess: boolean
-        courseToStatus: Map<Course, CourseStatus>,
+        courseToStatus: Map<Course, RegistrationStatus>,
         courseToRequirement: Map<Course, Requirements>,
         selectionToRequirement: Map<SelectionRequirement, Requirement>,
     }): number {

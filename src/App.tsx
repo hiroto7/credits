@@ -5,11 +5,11 @@ import { Col, Container, Row } from 'react-bootstrap';
 import './App.css';
 import requirements0 from './coins17.json';
 import Course from './Course';
+import CourseList from './CourseList';
 import courses0 from './courses1.json';
-import CourseStatus from './CourseStatus';
+import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
-import CourseList from './CourseList';
 
 const courses: unknown = courses0;
 
@@ -75,7 +75,7 @@ const requirement = convertJSONToRichRequirement(requirements0);
 console.log(requirement);
 
 const App = () => {
-    const [courseToStatus, setCourseToStatus] = useState(new Map<Course, CourseStatus>());
+    const [courseToStatus, setCourseToStatus] = useState(new Map<Course, RegistrationStatus>());
     const [courseToRequirement, setCourseToRequirement] = useState(new Map<Course, Requirements>());
     const [selectionToRequirement, setSelectionToRequirement] = useState(new Map<SelectionRequirement, Requirements>());
 
@@ -84,11 +84,11 @@ const App = () => {
             <Row>
                 <Col md={4}>
                     <CourseList courses={courses} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                        onCourseClick={(course: Course, nextStatus: CourseStatus) => setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]))} />
+                        onCourseClick={(course: Course, nextStatus: RegistrationStatus) => setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]))} />
                 </Col>
                 <Col md={8}>
                     <RequirementView onCourseClick={
-                        (course: Course, nextStatus: CourseStatus, requirement: Requirements) => {
+                        (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
                             setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
                             setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
                         }
