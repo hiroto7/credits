@@ -10,7 +10,7 @@ const CourseListItem = ({ course, status, onClick, requirement }: {
     onClick: (nextStatus: CourseStatus) => void,
     requirement?: Requirements
 }) => (
-        <ListGroup.Item action onClick={() => onClick !== undefined && onClick((status + 1) % 3)} variant={status === CourseStatus.Acquired ? 'success' : status === CourseStatus.Registered ? 'primary' : undefined}>
+        <ListGroup.Item action onClick={() => onClick((status + 1) % 3)} variant={status === CourseStatus.Acquired ? 'success' : status === CourseStatus.Registered ? 'primary' : undefined}>
             <div className="d-flex justify-content-between align-items-center">
                 <div>
                     <div>{course.title}</div>

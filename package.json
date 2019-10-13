@@ -14,7 +14,7 @@
     "react-bootstrap": "^1.0.0-beta.14",
     "react-dom": "^16.10.2",
     "react-scripts": "^3.2.0",
-    "typescript": "^3.7.0-beta"
+    "typescript": "^3.7.0-dev.20191013"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -77,6 +77,7 @@ console.log(requirement);
 const App = () => {
     const [courseToStatus, setCourseToStatus] = useState(new Map<Course, CourseStatus>());
     const [courseToRequirement, setCourseToRequirement] = useState(new Map<Course, Requirements>());
+    const [selectionToRequirement, setSelectionToRequirement] = useState(new Map<SelectionRequirement, Requirements>());
 
     return (
         <Container>
@@ -91,7 +92,9 @@ const App = () => {
                             setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
                             setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
                         }
-                    } requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} />
+                    } onSelectionChange={
+                        (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
+                    } requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
                 </Col>
             </Row>
         </Container>
