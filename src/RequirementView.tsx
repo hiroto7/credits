@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Accordion, Badge, Button, ListGroup } from "react-bootstrap";
+import { Accordion, Badge, Button, Dropdown, ListGroup } from "react-bootstrap";
 import Course from "./Course";
 import CourseList from "./CourseList";
 import RegistrationStatus from "./RegistrationStatus";
@@ -77,8 +77,9 @@ const RequirementWithChildrenView = ({ requirement, courseToStatus, courseToRequ
             <ListGroup className="mt-2">
                 {
                     requirement.children.map(child => (
-                        <ListGroup.Item>
-                            <RequirementView requirement={child} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
+                        <ListGroup.Item key={child.title}>
+                            <RequirementView requirement={child}
+                                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
                                 onCourseClick={onCourseClick} onSelectionChange={onSelectionChange} />
                         </ListGroup.Item>
                     ))
@@ -100,7 +101,7 @@ const RequirementWithCoursesView = ({ requirement, courseToStatus, courseToRequi
     return (
         <>
             <Accordion activeKey={isOpen ? '0' : ''}>
-                <div className="sticky-top bg-white">
+                <div className={`bg-white ${isOpen ? 'sticky-top' : ''}`}>
                     <RequirementSummaryView requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
                     <Button block size="sm" className="mt-2"
                         onClick={() => setIsOpen(!isOpen)}
@@ -128,11 +129,27 @@ const SelectionRequirementView = ({ requirement, courseToStatus, courseToRequire
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
-            <div>{requirement.title}<Button variant="secondary" size="sm">変更</Button></div>
-            <RequirementView requirement={selectionToRequirement.get(requirement) || requirement.choices[0]}
-                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
-                selectionToRequirement={selectionToRequirement} />
+            <Dropdown>
+                <Dropdown.Toggle id="" block size="sm" variant="secondary">{requirement.title} を変更</Dropdown.Toggle>
+
+                <Dropdown.Menu style={{ zIndex: 1100 }}>
+                    {
+                        requirement.choices.map(choice => (
+                            <Dropdown.Item key={choice.title}
+                                active={choice === (selectionToRequirement.get(requirement) || requirement.choices[0])}
+                                onClick={() => onSelectionChange(requirement, choice)}>
+                                {choice.title}
+                            </Dropdown.Item>
+                        ))
+                    }
+                </Dropdown.Menu>
+            </Dropdown>
+            <div className="mt-2">
+                <RequirementView requirement={selectionToRequirement.get(requirement) || requirement.choices[0]}
+                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
+                    onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
+                    selectionToRequirement={selectionToRequirement} />
+            </div>
         </>
     );
 
