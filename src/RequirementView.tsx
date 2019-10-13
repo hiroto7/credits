@@ -57,7 +57,7 @@ const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequireme
                 </Badge>
             </h5>
             <div>
-                <div>{requirement.description === undefined ? (<div>{requirement.description}</div>) : ''}</div>
+                {requirement.description === undefined ? (<></>) : (<div className="text-muted">{requirement.description}</div>)}
                 <CreditsCountLabels requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
             </div>
         </>
