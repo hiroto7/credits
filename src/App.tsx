@@ -1,7 +1,7 @@
 import { $array, $number, $object, $optional, $string, isCompatible } from '@hiroto/json-type-checker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Container, Form } from 'react-bootstrap';
+import { Alert, Container, Form, Navbar } from 'react-bootstrap';
 import './App.css';
 import requirements0 from './coins17.json';
 import Course from './Course';
@@ -80,26 +80,35 @@ const App = () => {
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
 
     return (
-        <Container>
-            <Form className="mt-2">
-                <Form.Check custom label="履修する科目のみ表示する" id="showsOnlyRegisteredCheck"
-                    checked={showsOnlyRegistered}
-                    onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)} />
-            </Form>
-            <div className="my-2">
-                <RequirementView requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
-                    onCourseClick={
-                        (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
-                            setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
-                            setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+        <>
+            <Navbar variant="dark" bg="dark">
+                <Navbar.Brand>卒業要件を満たしたい</Navbar.Brand>
+            </Navbar>
+            <Container>
+                <Alert variant="danger" className="mt-3">
+                    このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
+                    <strong>科目や要件の定義が誤っていたり、実際には認められない履修の組み合わせがある可能性があります。</strong>
+                </Alert>
+                <Form className="mt-3">
+                    <Form.Check custom label="履修する科目のみ表示する" id="showsOnlyRegisteredCheck"
+                        checked={showsOnlyRegistered}
+                        onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)} />
+                </Form>
+                <div className="my-3">
+                    <RequirementView requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
+                        courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
+                        onCourseClick={
+                            (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
+                                setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
+                                setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+                            }
                         }
-                    }
-                    onSelectionChange={
-                        (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
-                    } />
-            </div>
-        </Container>
+                        onSelectionChange={
+                            (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
+                        } />
+                </div>
+            </Container>
+        </>
     );
 }
 
