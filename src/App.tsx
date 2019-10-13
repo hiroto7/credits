@@ -84,10 +84,10 @@ const App = () => {
             <Form className="mt-2">
                 <Form.Check custom label="履修する科目のみ表示する" id="showsOnlyRegisteredCheck"
                     checked={showsOnlyRegistered}
-                    onClick={() => setShowsOnlyRegistered(!showsOnlyRegistered)} />
+                    onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)} />
             </Form>
             <div className="my-2">
-                <RequirementView requirement={requirement}
+                <RequirementView requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
                     courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
                     onCourseClick={
                         (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {

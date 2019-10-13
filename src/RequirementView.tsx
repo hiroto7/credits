@@ -64,8 +64,9 @@ const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequireme
     );
 }
 
-const RequirementWithChildrenView = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement, onCourseClick, onSelectionChange }: {
+const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionToRequirement, onCourseClick, onSelectionChange }: {
     requirement: RequirementWithChildren,
+    showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
@@ -78,7 +79,7 @@ const RequirementWithChildrenView = ({ requirement, courseToStatus, courseToRequ
                 {
                     requirement.children.map(child => (
                         <ListGroup.Item key={child.title}>
-                            <RequirementView requirement={child}
+                            <RequirementView requirement={child} showsOnlyRegistered={showsOnlyRegistered}
                                 courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
                                 onCourseClick={onCourseClick} onSelectionChange={onSelectionChange} />
                         </ListGroup.Item>
@@ -88,8 +89,9 @@ const RequirementWithChildrenView = ({ requirement, courseToStatus, courseToRequ
         </>
     );
 
-const RequirementWithCoursesView = ({ requirement, courseToStatus, courseToRequirement, onCourseClick, selectionToRequirement }: {
+const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, selectionToRequirement }: {
     requirement: RequirementWithCourses,
+    showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
@@ -97,31 +99,48 @@ const RequirementWithCoursesView = ({ requirement, courseToStatus, courseToRequi
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const courses = requirement.courses.filter(course =>
+        !showsOnlyRegistered || (courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
+            requirement === courseToRequirement.get(course)));
 
     return (
         <>
             <Accordion activeKey={isOpen ? '0' : ''}>
                 <div className={`bg-white ${isOpen ? 'sticky-top' : ''}`}>
                     <RequirementSummaryView requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
-                    <Button block size="sm" className="mt-2"
-                        onClick={() => setIsOpen(!isOpen)}
-                        variant={isOpen ? 'primary' : 'outline-secondary'} >
-                        科目を{isOpen ? '非' : ''}表示
-                    </Button>
+                    {
+                        courses.length === 0 ? (
+                            <Button block size="sm" className="mt-2" variant="outline-secondary" disabled>
+                                {showsOnlyRegistered ? '履修する' : ''}科目はありません
+                            </Button>
+                        ) : (
+                                <Button block size="sm" className="mt-2"
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    variant={isOpen ? 'primary' : 'outline-secondary'} >
+                                    {showsOnlyRegistered ? '履修する' : ''}科目を{isOpen ? '非' : ''}表示
+                                </Button>
+                            )
+                    }
                 </div>
                 <Accordion.Collapse eventKey="0">
-                    <div className="mt-2">
-                        <CourseList requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                            onCourseClick={(course, nextStatus) => onCourseClick(course, nextStatus, requirement)} />
-                    </div>
+                    {
+                        courses.length === 0 ? (<></>) : (
+                            <div className="mt-2">
+                                <CourseList requirement={requirement} courses={courses} showsOnlyRegistered={showsOnlyRegistered}
+                                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
+                                    onCourseClick={(course, nextStatus) => onCourseClick(course, nextStatus, requirement)} />
+                            </div>
+                        )
+                    }
                 </Accordion.Collapse>
             </Accordion>
         </>
     );
 }
 
-const SelectionRequirementView = ({ requirement, courseToStatus, courseToRequirement, onCourseClick, selectionToRequirement, onSelectionChange }: {
+const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, selectionToRequirement, onSelectionChange }: {
     requirement: SelectionRequirement,
+    showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
@@ -146,6 +165,7 @@ const SelectionRequirementView = ({ requirement, courseToStatus, courseToRequire
             </Dropdown>
             <div className="mt-2">
                 <RequirementView requirement={selectionToRequirement.get(requirement) || requirement.choices[0]}
+                    showsOnlyRegistered={showsOnlyRegistered}
                     courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
                     onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
                     selectionToRequirement={selectionToRequirement} />
@@ -153,17 +173,18 @@ const SelectionRequirementView = ({ requirement, courseToStatus, courseToRequire
         </>
     );
 
-const RequirementView = ({ requirement, courseToStatus, courseToRequirement, onCourseClick, onSelectionChange, selectionToRequirement }: {
+const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onSelectionChange, selectionToRequirement }: {
     requirement: Requirements,
+    showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
     onCourseClick: (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) =>
-    requirement instanceof RequirementWithChildren ? (<RequirementWithChildrenView onCourseClick={onCourseClick} requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />) :
-        requirement instanceof RequirementWithCourses ? (<RequirementWithCoursesView onCourseClick={onCourseClick} requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />) :
-            (<SelectionRequirementView requirement={requirement} onCourseClick={onCourseClick} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />);
+    requirement instanceof RequirementWithChildren ? (<RequirementWithChildrenView showsOnlyRegistered={showsOnlyRegistered} onCourseClick={onCourseClick} requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />) :
+        requirement instanceof RequirementWithCourses ? (<RequirementWithCoursesView showsOnlyRegistered={showsOnlyRegistered} onCourseClick={onCourseClick} requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />) :
+            (<SelectionRequirementView requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} onCourseClick={onCourseClick} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />);
 
 
 export default RequirementView;
