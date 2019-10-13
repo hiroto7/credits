@@ -87,14 +87,17 @@ const App = () => {
                     onClick={() => setShowsOnlyRegistered(!showsOnlyRegistered)} />
             </Form>
             <div className="my-2">
-                <RequirementView onCourseClick={
-                    (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
-                        setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
-                        setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+                <RequirementView requirement={requirement}
+                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
+                    onCourseClick={
+                        (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
+                            setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
+                            setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+                        }
                     }
-                } onSelectionChange={
-                    (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
-                } requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
+                    onSelectionChange={
+                        (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
+                    } />
             </div>
         </Container>
     );
