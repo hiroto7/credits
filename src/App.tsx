@@ -1,11 +1,10 @@
 import { $array, $number, $object, $optional, $string, isCompatible } from '@hiroto/json-type-checker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import './App.css';
 import requirements0 from './coins17.json';
 import Course from './Course';
-import CourseList from './CourseList';
 import courses0 from './courses1.json';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
@@ -81,22 +80,14 @@ const App = () => {
 
     return (
         <Container>
-            <Row>
-                <Col md={4}>
-                    <CourseList courses={courses} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                        onCourseClick={(course: Course, nextStatus: RegistrationStatus) => setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]))} />
-                </Col>
-                <Col md={8}>
-                    <RequirementView onCourseClick={
-                        (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
-                            setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
-                            setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
-                        }
-                    } onSelectionChange={
-                        (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
-                    } requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
-                </Col>
-            </Row>
+            <RequirementView onCourseClick={
+                (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
+                    setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
+                    setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+                }
+            } onSelectionChange={
+                (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
+            } requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
         </Container>
     );
 }
