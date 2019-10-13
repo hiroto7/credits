@@ -111,7 +111,7 @@ const RequirementWithCoursesView = ({ requirement, courseToStatus, courseToRequi
                 </div>
                 <Accordion.Collapse eventKey="0">
                     <div className="mt-2">
-                        <CourseList courses={requirement.courses} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
+                        <CourseList requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
                             onCourseClick={(course, nextStatus) => onCourseClick(course, nextStatus, requirement)} />
                     </div>
                 </Accordion.Collapse>
