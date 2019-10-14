@@ -9,6 +9,7 @@ import courses0 from './courses1.json';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
+import confirmCourseMovement from './confirmCourseMovement';
 
 const courses: unknown = courses0;
 
@@ -78,8 +79,9 @@ const App = () => {
     const [courseToRequirement, setCourseToRequirement] = useState(new Map<Course, RequirementWithCourses>());
     const [selectionToRequirement, setSelectionToRequirement] = useState(new Map<SelectionRequirement, Requirements>());
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
+    const [modals, setModals] = useState(new Array<JSX.Element>());
 
-    const handleCourseClick = (course: Course, requirement: RequirementWithCourses) => {
+    const handleCourseClick = async (course: Course, requirement: RequirementWithCourses) => {
         const currentStatus: RegistrationStatus = courseToStatus.get(course) || RegistrationStatus.Unregistered;
         const currentRequirement = courseToRequirement.get(course);
         if (currentStatus === RegistrationStatus.Unregistered || currentRequirement === requirement) {
@@ -91,8 +93,10 @@ const App = () => {
                         (currentStatus + 1) % 3
                 ]]
             ));
-        } else if (currentRequirement !== undefined &&
-            !window.confirm(`科目「${course.title}」は、別の要件「${currentRequirement!.title}」に割り当てられています。要件「${requirement.title}」に移動しますか？`)) {
+        } else if (
+            currentRequirement !== undefined &&
+            !await confirmCourseMovement({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, modals, setModals })
+        ) {
             return;
         }
         setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
@@ -124,6 +128,7 @@ const App = () => {
 
     return (
         <>
+            {modals}
             <Navbar variant="dark" bg="dark">
                 <Navbar.Brand>卒業要件を満たしたい</Navbar.Brand>
             </Navbar>

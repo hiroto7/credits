@@ -43,7 +43,7 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
     )
 };
 
-const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
+export const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
     requirement: Requirements,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
