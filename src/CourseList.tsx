@@ -26,8 +26,11 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
                 </div>
                 <div className="text-right flex-shrink-0">
                     {
-                        status !== RegistrationStatus.Unregistered && currentRequirement !== newRequirement ?
-                            (<Badge variant="warning">!</Badge>) : (<></>)
+                        status === RegistrationStatus.Unregistered || currentRequirement === newRequirement ?
+                            (<></>) :
+                            currentRequirement === undefined ?
+                                (<Badge variant="info">?</Badge>) :
+                                (<Badge variant="warning">!</Badge>)
                     }
                     <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
                         {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}

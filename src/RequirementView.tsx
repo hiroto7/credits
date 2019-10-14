@@ -70,9 +70,9 @@ const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseT
     requirement: RequirementWithChildren,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
+    courseToRequirement: Map<Course, RequirementWithCourses>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, requirement: Requirements) => void,
+    onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
@@ -97,7 +97,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, requirement: Requirements) => void,
+    onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -144,9 +144,9 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
     requirement: SelectionRequirement,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
+    courseToRequirement: Map<Course, RequirementWithCourses>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, requirement: Requirements) => void,
+    onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
@@ -179,9 +179,9 @@ const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, cou
     requirement: Requirements,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
+    courseToRequirement: Map<Course, RequirementWithCourses>,
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    onCourseClick: (course: Course, requirement: Requirements) => void,
+    onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) =>
     requirement instanceof RequirementWithChildren ? (<RequirementWithChildrenView showsOnlyRegistered={showsOnlyRegistered} onCourseClick={onCourseClick} requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} onSelectionChange={onSelectionChange} />) :
