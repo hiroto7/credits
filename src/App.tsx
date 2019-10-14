@@ -79,6 +79,24 @@ const App = () => {
     const [selectionToRequirement, setSelectionToRequirement] = useState(new Map<SelectionRequirement, Requirements>());
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
 
+    const handleCourseClick = (course: Course, requirement: Requirements) => {
+        const currentStatus: RegistrationStatus = courseToStatus.get(course) || RegistrationStatus.Unregistered;
+        const currentRequirement = courseToRequirement.get(course);
+        if (currentStatus === RegistrationStatus.Unregistered || currentRequirement === requirement) {
+            setCourseToStatus(new Map(
+                [...courseToStatus, [
+                    course,
+                    showsOnlyRegistered ?
+                        currentStatus === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired :
+                        (currentStatus + 1) % 3
+                ]]
+            ));
+        } else if (!window.confirm(`科目「${course.title}」は、別の要件「${currentRequirement!.title}」に割り当てられています。要件「${requirement.title}」に移動しますか？`)) {
+            return;
+        }
+        setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
+    }
+
     return (
         <>
             <Navbar variant="dark" bg="dark">
@@ -97,12 +115,7 @@ const App = () => {
                 <div className="my-3">
                     <RequirementView requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
                         courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
-                        onCourseClick={
-                            (course: Course, nextStatus: RegistrationStatus, requirement: Requirements) => {
-                                setCourseToStatus(new Map([...courseToStatus, [course, nextStatus]]));
-                                setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
-                            }
-                        }
+                        onCourseClick={handleCourseClick}
                         onSelectionChange={
                             (selection: SelectionRequirement, chosen: Requirements) => setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]))
                         } />
