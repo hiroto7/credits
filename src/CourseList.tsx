@@ -4,33 +4,21 @@ import Course from "./Course";
 import RegistrationStatus from "./RegistrationStatus";
 import Requirements, { RequirementWithCourses } from "./Requirements";
 
-const CourseListItem = ({ course, status, onClick, currentRequirement, newRequirement, showsOnlyRegistered, disabled }: {
+const CourseListItem = ({ course, status, onClick, currentRequirement, newRequirement, disabled }: {
     course: Course,
     status: RegistrationStatus,
-    onClick: (nextStatus: RegistrationStatus) => void,
+    onClick: () => void,
     currentRequirement: Requirements | undefined,
     newRequirement: Requirements,
-    showsOnlyRegistered: boolean,
     disabled: boolean,
 }) => (
-        <ListGroup.Item action
-            disabled={disabled}
+        <ListGroup.Item action disabled={disabled} onClick={onClick}
             variant={
                 status === RegistrationStatus.Unregistered ? undefined :
                     currentRequirement === newRequirement ?
                         status === RegistrationStatus.Acquired ? 'success' : 'primary' :
                         'dark'
-            }
-            onClick={() => {
-                if (status === RegistrationStatus.Unregistered || currentRequirement === newRequirement) {
-                    onClick(
-                        showsOnlyRegistered ?
-                            status === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired :
-                            (status + 1) % 3);
-                } else if (window.confirm(`科目「${course.title}」は、別の要件「${currentRequirement!.title}」に割り当てられています。要件「${newRequirement.title}」に移動しますか？`)) {
-                    onClick(status);
-                }
-            }}>
+            }>
             <div className="d-flex justify-content-between align-items-center">
                 <div>
                     <div>{course.title}</div>
@@ -38,8 +26,11 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
                 </div>
                 <div className="text-right flex-shrink-0">
                     {
-                        status !== RegistrationStatus.Unregistered && currentRequirement !== newRequirement ?
-                            (<Badge variant="warning">!</Badge>) : (<></>)
+                        status === RegistrationStatus.Unregistered || currentRequirement === newRequirement ?
+                            (<></>) :
+                            currentRequirement === undefined ?
+                                (<Badge variant="info">?</Badge>) :
+                                (<Badge variant="warning">!</Badge>)
                     }
                     <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
                         {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}
@@ -50,13 +41,12 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
         </ListGroup.Item>
     );
 
-const CourseList = ({ requirement, courses, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick }: {
+const CourseList = ({ requirement, courses, courseToStatus, courseToRequirement, onCourseClick }: {
     requirement: RequirementWithCourses,
     courses: readonly Course[],
-    showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
-    onCourseClick: (course: Course, nextStatus: RegistrationStatus) => void,
+    onCourseClick: (course: Course) => void,
 }) => (
         <ListGroup>
             {
@@ -65,15 +55,14 @@ const CourseList = ({ requirement, courses, showsOnlyRegistered, courseToStatus,
                         currentRequirement={courseToRequirement.get(course)}
                         newRequirement={requirement}
                         status={courseToStatus.get(course) || RegistrationStatus.Unregistered}
-                        onClick={nextStatus => onCourseClick(course, nextStatus)}
+                        onClick={() => onCourseClick(course)}
                         disabled={
                             (!courseToStatus.has(course) || courseToStatus.get(course) === RegistrationStatus.Unregistered) &&
                             [...courseToStatus.entries()]
                                 .filter(([_, status]) => status !== RegistrationStatus.Unregistered)
                                 .map(([course, _]) => course.title)
                                 .includes(course.title)
-                        }
-                        showsOnlyRegistered={showsOnlyRegistered} />
+                        } />
                 ))
             }
         </ListGroup>
