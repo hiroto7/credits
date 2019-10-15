@@ -1,6 +1,6 @@
 {
     "title": "卒業に必要な履修科目",
-    "description": "共通科目を除く",
+    "description": "共通科目 - 必修科目 を除く",
     "children": [
         {
             "title": "専門科目 - 必修科目",
@@ -99,8 +99,18 @@
                     ]
                 },
                 {
+                    "title": "共通科目 - 自由科目",
+                    "description": "総合科目II / 総合科目III / 体育 / 外国語 / 国語 / 芸術",
+                    "creditsCount": {
+                        "min": 0,
+                        "max": 9
+                    },
+                    "courses": [],
+                    "allowOthers": true
+                },
+                {
                     "title": "基礎科目 - 自由科目",
-                    "description": "他学群又は多学類の授業科目 / 情報（上級） / 博物館に関する科目 / 自由科目（特設）",
+                    "description": "他学群又は他学類の授業科目 / 情報（上級） / 博物館に関する科目 / 自由科目（特設）",
                     "creditsCount": {
                         "min": 0,
                         "max": 9
