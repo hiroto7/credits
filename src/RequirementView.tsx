@@ -108,13 +108,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
-    const useIsOpen = () => {
-        const [isOpenWhenFalse, setIsOpenWhenFalse] = useState(false);
-        const [isOpenWhenTrue, setIsOpenWhenTrue] = useState(true);
-        return showsOnlyRegistered ? [isOpenWhenTrue, setIsOpenWhenTrue] as const : [isOpenWhenFalse, setIsOpenWhenFalse] as const;
-    };
-
-    const [isOpen, setIsOpen] = useIsOpen();
+    const [isOpen, setIsOpen] = useState(false);
     const courses = requirement.courses.filter(course =>
         !showsOnlyRegistered || (courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
             requirement === courseToRequirement.get(course)));
