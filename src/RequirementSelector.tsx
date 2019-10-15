@@ -6,6 +6,7 @@ import courses0 from './courses1.json';
 import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
 import coins17_0 from './requirements/coins17.json';
 import mast17_0 from './requirements/mast17.json';
+import klis17_0 from './requirements/klis17.json';
 
 const courses: unknown = courses0;
 
@@ -54,7 +55,10 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
         title: $string,
         description: $optional($string),
         children: $array($object({})),
-        creditsCount: $optional($number),
+        creditsCount: $optional($union($number, $object({
+            min: $number,
+            max: $number,
+        }))),
     }))) {
         return new RequirementWithChildren({
             title: json.title,
@@ -80,6 +84,7 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
 const requirements = {
     coins17: convertJSONToRichRequirement(coins17_0),
     mast17: convertJSONToRichRequirement(mast17_0),
+    klis17: convertJSONToRichRequirement(klis17_0),
 };
 
 console.log(requirements);
@@ -96,6 +101,7 @@ const RequirementSelector = ({ onChange }: { onChange: (requirement: Requirement
             }}>
                 <option value="coins17">情報科学類（2017年度入学）</option>
                 <option value="mast17">情報メディア創成学類（2017年度入学）</option>
+                <option value="klis17">知識情報・図書館学類（2017年度入学）</option>
             </Form.Control>
         </Form.Group>
     )

@@ -1330,6 +1330,11 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GE21822",
+    "title": "テクスト解釈-2",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GE21832",
     "title": "テクスト解釈-3",
     "creditsCount": 2.0
@@ -1405,6 +1410,16 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GE40803",
+    "title": "体験型システム開発A",
+    "creditsCount": 3.0
+  },
+  {
+    "code": "GE40903",
+    "title": "体験型システム開発B",
+    "creditsCount": 3.0
+  },
+  {
     "code": "GE50301",
     "title": "知識情報特論I",
     "creditsCount": 1.0
@@ -1466,6 +1481,11 @@
   },
   {
     "code": "GE51038",
+    "title": "卒業研究",
+    "creditsCount": 6.0
+  },
+  {
+    "code": "GE51048",
     "title": "卒業研究",
     "creditsCount": 6.0
   },
@@ -1620,6 +1640,11 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GE71301",
+    "title": "知識資源の記述",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GE71501",
     "title": "クラウドコンピューティング",
     "creditsCount": 2.0
@@ -1660,6 +1685,11 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GE72402",
+    "title": "ディジタルキュレーション",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GE72501",
     "title": "メディアアート",
     "creditsCount": 2.0
@@ -1687,6 +1717,11 @@
   {
     "code": "GE80501",
     "title": "情報サービス経営論",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE80601",
+    "title": "情報経済論",
     "creditsCount": 2.0
   },
   {
@@ -1730,6 +1765,11 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GE82001",
+    "title": "中国図書学",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GE82101",
     "title": "日本図書学",
     "creditsCount": 2.0
@@ -1737,6 +1777,11 @@
   {
     "code": "GE82201",
     "title": "アーカイブズの構築",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GE82301",
+    "title": "Comparative Study on Library and Information Services",
     "creditsCount": 2.0
   },
   {
