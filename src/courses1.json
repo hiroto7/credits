@@ -910,6 +910,11 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GC30401",
+    "title": "生物と情報",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GC34502",
     "title": "ハイブリッドアート演習",
     "creditsCount": 1.5
@@ -940,6 +945,11 @@
     "creditsCount": 2.0
   },
   {
+    "code": "GC50301",
+    "title": "プログラム言語論",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GC50501",
     "title": "通信ネットワーク",
     "creditsCount": 2.0
@@ -952,6 +962,16 @@
   {
     "code": "GC50701",
     "title": "インタラクティブCG",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC50801",
+    "title": "パターン認識",
+    "creditsCount": 2.0
+  },
+  {
+    "code": "GC51001",
+    "title": "画像・映像情報処理",
     "creditsCount": 2.0
   },
   {
@@ -1070,6 +1090,11 @@
     "creditsCount": 1.5
   },
   {
+    "code": "GC54201",
+    "title": "音声・音響学基礎",
+    "creditsCount": 2.0
+  },
+  {
     "code": "GC54301",
     "title": "システム数理III",
     "creditsCount": 1.0
@@ -1092,6 +1117,11 @@
   {
     "code": "GC59301",
     "title": "情報メディア創成特別講義C",
+    "creditsCount": 1.0
+  },
+  {
+    "code": "GC59401",
+    "title": "情報メディア創成特別講義D",
     "creditsCount": 1.0
   },
   {
