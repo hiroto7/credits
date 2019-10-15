@@ -21,11 +21,11 @@ const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, c
                 <Modal.Title>割り当てる要件を変更</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p>この科目はすでに以下の要件に割り当てられています。</p>
                 <p>
-                    各科目が割り当てできる要件は1つまでです。
+                    この科目はすでに以下の要件に割り当てられています。
                     <strong>続けると、この要件への割り当ては解除されます。</strong>
                 </p>
+                <p>各科目に割り当てできる要件は1つまでです。</p>
                 <Card body>
                     <RequirementSummaryView requirement={currentRequirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
                 </Card>
