@@ -62,7 +62,7 @@ export const RequirementSummaryView = ({ requirement, courseToStatus, courseToRe
         <>
             <h5 className="d-flex justify-content-between align-items-center">
                 <div>{requirement.title}</div>
-                <Badge className="flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
+                <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
                     {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
                 </Badge>
             </h5>

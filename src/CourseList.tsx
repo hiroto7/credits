@@ -24,7 +24,7 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
                     <div>{course.title}</div>
                     <code>{course.code}</code>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="ml-2 text-right flex-shrink-0">
                     {
                         status === RegistrationStatus.Unregistered || currentRequirement === newRequirement ?
                             (<></>) :
