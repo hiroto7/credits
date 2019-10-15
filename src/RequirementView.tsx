@@ -115,19 +115,17 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     };
 
     const [isOpen, setIsOpen] = useIsOpen();
-    const allCourses = requirement.courses;
-    const registeredCourses = requirement.courses.filter(course =>
-        courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
-        requirement === courseToRequirement.get(course)
-    );
+    const courses = requirement.courses.filter(course =>
+        !showsOnlyRegistered || (courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
+            requirement === courseToRequirement.get(course)));
 
     return (
         <>
-            <Accordion activeKey={isOpen ? showsOnlyRegistered ? 'registered' : 'all' : ''}>
+            <Accordion activeKey={isOpen ? '0' : ''}>
                 <div className={`bg-white ${isOpen ? 'sticky-top' : ''}`}>
                     <RequirementSummaryView requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
                     {
-                        (showsOnlyRegistered ? registeredCourses : allCourses).length === 0 ? (
+                        courses.length === 0 ? (
                             <Button block className="mt-2" variant="outline-secondary" disabled>
                                 {showsOnlyRegistered ? '履修する' : ''}科目はありません
                             </Button>
@@ -140,25 +138,17 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                             )
                     }
                 </div>
-                {
-                    [
-                        { courses: allCourses, key: 'all' },
-                        { courses: registeredCourses, key: 'registered' },
-                    ].map(({ courses, key }) => (
-                        <Accordion.Collapse key={key} eventKey={key}>
-                            {
-                                courses.length === 0 ? (<></>) : (
-                                    <div className="mt-2">
-                                        <CourseList requirement={requirement} courses={courses}
-                                            courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                                            onCourseClick={course => onCourseClick(course, requirement)}
-                                        />
-                                    </div>
-                                )
-                            }
-                        </Accordion.Collapse>
-                    ))
-                }
+                <Accordion.Collapse eventKey="0">
+                    {
+                        courses.length === 0 ? (<></>) : (
+                            <div className="mt-2">
+                                <CourseList requirement={requirement} courses={courses}
+                                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
+                                    onCourseClick={course => onCourseClick(course, requirement)} />
+                            </div>
+                        )
+                    }
+                </Accordion.Collapse>
             </Accordion>
         </>
     );
