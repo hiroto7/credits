@@ -137,6 +137,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     };
 
     const [isOpen, setIsOpen] = useIsOpen();
+
     const allCourses = requirement.courses;
     const registeredCourses = requirement.courses.filter(course =>
         courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
@@ -145,7 +146,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
 
     return (
         <>
-            <Accordion activeKey={isOpen ? showsOnlyRegistered ? 'registered' : 'all' : ''}>
+            <Accordion activeKey={isOpen ? '0' : ''}>
                 <div className={`bg-white ${isOpen ? 'sticky-top' : ''}`}>
                     <RequirementSummaryView
                         requirement={requirement}
@@ -175,10 +176,10 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                 </div>
                 {
                     [
-                        { courses: allCourses, key: 'all' },
-                        { courses: registeredCourses, key: 'registered' },
-                    ].map(({ courses, key }) => (
-                        <Accordion.Collapse key={key} eventKey={key}>
+                        { courses: allCourses, key: 'all', hidden: showsOnlyRegistered },
+                        { courses: registeredCourses, key: 'registered', hidden: !showsOnlyRegistered },
+                    ].map(({ courses, key, hidden }) => (
+                        <Accordion.Collapse eventKey="0" key={key} hidden={hidden}>
                             {
                                 courses.length === 0 ? (<></>) : (
                                     <div className="mt-3">
