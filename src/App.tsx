@@ -13,6 +13,9 @@ const App = () => {
     const [requirement, setRequirement] = useState(defaultRequirement);
     const [courseToStatus, setCourseToStatus] = useState(new Map<Course, RegistrationStatus>());
     const [courseToRequirement, setCourseToRequirement] = useState(new Map<Course, RequirementWithCourses>());
+    const [requirementToOthersCount, setRequirementToOthersCount] = useState(
+        new Map<RequirementWithCourses, { acquired: number, registered: number }>()
+    );
     const [selectionToRequirement, setSelectionToRequirement] = useState(new Map<SelectionRequirement, Requirements>());
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
     const [modals, setModals] = useState(new Array<JSX.Element>());
@@ -31,7 +34,7 @@ const App = () => {
             ));
         } else if (
             currentRequirement !== undefined &&
-            !await confirmCourseMovement({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, modals, setModals })
+            !await confirmCourseMovement({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, modals, setModals })
         ) {
             return;
         }
@@ -52,6 +55,21 @@ const App = () => {
         } else {
             clearCourseToRequirement(selectionToRequirement.get(requirement) || requirement.choices[0], newCourseToRequirement);
         }
+    }
+
+    const handleOthersClick = (requirement: RequirementWithCourses) => {
+        const {
+            acquired: currentAcquired,
+            registered: currentRegistered,
+        } = requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }
+        const newAcquired = window.prompt('修得済みの単位数を入力', `${currentAcquired}`);
+        if (newAcquired === null) { return; }
+        const newRegistered = window.prompt('履修済みの単位数を入力（修得済みの単位は含まない）', `${currentRegistered}`);
+        if (newRegistered === null) { return; }
+        setRequirementToOthersCount(new Map([
+            ...requirementToOthersCount,
+            [requirement, { acquired: +newAcquired, registered: +newRegistered }]
+        ]));
     }
 
     const handleSelectionChange = (selection: SelectionRequirement, chosen: Requirements) => {
@@ -79,9 +97,12 @@ const App = () => {
                     onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)}
                 />
                 <div className="my-3">
-                    <RequirementView requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
+                    <RequirementView
+                        requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
                         courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
-                        onCourseClick={handleCourseClick} onSelectionChange={handleSelectionChange} />
+                        onCourseClick={handleCourseClick} onOthersClick={handleOthersClick}
+                        onSelectionChange={handleSelectionChange} requirementToOthersCount={requirementToOthersCount}
+                    />
                 </div>
             </Container>
         </>

@@ -106,7 +106,7 @@
                         "max": 9
                     },
                     "courses": [],
-                    "allowOthers": true
+                    "allowsOthers": true
                 },
                 {
                     "title": "基礎科目 - 自由科目",
@@ -116,7 +116,7 @@
                         "max": 9
                     },
                     "courses": [],
-                    "allowOthers": true
+                    "allowsOthers": true
                 }
             ]
         }

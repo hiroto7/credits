@@ -1,4 +1,4 @@
-import { $array, $number, $object, $optional, $string, $union, isCompatible } from "@hiroto/json-type-checker";
+import { $array, $number, $object, $optional, $string, $union, isCompatible, $boolean } from "@hiroto/json-type-checker";
 import React from "react";
 import { Form } from "react-bootstrap";
 import Course from "./Course.js";
@@ -37,6 +37,7 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
             max: $number,
         })),
         courses: $array($string),
+        allowsOthers: $optional($boolean),
     }))) {
         return new RequirementWithCourses({
             title: json.title,
@@ -46,7 +47,8 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
                 const course = codeToCourse.get(courseCode);
                 if (course === undefined) { throw new Error(`要件定義が不正です。科目番号 ${courseCode} は定義されていません。`); }
                 return course;
-            })
+            }),
+            allowsOthers: json.allowsOthers,
         });
     } else if (isCompatible(json, $object({
         title: $string,
