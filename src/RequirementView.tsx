@@ -7,6 +7,14 @@ import Requirements, { RequirementWithChildren, RequirementWithCourses, Selectio
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
+const ExceededCreditsCountLabel = ({ creditsCount }: { creditsCount: number }) => (
+    <>
+        <span className="text-muted">(</span>
+        +{creditsCount}
+        <span className="text-muted">)</span>
+    </>
+)
+
 const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
     requirement: Requirements,
     courseToStatus: Map<Course, RegistrationStatus>,
@@ -24,20 +32,20 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
                 <span className="text-muted">習得</span>
                 <> </>
                 <strong className="text-success">{acquiredCreditsCount}</strong>
-                {exceededAcquiredCreditsCount > acquiredCreditsCount ? `(+${exceededAcquiredCreditsCount - acquiredCreditsCount})` : ''}
+                {exceededAcquiredCreditsCount > acquiredCreditsCount ? (<ExceededCreditsCountLabel creditsCount={exceededRegisteredCreditsCount - registeredCreditsCount} />) : (<></>)}
             </span>
             <CreditsCountLabelDelimiter />
             <span>
                 <span className="text-muted">履修</span>
                 <> </>
                 <strong className="text-primary">{registeredCreditsCount}</strong>
-                {exceededRegisteredCreditsCount > registeredCreditsCount ? `(+${exceededRegisteredCreditsCount - registeredCreditsCount})` : ''}
+                {exceededRegisteredCreditsCount > registeredCreditsCount ? (<ExceededCreditsCountLabel creditsCount={exceededRegisteredCreditsCount - registeredCreditsCount} />) : (<></>)}
             </span>
             <CreditsCountLabelDelimiter />
             <span>
                 <span className="text-muted">必要</span>
                 <> </>
-                <strong className="text-secondary">{requiredCreditsCount}</strong>
+                <strong>{requiredCreditsCount}</strong>
             </span>
         </div>
     )
