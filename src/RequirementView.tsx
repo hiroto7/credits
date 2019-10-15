@@ -112,11 +112,11 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                     <RequirementSummaryView requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
                     {
                         courses.length === 0 ? (
-                            <Button block size="sm" className="mt-2" variant="outline-secondary" disabled>
+                            <Button block className="mt-2" variant="outline-secondary" disabled>
                                 {showsOnlyRegistered ? '履修する' : ''}科目はありません
                             </Button>
                         ) : (
-                                <Button block size="sm" className="mt-2"
+                                <Button block className="mt-2"
                                     onClick={() => setIsOpen(!isOpen)}
                                     variant={isOpen ? 'primary' : 'outline-secondary'} >
                                     {showsOnlyRegistered ? '履修する' : ''}科目を{isOpen ? '非' : ''}表示
@@ -151,7 +151,7 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
 }) => (
         <>
             <Dropdown>
-                <Dropdown.Toggle id="" block size="sm" variant="secondary">{requirement.title} を変更</Dropdown.Toggle>
+                <Dropdown.Toggle id="" variant="secondary">{requirement.title} を変更</Dropdown.Toggle>
 
                 <Dropdown.Menu style={{ zIndex: 1100 }}>
                     {

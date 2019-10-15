@@ -57,7 +57,7 @@ const confirmCourseMovement = async ({ currentRequirement, courseToStatus, cours
                         setModals(newModals.filter(value => value !== modal));
                     }}
                 />
-            )
+            );
             const newModals = [...modals, modal];
             setModals(newModals);
         } catch (e) {
