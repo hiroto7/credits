@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Accordion, Badge, Button, Dropdown, ListGroup } from "react-bootstrap";
+import { Accordion, Badge, Button, ButtonToolbar, Card, Col, Dropdown, Form, ListGroup } from "react-bootstrap";
 import Course from "./Course";
 import CourseList from "./CourseList";
 import RegistrationStatus from "./RegistrationStatus";
@@ -85,7 +85,7 @@ export const RequirementSummaryView = ({ requirement, courseToStatus, courseToRe
     );
 }
 
-const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, onCourseClick, onOthersClick, onSelectionChange }: {
+const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: RequirementWithChildren,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
@@ -93,7 +93,7 @@ const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseT
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
     requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersClick: (requirement: RequirementWithCourses) => void,
+    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
@@ -110,7 +110,7 @@ const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseT
                                 requirement={child} showsOnlyRegistered={showsOnlyRegistered}
                                 courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
                                 onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
-                                onOthersClick={onOthersClick} requirementToOthersCount={requirementToOthersCount}
+                                onOthersCountsChange={onOthersCountsChange} requirementToOthersCount={requirementToOthersCount}
                             />
                         </ListGroup.Item>
                     ))
@@ -119,7 +119,101 @@ const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseT
         </>
     );
 
-const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onOthersClick, selectionToRequirement, requirementToOthersCount }: {
+const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
+    currentOthersCount: RegisteredCreditsCounts,
+    onReturn: (newOthersCount: RegisteredCreditsCounts) => void,
+    onHide: () => void,
+}) => {
+    const [acquired, setAcquired] = useState(undefined as number | undefined);
+    const [registeredExcludingAcquired, setRegisteredExcludingAcquired] = useState(undefined as number | undefined);
+    const [registeredIncludingAcquired, setRegisteredIncludingAcquired] = useState(undefined as number | undefined);
+
+    const computed = {
+        acquired: acquired || currentOthersCount.acquired,
+        registered:
+            registeredIncludingAcquired !== undefined ?
+                registeredIncludingAcquired :
+                registeredExcludingAcquired !== undefined ?
+                    (acquired !== undefined ? acquired : currentOthersCount.acquired) + registeredExcludingAcquired :
+                    acquired !== undefined ?
+                        currentOthersCount.registered + acquired - currentOthersCount.acquired :
+                        currentOthersCount.registered,
+    }
+
+    return (
+        <Card body border="primary">
+            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                onReturn(computed);
+                onHide();
+            }}>
+                <Form.Row>
+                    <Form.Group as={Col} md="4" controlId="validationCustom01">
+                        <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
+                        <Form.Control
+                            type="number" min={0}
+                            placeholder={`${computed.acquired}`}
+                            value={acquired === undefined ? '' : `${acquired}`}
+                            onChange={
+                                (e: React.ChangeEvent<HTMLInputElement>) =>
+                                    setAcquired(e.target.value === '' ? undefined : +e.target.value)
+                            }
+                            isInvalid={computed.acquired < 0}
+                        />
+                        <Form.Control.Feedback type="invalid">(a) &gt;= 0</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom02">
+                        <Form.Label>履修する単位数 <span className="text-muted">(b)</span></Form.Label>
+                        <Form.Control
+                            type="number" min={0}
+                            placeholder={`${computed.registered - computed.acquired}`}
+                            value={registeredExcludingAcquired === undefined ? '' : `${registeredExcludingAcquired}`}
+                            onChange={
+                                (e: React.ChangeEvent<HTMLInputElement>) => {
+                                    if (e.target.value === '') {
+                                        setRegisteredExcludingAcquired(undefined);
+                                    } else {
+                                        setRegisteredExcludingAcquired(+e.target.value);
+                                        setRegisteredIncludingAcquired(undefined);
+                                    }
+                                }
+                            }
+                            isInvalid={computed.acquired > computed.registered}
+                        />
+                        <Form.Control.Feedback type="invalid">(b) &gt;= 0</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom02">
+                        <Form.Label>計 <span className="text-muted">(a) + (b)</span></Form.Label>
+                        <Form.Control
+                            type="number" min={0}
+                            placeholder={`${computed.registered}`}
+                            value={registeredIncludingAcquired === undefined ? '' : `${registeredIncludingAcquired}`}
+                            onChange={
+                                (e: React.ChangeEvent<HTMLInputElement>) => {
+                                    if (e.target.value === '') {
+                                        setRegisteredIncludingAcquired(undefined);
+                                    } else {
+                                        setRegisteredIncludingAcquired(+e.target.value);
+                                        setRegisteredExcludingAcquired(undefined);
+                                    }
+                                }
+                            }
+                        />
+                    </Form.Group>
+                </Form.Row>
+                <ButtonToolbar>
+                    <Button
+                        type="submit"
+                        disabled={computed.acquired < 0 || computed.acquired > computed.registered}
+                    >OK</Button>
+                    <Button variant="secondary" onClick={onHide}>キャンセル</Button>
+                </ButtonToolbar>
+            </Form>
+        </Card>
+    )
+}
+
+const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onOthersCountsChange, selectionToRequirement, requirementToOthersCount }: {
     requirement: RequirementWithCourses,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
@@ -127,7 +221,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
     requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersClick: () => void,
+    onOthersCountsChange: (newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
     const useIsOpen = () => {
@@ -137,6 +231,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     };
 
     const [isOpen, setIsOpen] = useIsOpen();
+    const [showsInput, setShowsInput] = useState(false);
 
     const allCourses = requirement.courses;
     const registeredCourses = requirement.courses.filter(course =>
@@ -156,9 +251,11 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                     {
                         (showsOnlyRegistered ? registeredCourses : allCourses).length === 0 ?
                             requirement.allowsOthers ? (
-                                <Button block className="mt-3" variant="secondary" onClick={onOthersClick}>
-                                    単位数を入力
-                                </Button>
+                                showsInput ? (<></>) : (
+                                    <Button block className="mt-3" variant="secondary" onClick={() => setShowsInput(true)}>
+                                        単位数を入力
+                                    </Button>
+                                )
                             ) : (
                                     <Button block className="mt-3" variant="outline-secondary" disabled>
                                         {showsOnlyRegistered ? '履修する' : ''}科目はありません
@@ -174,6 +271,16 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                             )
                     }
                 </div>
+                {
+                    showsInput ? (
+                        <div className="mt-3">
+                            <OthersCountInput
+                                currentOthersCount={requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }}
+                                onReturn={onOthersCountsChange} onHide={() => setShowsInput(false)}
+                            />
+                        </div>
+                    ) : (<></>)
+                }
                 {
                     [
                         { courses: allCourses, key: 'all', hidden: showsOnlyRegistered },
@@ -198,7 +305,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     );
 }
 
-const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, onCourseClick, onOthersClick, onSelectionChange }: {
+const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: SelectionRequirement,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
@@ -206,7 +313,7 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
     requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersClick: (requirement: RequirementWithCourses) => void,
+    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => (
         <>
@@ -231,14 +338,14 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
                     showsOnlyRegistered={showsOnlyRegistered}
                     courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
                     selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
-                    onCourseClick={onCourseClick} onOthersClick={onOthersClick}
+                    onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange}
                     onSelectionChange={onSelectionChange}
                 />
             </div>
         </>
     );
 
-const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onOthersClick, onSelectionChange, selectionToRequirement, requirementToOthersCount }: {
+const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onOthersCountsChange, onSelectionChange, selectionToRequirement, requirementToOthersCount }: {
     requirement: Requirements,
     showsOnlyRegistered: boolean,
     courseToStatus: Map<Course, RegistrationStatus>,
@@ -246,7 +353,7 @@ const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, cou
     selectionToRequirement: Map<SelectionRequirement, Requirements>,
     requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersClick: (requirement: RequirementWithCourses) => void,
+    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) =>
     requirement instanceof RequirementWithChildren ? (
@@ -254,7 +361,7 @@ const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, cou
             requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
             courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
             selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
-            onCourseClick={onCourseClick} onOthersClick={onOthersClick} onSelectionChange={onSelectionChange}
+            onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange} onSelectionChange={onSelectionChange}
         />
     ) :
         requirement instanceof RequirementWithCourses ? (
@@ -263,14 +370,14 @@ const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, cou
                 courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
                 selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
                 onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
-                onOthersClick={() => onOthersClick(requirement)}
+                onOthersCountsChange={creditsCounts => onOthersCountsChange(requirement, creditsCounts)}
             />) :
             (
                 <SelectionRequirementView
                     requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
                     courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
                     selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
-                    onCourseClick={onCourseClick} onOthersClick={onOthersClick} onSelectionChange={onSelectionChange}
+                    onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange} onSelectionChange={onSelectionChange}
                 />
             );
 

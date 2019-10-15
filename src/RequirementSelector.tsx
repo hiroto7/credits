@@ -84,7 +84,7 @@ const requirements = {
 
 console.log(requirements);
 
-export const defaultRequirement = requirements.mast17;
+export const defaultRequirement = requirements.coins17;
 
 const RequirementSelector = ({ onChange }: { onChange: (requirement: Requirements) => void }) => {
     return (
@@ -94,8 +94,8 @@ const RequirementSelector = ({ onChange }: { onChange: (requirement: Requirement
                 const newRequirementName = (e.target as HTMLSelectElement).value as keyof typeof requirements;
                 onChange(requirements[newRequirementName]);
             }}>
-                <option value="coins17">情報科学類（2017年度）</option>
-                <option value="mast17">情報メディア創成学類（2017年度）</option>
+                <option value="coins17">情報科学類（2017年度入学）</option>
+                <option value="mast17">情報メディア創成学類（2017年度入学）</option>
             </Form.Control>
         </Form.Group>
     )

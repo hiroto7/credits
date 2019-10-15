@@ -18,9 +18,6 @@ const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, c
 
     return (
         <Modal show={show} onHide={() => { setShow(false); onReturn(false); }} onExited={onExited}>
-            <Modal.Header closeButton>
-                <Modal.Title>割り当てる要件を変更</Modal.Title>
-            </Modal.Header>
             <Modal.Body>
                 <p>
                     この科目はすでに以下の要件に割り当てられています。

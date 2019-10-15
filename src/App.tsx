@@ -5,7 +5,7 @@ import './App.css';
 import confirmCourseMovement from './confirmCourseMovement';
 import Course from './Course';
 import RegistrationStatus from './RegistrationStatus';
-import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
+import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementSelector, { defaultRequirement } from './RequirementSelector';
 import RequirementView from './RequirementView';
 
@@ -57,18 +57,10 @@ const App = () => {
         }
     }
 
-    const handleOthersClick = (requirement: RequirementWithCourses) => {
-        const {
-            acquired: currentAcquired,
-            registered: currentRegistered,
-        } = requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }
-        const newAcquired = window.prompt('修得済みの単位数を入力', `${currentAcquired}`);
-        if (newAcquired === null) { return; }
-        const newRegistered = window.prompt('履修済みの単位数を入力（修得済みの単位は含まない）', `${currentRegistered}`);
-        if (newRegistered === null) { return; }
+    const handleOthersCountsChange = (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => {
         setRequirementToOthersCount(new Map([
             ...requirementToOthersCount,
-            [requirement, { acquired: +newAcquired, registered: +newRegistered }]
+            [requirement, newOthersCount]
         ]));
     }
 
@@ -100,7 +92,7 @@ const App = () => {
                     <RequirementView
                         requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
                         courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
-                        onCourseClick={handleCourseClick} onOthersClick={handleOthersClick}
+                        onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
                         onSelectionChange={handleSelectionChange} requirementToOthersCount={requirementToOthersCount}
                     />
                 </div>
