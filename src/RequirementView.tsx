@@ -224,20 +224,12 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     onOthersCountsChange: (newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
-    const useIsOpen = () => {
-        const [isOpenWhenFalse, setIsOpenWhenFalse] = useState(false);
-        const [isOpenWhenTrue, setIsOpenWhenTrue] = useState(true);
-        return showsOnlyRegistered ? [isOpenWhenTrue, setIsOpenWhenTrue] as const : [isOpenWhenFalse, setIsOpenWhenFalse] as const;
-    };
-
-    const [isOpen, setIsOpen] = useIsOpen();
+    const [isOpen, setIsOpen] = useState(false);
     const [showsInput, setShowsInput] = useState(false);
 
-    const allCourses = requirement.courses;
-    const registeredCourses = requirement.courses.filter(course =>
-        courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
-        requirement === courseToRequirement.get(course)
-    );
+    const courses = requirement.courses.filter(course =>
+        !showsOnlyRegistered || (courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
+            requirement === courseToRequirement.get(course)));
 
     return (
         <>
@@ -249,7 +241,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                         selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
                     />
                     {
-                        (showsOnlyRegistered ? registeredCourses : allCourses).length === 0 ?
+                        courses.length === 0 ?
                             requirement.allowsOthers ? (
                                 showsInput ? (<></>) : (
                                     <Button block className="mt-3" variant="secondary" onClick={() => setShowsInput(true)}>
@@ -281,25 +273,17 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                         </div>
                     ) : (<></>)
                 }
-                {
-                    [
-                        { courses: allCourses, key: 'all', hidden: showsOnlyRegistered },
-                        { courses: registeredCourses, key: 'registered', hidden: !showsOnlyRegistered },
-                    ].map(({ courses, key, hidden }) => (
-                        <Accordion.Collapse eventKey="0" key={key} hidden={hidden}>
-                            {
-                                courses.length === 0 ? (<></>) : (
-                                    <div className="mt-3">
-                                        <CourseList requirement={requirement} courses={courses}
-                                            courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                                            onCourseClick={course => onCourseClick(course, requirement)}
-                                        />
-                                    </div>
-                                )
-                            }
-                        </Accordion.Collapse>
-                    ))
-                }
+                <Accordion.Collapse eventKey="0">
+                    {
+                        courses.length === 0 ? (<></>) : (
+                            <div className="mt-3">
+                                <CourseList requirement={requirement} courses={courses}
+                                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
+                                    onCourseClick={course => onCourseClick(course, requirement)} />
+                            </div>
+                        )
+                    }
+                </Accordion.Collapse>
             </Accordion>
         </>
     );
