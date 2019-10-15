@@ -5,3 +5,7 @@
 .badge+.badge {
     margin-left: .5em;
 }
+
+.btn-toolbar>*+* {
+    margin-left: .5em;
+}

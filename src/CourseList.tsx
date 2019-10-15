@@ -29,7 +29,7 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
                         status === RegistrationStatus.Unregistered || currentRequirement === newRequirement ?
                             (<></>) :
                             currentRequirement === undefined ?
-                                (<Badge variant="info">?</Badge>) :
+                                (<Badge variant="secondary">?</Badge>) :
                                 (<Badge variant="warning">!</Badge>)
                     }
                     <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
