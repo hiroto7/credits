@@ -1,9 +1,9 @@
-import { $array, $number, $object, $optional, $string, isCompatible } from "@hiroto/json-type-checker";
+import { $array, $number, $object, $optional, $string, $union, isCompatible } from "@hiroto/json-type-checker";
 import React from "react";
 import { Form } from "react-bootstrap";
 import Course from "./Course.js";
 import courses0 from './courses1.json';
-import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
+import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
 import coins17_0 from './requirements/coins17.json';
 import mast17_0 from './requirements/mast17.json';
 
@@ -22,17 +22,26 @@ for (const course of courses) {
     codeToCourse.set(course.code, course);
 }
 
+const numberOrRangeToRange = (numberOrRange: number | Range) =>
+    isRange(numberOrRange) ? numberOrRange : {
+        min: numberOrRange,
+        max: numberOrRange,
+    };
+
 const convertJSONToRichRequirement = (json: unknown): Requirements => {
     if (isCompatible(json, $object({
         title: $string,
         description: $optional($string),
-        creditsCount: $number,
+        creditsCount: $union($number, $object({
+            min: $number,
+            max: $number,
+        })),
         courses: $array($string),
     }))) {
         return new RequirementWithCourses({
             title: json.title,
             description: json.description,
-            creditsCount: json.creditsCount,
+            creditsCount: numberOrRangeToRange(json.creditsCount),
             courses: json.courses.map(courseCode => {
                 const course = codeToCourse.get(courseCode);
                 if (course === undefined) { throw new Error(`要件定義が不正です。科目番号 ${courseCode} は定義されていません。`); }
@@ -49,7 +58,7 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
             title: json.title,
             description: json.description,
             children: json.children.map(child => convertJSONToRichRequirement(child)),
-            creditsCount: json.creditsCount,
+            creditsCount: json.creditsCount === undefined ? undefined : numberOrRangeToRange(json.creditsCount),
         });
     } else if (isCompatible(json, $object({
         title: $string,

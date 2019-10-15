@@ -60,7 +60,10 @@
                 {
                     "title": "専門科目 - 自由科目",
                     "description": "GC5 / GC6 / ビジネスシステムデザインA / ビジネスシステムデザインB",
-                    "creditsCount": 0,
+                    "creditsCount": {
+                        "min": 0,
+                        "max": 9
+                    },
                     "courses": [
                         "GC50201", "GC50301", "GC50501", "GC50601",
                         "GC50701", "GC50801", "GC51001", "GC51101",
@@ -79,7 +82,10 @@
                 {
                     "title": "専門基礎科目 - 自由科目",
                     "description": "GC2 / GC3 / GA1",
-                    "creditsCount": 0,
+                    "creditsCount": {
+                        "min": 0,
+                        "max": 9
+                    },
                     "courses": [
                         "GC20101", "GC20201", "GC21201", "GC21301",
                         "GC21401", "GC22101", "GC22201", "GC23101",
@@ -95,7 +101,10 @@
                 {
                     "title": "基礎科目 - 自由科目",
                     "description": "他学群又は多学類の授業科目 / 情報（上級） / 博物館に関する科目 / 自由科目（特設）",
-                    "creditsCount": 0,
+                    "creditsCount": {
+                        "min": 0,
+                        "max": 9
+                    },
                     "courses": [],
                     "allowOthers": true
                 }

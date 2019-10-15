@@ -13,7 +13,7 @@ const ExceededCreditsCountLabel = ({ creditsCount }: { creditsCount: number }) =
         +{creditsCount}
         <span className="text-muted">)</span>
     </>
-)
+);
 
 const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
     requirement: Requirements,
@@ -45,7 +45,13 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
             <span>
                 <span className="text-muted">必要</span>
                 <> </>
-                <strong>{requiredCreditsCount}</strong>
+                <strong>
+                    {
+                        requiredCreditsCount.min === requiredCreditsCount.max ?
+                            requiredCreditsCount.min :
+                            `${requiredCreditsCount.min}~${requiredCreditsCount.max}`
+                    }
+                </strong>
             </span>
         </div>
     )
