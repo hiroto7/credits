@@ -32,7 +32,7 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
                 <span className="text-muted">習得</span>
                 <> </>
                 <strong className="text-success">{acquiredCreditsCount}</strong>
-                {exceededAcquiredCreditsCount > acquiredCreditsCount ? (<ExceededCreditsCountLabel creditsCount={exceededRegisteredCreditsCount - registeredCreditsCount} />) : (<></>)}
+                {exceededAcquiredCreditsCount > acquiredCreditsCount ? (<ExceededCreditsCountLabel creditsCount={exceededAcquiredCreditsCount - acquiredCreditsCount} />) : (<></>)}
             </span>
             <CreditsCountLabelDelimiter />
             <span>
