@@ -7,6 +7,14 @@ import Requirements, { RequirementWithChildren, RequirementWithCourses, Selectio
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
+const ExceededCreditsCountLabel = ({ creditsCount }: { creditsCount: number }) => (
+    <>
+        <span className="text-muted">(</span>
+        +{creditsCount}
+        <span className="text-muted">)</span>
+    </>
+)
+
 const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, selectionToRequirement }: {
     requirement: Requirements,
     courseToStatus: Map<Course, RegistrationStatus>,
@@ -24,20 +32,20 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
                 <span className="text-muted">習得</span>
                 <> </>
                 <strong className="text-success">{acquiredCreditsCount}</strong>
-                {exceededAcquiredCreditsCount > acquiredCreditsCount ? `(+${exceededAcquiredCreditsCount - acquiredCreditsCount})` : ''}
+                {exceededAcquiredCreditsCount > acquiredCreditsCount ? (<ExceededCreditsCountLabel creditsCount={exceededRegisteredCreditsCount - registeredCreditsCount} />) : (<></>)}
             </span>
             <CreditsCountLabelDelimiter />
             <span>
                 <span className="text-muted">履修</span>
                 <> </>
                 <strong className="text-primary">{registeredCreditsCount}</strong>
-                {exceededRegisteredCreditsCount > registeredCreditsCount ? `(+${exceededRegisteredCreditsCount - registeredCreditsCount})` : ''}
+                {exceededRegisteredCreditsCount > registeredCreditsCount ? (<ExceededCreditsCountLabel creditsCount={exceededRegisteredCreditsCount - registeredCreditsCount} />) : (<></>)}
             </span>
             <CreditsCountLabelDelimiter />
             <span>
                 <span className="text-muted">必要</span>
                 <> </>
-                <strong className="text-secondary">{requiredCreditsCount}</strong>
+                <strong>{requiredCreditsCount}</strong>
             </span>
         </div>
     )
@@ -112,11 +120,11 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                     <RequirementSummaryView requirement={requirement} courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement} />
                     {
                         courses.length === 0 ? (
-                            <Button block size="sm" className="mt-2" variant="outline-secondary" disabled>
+                            <Button block className="mt-2" variant="outline-secondary" disabled>
                                 {showsOnlyRegistered ? '履修する' : ''}科目はありません
                             </Button>
                         ) : (
-                                <Button block size="sm" className="mt-2"
+                                <Button block className="mt-2"
                                     onClick={() => setIsOpen(!isOpen)}
                                     variant={isOpen ? 'primary' : 'outline-secondary'} >
                                     {showsOnlyRegistered ? '履修する' : ''}科目を{isOpen ? '非' : ''}表示
@@ -151,7 +159,7 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
 }) => (
         <>
             <Dropdown>
-                <Dropdown.Toggle id="" block size="sm" variant="secondary">{requirement.title} を変更</Dropdown.Toggle>
+                <Dropdown.Toggle id="" variant="secondary">{requirement.title} を変更</Dropdown.Toggle>
 
                 <Dropdown.Menu style={{ zIndex: 1100 }}>
                     {
