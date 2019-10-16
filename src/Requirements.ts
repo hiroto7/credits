@@ -88,6 +88,17 @@ export class RequirementWithChildren extends Requirement implements RequirementW
             }
         }, { min: 0, max: 0 }) : this.creditsCount;
     }
+    getStatus({ courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount }: {
+        courseToStatus: Map<Course, RegistrationStatus>,
+        courseToRequirement: Map<Course, Requirements>,
+        selectionToRequirement: Map<SelectionRequirement, Requirement>,
+        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    }): RegistrationStatus {
+        return Math.min(
+            super.getStatus({ courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount }),
+            ...this.children.map(child => child.getStatus({ courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount }))
+        );
+    };
 }
 
 export interface RequirementWithCoursesInit {
