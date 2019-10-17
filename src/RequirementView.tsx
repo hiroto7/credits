@@ -224,7 +224,13 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     onOthersCountsChange: (newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selection: SelectionRequirement, chosen: Requirements) => void,
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const useIsOpen = () => {
+        const [isOpenWhenFalse, setIsOpenWhenFalse] = useState(false);
+        const [isOpenWhenTrue, setIsOpenWhenTrue] = useState(true);
+        return showsOnlyRegistered ? [isOpenWhenTrue, setIsOpenWhenTrue] as const : [isOpenWhenFalse, setIsOpenWhenFalse] as const;
+    };
+
+    const [isOpen, setIsOpen] = useIsOpen();
     const [showsInput, setShowsInput] = useState(false);
 
     const courses = requirement.courses.filter(course =>
