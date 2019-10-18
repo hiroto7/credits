@@ -2,13 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Alert, Container, Form, Navbar } from 'react-bootstrap';
 import './App.css';
-import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import Course from './Course';
+import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
+import getValueFromModal from './getValueFromModal';
 import RegistrationStatus from './RegistrationStatus';
-import { RegisteredCreditsCounts, RequirementWithCourses } from './Requirements';
+import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementSelector, { defaultRequirement } from './RequirementSelector';
 import RequirementView from './RequirementView';
-import getValueFromModal from './getValueFromModal';
 
 const App = () => {
     const [requirement, setRequirement] = useState(defaultRequirement);
@@ -46,7 +46,6 @@ const App = () => {
         setCourseToRequirement(new Map([...courseToRequirement, [course, requirement]]));
     }
 
-    /*
     const clearCourseToRequirement = (requirement: Requirements, newCourseToRequirement: Map<Course, RequirementWithCourses>) => {
         if (requirement instanceof RequirementWithChildren) {
             for (const child of requirement.children) {
@@ -59,10 +58,22 @@ const App = () => {
                 }
             }
         } else {
-            clearCourseToRequirement(selectionToRequirement.get(requirement) || requirement.choices[0], newCourseToRequirement);
+            const selectedRequirement = requirement.getSelectedRequirement(selectionNameToOptionName);
+            if (selectedRequirement !== undefined) {
+                clearCourseToRequirement(selectedRequirement, newCourseToRequirement);
+            }
         }
     }
-    */
+
+    const clearCourseToRequirementInSelection = (selectionName: string, requirement: Requirements, newCourseToRequirement: Map<Course, RequirementWithCourses>) => {
+        if (requirement instanceof RequirementWithChildren) {
+            for (const child of requirement.children) {
+                clearCourseToRequirementInSelection(selectionName, child, newCourseToRequirement);
+            }
+        } else if (requirement instanceof SelectionRequirement && requirement.selectionName === selectionName) {
+            clearCourseToRequirement(requirement, newCourseToRequirement);
+        }
+    }
 
     const handleOthersCountsChange = (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => {
         setRequirementToOthersCount(new Map([
@@ -73,7 +84,7 @@ const App = () => {
 
     const handleSelectionChange = (selectionName: string, newOptionName: string) => {
         const newCourseToRequirement = new Map(courseToRequirement);
-        // clearCourseToRequirement(selectionName, newCourseToRequirement);
+        clearCourseToRequirementInSelection(selectionName, requirement, newCourseToRequirement);
         setCourseToRequirement(newCourseToRequirement);
         setSelectionNameToOptionName(new Map([...selectionNameToOptionName, [selectionName, newOptionName]]));
     }
