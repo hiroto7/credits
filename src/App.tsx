@@ -2,8 +2,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Alert, Container, Form, Navbar } from 'react-bootstrap';
 import './App.css';
-import confirmCourseMovement from './confirmCourseMovement';
 import Course from './Course';
+import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
+import getValueFromModal from './getValueFromModal';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementSelector, { defaultRequirement } from './RequirementSelector';
@@ -16,7 +17,7 @@ const App = () => {
     const [requirementToOthersCount, setRequirementToOthersCount] = useState(
         new Map<RequirementWithCourses, { acquired: number, registered: number }>()
     );
-    const [selectionToRequirement, setSelectionToRequirement] = useState(new Map<SelectionRequirement, Requirements>());
+    const [selectionNameToOptionName, setSelectionNameToOptionName] = useState(new Map<string, string>());
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
     const [modals, setModals] = useState(new Array<JSX.Element>());
 
@@ -34,7 +35,11 @@ const App = () => {
             ));
         } else if (
             currentRequirement !== undefined &&
-            !await confirmCourseMovement({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, modals, setModals })
+            !await getValueFromModal(
+                CourseMovementConfirmationModal,
+                { currentRequirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount },
+                modals, setModals
+            )
         ) {
             return;
         }
@@ -53,7 +58,20 @@ const App = () => {
                 }
             }
         } else {
-            clearCourseToRequirement(selectionToRequirement.get(requirement) || requirement.choices[0], newCourseToRequirement);
+            const selectedRequirement = requirement.getSelectedRequirement(selectionNameToOptionName);
+            if (selectedRequirement !== undefined) {
+                clearCourseToRequirement(selectedRequirement, newCourseToRequirement);
+            }
+        }
+    }
+
+    const clearCourseToRequirementInSelection = (selectionName: string, requirement: Requirements, newCourseToRequirement: Map<Course, RequirementWithCourses>) => {
+        if (requirement instanceof RequirementWithChildren) {
+            for (const child of requirement.children) {
+                clearCourseToRequirementInSelection(selectionName, child, newCourseToRequirement);
+            }
+        } else if (requirement instanceof SelectionRequirement && requirement.selectionName === selectionName) {
+            clearCourseToRequirement(requirement, newCourseToRequirement);
         }
     }
 
@@ -64,11 +82,11 @@ const App = () => {
         ]));
     }
 
-    const handleSelectionChange = (selection: SelectionRequirement, chosen: Requirements) => {
+    const handleSelectionChange = (selectionName: string, newOptionName: string) => {
         const newCourseToRequirement = new Map(courseToRequirement);
-        clearCourseToRequirement(selection, newCourseToRequirement);
+        clearCourseToRequirementInSelection(selectionName, requirement, newCourseToRequirement);
         setCourseToRequirement(newCourseToRequirement);
-        setSelectionToRequirement(new Map([...selectionToRequirement, [selection, chosen]]));
+        setSelectionNameToOptionName(new Map([...selectionNameToOptionName, [selectionName, newOptionName]]));
     }
 
     return (
@@ -91,7 +109,7 @@ const App = () => {
                 <div className="my-3">
                     <RequirementView
                         requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                        courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionToRequirement={selectionToRequirement}
+                        courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionNameToOptionName={selectionNameToOptionName}
                         onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
                         onSelectionChange={handleSelectionChange} requirementToOthersCount={requirementToOthersCount}
                     />

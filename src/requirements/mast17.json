@@ -1,15 +1,15 @@
 {
-    "title": "卒業に必要な履修科目",
+    "name": "卒業に必要な履修科目",
     "children": [
         {
-            "title": "専門科目 - 必修科目",
+            "name": "専門科目 - 必修科目",
             "creditsCount": 12,
             "courses": [
                 "GC41103", "GC41203", "GC48808", "GC48908"
             ]
         },
         {
-            "title": "専門基礎科目 - 必修科目",
+            "name": "専門基礎科目 - 必修科目",
             "creditsCount": 36,
             "courses": [
                 "GC10112", "GC10122", "GC12101", "GC12103",
@@ -22,14 +22,14 @@
             ]
         },
         {
-            "title": "共通科目 - 必修科目",
+            "name": "共通科目 - 必修科目",
             "description": "総合科目I（フレッシュマン・セミナーを含む） / 総合科目II / 総合科目III / 体育 / 第1外国語（英語）",
             "creditsCount": 15.5,
             "courses": [],
             "allowsOthers": true
         },
         {
-            "title": "専門科目 - 選択科目",
+            "name": "専門科目 - 選択科目",
             "description": "GC5",
             "creditsCount": 30,
             "courses": [
@@ -46,7 +46,7 @@
             ]
         },
         {
-            "title": "専門基礎科目 - 選択科目",
+            "name": "専門基礎科目 - 選択科目",
             "description": "GC2 / GA1",
             "creditsCount": 22,
             "courses": [
@@ -60,11 +60,11 @@
             ]
         },
         {
-            "title": "自由科目",
+            "name": "自由科目",
             "creditsCount": 9,
             "children": [
                 {
-                    "title": "専門科目 - 自由科目",
+                    "name": "専門科目 - 自由科目",
                     "description": "GC5 / GC6 / ビジネスシステムデザインA / ビジネスシステムデザインB",
                     "creditsCount": {
                         "min": 0,
@@ -86,7 +86,7 @@
                     ]
                 },
                 {
-                    "title": "専門基礎科目 - 自由科目",
+                    "name": "専門基礎科目 - 自由科目",
                     "description": "GC2 / GC3 / GA1",
                     "creditsCount": {
                         "min": 0,
@@ -105,7 +105,7 @@
                     ]
                 },
                 {
-                    "title": "共通科目 - 自由科目",
+                    "name": "共通科目 - 自由科目",
                     "description": "総合科目II / 総合科目III / 体育 / 外国語 / 国語 / 芸術",
                     "creditsCount": {
                         "min": 0,
@@ -115,7 +115,7 @@
                     "allowsOthers": true
                 },
                 {
-                    "title": "基礎科目 - 自由科目",
+                    "name": "基礎科目 - 自由科目",
                     "description": "他学群又は他学類の授業科目 / 情報（上級） / 博物館に関する科目 / 自由科目（特設）",
                     "creditsCount": {
                         "min": 0,
