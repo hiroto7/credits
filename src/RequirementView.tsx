@@ -305,9 +305,14 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
         <>
             <Dropdown>
                 <Dropdown.Toggle id="" variant="secondary">
-                    {requirement.selectionName}
-                    <> : </>
-                    <strong>{selectedOptionName}</strong>
+                    <span style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    }}>
+                        {requirement.selectionName}
+                        <> : </>
+                        <strong>{selectedOptionName}</strong>
+                    </span>
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu style={{ zIndex: 1100 }}>

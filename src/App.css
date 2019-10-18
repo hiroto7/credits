@@ -9,3 +9,13 @@
 .btn-toolbar>*+* {
     margin-left: .5em;
 }
+
+.dropdown-toggle {
+    align-items: center;
+    display: flex;
+    max-width: 100%;
+}
+
+.dropdown-toggle::after {
+    flex-shrink: 0;
+}
