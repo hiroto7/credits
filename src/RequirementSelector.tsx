@@ -29,9 +29,9 @@ const numberOrRangeToRange = (numberOrRange: number | Range) =>
         max: numberOrRange,
     };
 
-const convertJSONToRichRequirement = (json: unknown): Requirements => {
+const convertJSONToRichRequirement = (json: unknown, selectionNameToCount: Map<string, number>): Requirements => {
     if (isCompatible(json, $object({
-        title: $string,
+        name: $string,
         description: $optional($string),
         creditsCount: $union($number, $object({
             min: $number,
@@ -41,7 +41,7 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
         allowsOthers: $optional($boolean),
     }))) {
         return new RequirementWithCourses({
-            title: json.title,
+            name: json.name,
             description: json.description,
             creditsCount: numberOrRangeToRange(json.creditsCount),
             courses: json.courses.map(courseCode => {
@@ -52,29 +52,49 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
             allowsOthers: json.allowsOthers,
         });
     } else if (isCompatible(json, $object({
-        title: $string,
+        name: $string,
         description: $optional($string),
         children: $array($object({})),
-        creditsCount: $optional($union($number, $object({
-            min: $number,
-            max: $number,
-        }))),
+        creditsCount: $optional($union(
+            $number,
+            $object({
+                min: $number,
+                max: $number,
+            }),
+        )),
     }))) {
         return new RequirementWithChildren({
-            title: json.title,
+            name: json.name,
             description: json.description,
-            children: json.children.map(child => convertJSONToRichRequirement(child)),
+            children: json.children.map(child => convertJSONToRichRequirement(child, selectionNameToCount)),
             creditsCount: json.creditsCount === undefined ? undefined : numberOrRangeToRange(json.creditsCount),
         });
     } else if (isCompatible(json, $object({
-        title: $string,
-        description: $optional($string),
-        choices: $array($object({})),
+        selectionName: $string,
+        options: $array($object({})),
     }))) {
+        const selectionCount = selectionNameToCount.get(json.selectionName) || 0;
+        selectionNameToCount.set(json.selectionName, selectionCount + 1);
         return new SelectionRequirement({
-            title: json.title,
-            description: json.description,
-            choices: json.choices.map(choice => convertJSONToRichRequirement(choice)),
+            name: `${json.selectionName}_${selectionCount}`,
+            selectionName: json.selectionName,
+            options: json.options.map(option => {
+                if (isCompatible(option, $object({
+                    name: $string,
+                    requirement: $object({}),
+                }))) {
+                    return {
+                        name: option.name,
+                        requirement: convertJSONToRichRequirement(option.requirement, selectionNameToCount),
+                    };
+                } else {
+                    const requirement = convertJSONToRichRequirement(option, selectionNameToCount);
+                    return {
+                        name: requirement.name,
+                        requirement
+                    };
+                }
+            }),
         })
     } else {
         throw new Error('要件定義が不正です。')
@@ -82,9 +102,9 @@ const convertJSONToRichRequirement = (json: unknown): Requirements => {
 }
 
 const requirements = {
-    coins17: convertJSONToRichRequirement(coins17_0),
-    mast17: convertJSONToRichRequirement(mast17_0),
-    klis17: convertJSONToRichRequirement(klis17_0),
+    coins17: convertJSONToRichRequirement(coins17_0, new Map()),
+    mast17: convertJSONToRichRequirement(mast17_0, new Map()),
+    klis17: convertJSONToRichRequirement(klis17_0, new Map()),
 };
 
 console.log(requirements);
