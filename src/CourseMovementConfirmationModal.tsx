@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import Course from "./Course";
 import RegistrationStatus from "./RegistrationStatus";
-import Requirements, { RegisteredCreditsCounts, RequirementWithCourses, SelectionRequirement } from "./Requirements";
+import Requirements, { RegisteredCreditsCounts, RequirementWithCourses } from "./Requirements";
 import { RequirementSummaryView } from "./RequirementView";
 
-const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, onReturn, onExited }: {
+const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount, onReturn, onExited }: {
     currentRequirement: RequirementWithCourses,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
-    selectionToRequirement: Map<SelectionRequirement, Requirements>,
+    selectionNameToOptionName: Map<string, string>,
     requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
     onReturn: (value: boolean) => void,
     onExited: () => void,
@@ -28,7 +28,7 @@ const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, c
                     <RequirementSummaryView
                         requirement={currentRequirement}
                         courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                        selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
+                        selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
                     />
                 </Card>
             </Modal.Body>
