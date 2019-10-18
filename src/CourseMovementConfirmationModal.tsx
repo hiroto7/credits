@@ -40,34 +40,4 @@ const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, c
     );
 };
 
-const confirmCourseMovement = async ({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, modals, setModals }: {
-    currentRequirement: RequirementWithCourses,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
-    selectionToRequirement: Map<SelectionRequirement, Requirements>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
-    modals: JSX.Element[],
-    setModals: React.Dispatch<React.SetStateAction<JSX.Element[]>>
-}): Promise<boolean> => {
-    return new Promise((resolve, reject) => {
-        try {
-            const modal = (
-                <CourseMovementConfirmationModal
-                    currentRequirement={currentRequirement}
-                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                    selectionToRequirement={selectionToRequirement} requirementToOthersCount={requirementToOthersCount}
-                    onReturn={value => resolve(value)}
-                    onExited={() => {
-                        setModals(newModals.filter(value => value !== modal));
-                    }}
-                />
-            );
-            const newModals = [...modals, modal];
-            setModals(newModals);
-        } catch (e) {
-            reject(e);
-        }
-    });
-};
-
-export default confirmCourseMovement;
+export default CourseMovementConfirmationModal;

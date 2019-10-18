@@ -2,12 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Alert, Container, Form, Navbar } from 'react-bootstrap';
 import './App.css';
-import confirmCourseMovement from './confirmCourseMovement';
+import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import Course from './Course';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementSelector, { defaultRequirement } from './RequirementSelector';
 import RequirementView from './RequirementView';
+import getValueFromModal from './getValueFromModal';
 
 const App = () => {
     const [requirement, setRequirement] = useState(defaultRequirement);
@@ -34,7 +35,11 @@ const App = () => {
             ));
         } else if (
             currentRequirement !== undefined &&
-            !await confirmCourseMovement({ currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount, modals, setModals })
+            !await getValueFromModal(
+                CourseMovementConfirmationModal,
+                { currentRequirement, courseToStatus, courseToRequirement, selectionToRequirement, requirementToOthersCount },
+                modals, setModals
+            )
         ) {
             return;
         }
