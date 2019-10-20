@@ -14,10 +14,10 @@ export interface Plan {
     readonly selectionNameToOptionName: ReadonlyMap<string, string>;
 }
 export const emptyPlan: Plan = {
-    courseToStatus: new Map,
-    courseToRequirement: new Map,
-    requirementToOthersCount: new Map,
-    selectionNameToOptionName: new Map,
+    courseToStatus: new Map(),
+    courseToRequirement: new Map(),
+    requirementToOthersCount: new Map(),
+    selectionNameToOptionName: new Map(),
 };
 
 const RequirementsRootView = ({ requirement, plan, onChange }: {
