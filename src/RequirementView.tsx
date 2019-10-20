@@ -301,6 +301,13 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
 }) => {
     const selectedOptionName = requirement.getSelectedOptionName(selectionNameToOptionName);
     const selectedRequirement = requirement.getSelectedRequirement(selectionNameToOptionName);
+
+    const handleOptionClick = (newOptionName: string) => {
+        if (selectedOptionName !== newOptionName) {
+            onSelectionChange(requirement.selectionName, newOptionName);
+        }
+    };
+
     return (
         <>
             <Dropdown>
@@ -320,7 +327,7 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
                         requirement.options.map(option => (
                             <Dropdown.Item key={option.name}
                                 active={option.name === selectedOptionName}
-                                onClick={() => onSelectionChange(requirement.selectionName, option.name)}
+                                onClick={() => handleOptionClick(option.name)}
                             >
                                 {option.name}
                             </Dropdown.Item>
