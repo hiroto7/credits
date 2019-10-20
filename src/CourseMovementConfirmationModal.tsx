@@ -9,7 +9,7 @@ const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, c
     currentRequirement: RequirementWithCourses,
     courseToStatus: Map<Course, RegistrationStatus>,
     courseToRequirement: Map<Course, Requirements>,
-    selectionNameToOptionName: Map<string, string>,
+    selectionNameToOptionName: ReadonlyMap<string, string>,
     requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
     onReturn: (value: boolean) => void,
     onExited: () => void,
