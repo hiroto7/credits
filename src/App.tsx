@@ -65,6 +65,18 @@ const storeCoursesState = (plan: Plan) => {
     localStorage.setItem(COURSES_STATE, JSON.stringify(coursesState))
 }
 
+const flattenRequirements = (requirement: Requirements): RequirementWithCourses[] => {
+    if (requirement instanceof RequirementWithChildren) {
+        return requirement.children.flatMap((child) => flattenRequirements(child))
+    } else if (requirement instanceof RequirementWithCourses) {
+        return [requirement as RequirementWithCourses]
+    } else if (requirement instanceof SelectionRequirement) {
+        return requirement.options.map((option) => option.requirement)
+        .filter((req) => req instanceof RequirementWithCourses) as RequirementWithCourses[]
+    }
+    return []
+}
+
 const loadStoredCoursesState = (rootRequirement: Requirements, plan: Plan) => {
     const coursesStateJson = localStorage.getItem(COURSES_STATE)
     if (!coursesStateJson || !(rootRequirement instanceof RequirementWithChildren)) {
@@ -73,19 +85,11 @@ const loadStoredCoursesState = (rootRequirement: Requirements, plan: Plan) => {
 
     const coursesStateGroupedByRequirementTitle = JSON.parse(coursesStateJson) as CoursesState
 
-    const flattenRequirements = rootRequirement.children.flatMap((child) => {
-        if (child instanceof RequirementWithCourses) {
-            return [child as RequirementWithCourses]
-        } else if (child instanceof SelectionRequirement) {
-            return child.options.map((option) => option.requirement)
-                     .filter((req) => req instanceof RequirementWithCourses) as RequirementWithCourses[]
-        }
-        return []
-    })
+    const flattenReqs = flattenRequirements(rootRequirement)
 
     Object.entries(coursesStateGroupedByRequirementTitle).forEach(([requirementTitle, coursesState]) => {
         console.log(requirementTitle)
-        const requirement = flattenRequirements.find((child) => child.name === requirementTitle)
+        const requirement = flattenReqs.find((child) => child.name === requirementTitle)
         if (!requirement) {
             return
         }
