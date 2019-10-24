@@ -1,28 +1,18 @@
 import { $number, $object, isCompatible } from "@hiroto/json-type-checker";
 import Course from "./Course";
 import RegistrationStatus from "./RegistrationStatus";
+import { Plan } from "./RequirementsRootView";
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;
 
 abstract class Requirement {
-    abstract getRegisteredCreditsCount({ includesExcess, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
-        includesExcess: boolean
-        courseToStatus: Map<Course, RegistrationStatus>,
-        courseToRequirement: Map<Course, Requirements>,
-        selectionNameToOptionName: ReadonlyMap<string, string>;
-        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
-    }): RegisteredCreditsCounts;
+    abstract getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
     abstract getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
     constructor(readonly name: string) { }
-    getStatus({ courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
-        courseToStatus: Map<Course, RegistrationStatus>,
-        courseToRequirement: Map<Course, Requirements>,
-        selectionNameToOptionName: ReadonlyMap<string, string>
-        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
-    }): RegistrationStatus {
-        const requiredCreditsCount = this.getRequiredCreditsCount(selectionNameToOptionName);
-        const registeredCreditsCounts = this.getRegisteredCreditsCount({ includesExcess: false, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount })
+    getStatus(plan: Plan): RegistrationStatus {
+        const requiredCreditsCount = this.getRequiredCreditsCount(plan.selectionNameToOptionName);
+        const registeredCreditsCounts = this.getRegisteredCreditsCount(plan, false);
         return registeredCreditsCounts.acquired >= requiredCreditsCount.min ?
             RegistrationStatus.Acquired :
             registeredCreditsCounts.registered >= requiredCreditsCount.min ?
@@ -59,16 +49,10 @@ export class RequirementWithChildren extends Requirement implements RequirementW
         this.children = [...children];
         this.creditsCount = creditsCount;
     }
-    getRegisteredCreditsCount({ includesExcess, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
-        includesExcess: boolean
-        courseToStatus: Map<Course, RegistrationStatus>,
-        courseToRequirement: Map<Course, Requirements>,
-        selectionNameToOptionName: ReadonlyMap<string, string>,
-        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
-    }): RegisteredCreditsCounts {
+    getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
         const creditsCounts = this.children.reduce(
             (previous, child) => {
-                const childRegisteredCreditsCount = child.getRegisteredCreditsCount({ includesExcess, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount });
+                const childRegisteredCreditsCount = child.getRegisteredCreditsCount(plan, includesExcess);
                 return {
                     acquired: previous.acquired + childRegisteredCreditsCount.acquired,
                     registered: previous.registered + childRegisteredCreditsCount.registered,
@@ -90,15 +74,10 @@ export class RequirementWithChildren extends Requirement implements RequirementW
             }
         }, { min: 0, max: 0 }) : this.creditsCount;
     }
-    getStatus({ courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
-        courseToStatus: Map<Course, RegistrationStatus>,
-        courseToRequirement: Map<Course, Requirements>,
-        selectionNameToOptionName: ReadonlyMap<string, string>,
-        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
-    }): RegistrationStatus {
+    getStatus(plan: Plan): RegistrationStatus {
         return Math.min(
-            super.getStatus({ courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }),
-            ...this.children.map(child => child.getStatus({ courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }))
+            super.getStatus(plan),
+            ...this.children.map(child => child.getStatus(plan))
         );
     };
 }
@@ -123,16 +102,11 @@ export class RequirementWithCourses extends Requirement {
         this.creditsCount = creditsCount;
         this.allowsOthers = allowsOthers;
     }
-    getRegisteredCreditsCount({ includesExcess, courseToStatus, courseToRequirement, requirementToOthersCount }: {
-        includesExcess: boolean
-        courseToStatus: Map<Course, RegistrationStatus>,
-        courseToRequirement: Map<Course, Requirements>,
-        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
-    }): RegisteredCreditsCounts {
-        const othersCount = requirementToOthersCount.get(this) || { acquired: 0, registered: 0 };
+    getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+        const othersCount = plan.requirementToOthersCount.get(this) || { acquired: 0, registered: 0 };
         const creditsCounts = this.courses.reduce((previous, course): RegisteredCreditsCounts => {
-            const courseStatus = courseToStatus.get(course) || RegistrationStatus.Unregistered;
-            if (courseToRequirement.get(course) === this) {
+            const courseStatus = plan.courseToStatus.get(course) || RegistrationStatus.Unregistered;
+            if (plan.courseToRequirement.get(course) === this) {
                 return courseStatus === RegistrationStatus.Acquired ?
                     {
                         acquired: previous.acquired + course.creditsCount,
@@ -190,18 +164,12 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
         const selectedRequirement = this.optionNameToRequirement.get(selectedOptionName);
         return selectedRequirement;
     }
-    getRegisteredCreditsCount({ includesExcess, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
-        includesExcess: boolean;
-        courseToStatus: Map<Course, RegistrationStatus>;
-        courseToRequirement: Map<Course, Requirements>;
-        selectionNameToOptionName: ReadonlyMap<string, string>;
-        requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>;
-    }): RegisteredCreditsCounts {
-        const selectedRequirement = this.getSelectedRequirement(selectionNameToOptionName);
+    getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+        const selectedRequirement = this.getSelectedRequirement(plan.selectionNameToOptionName);
         if (selectedRequirement === undefined) {
             return { acquired: 0, registered: 0 };
         } else {
-            return selectedRequirement.getRegisteredCreditsCount({ includesExcess, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount });
+            return selectedRequirement.getRegisteredCreditsCount(plan, includesExcess);
         }
     }
     getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range {

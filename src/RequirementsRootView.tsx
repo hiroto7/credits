@@ -8,9 +8,9 @@ import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, Require
 import RequirementView from './RequirementView';
 
 export interface Plan {
-    readonly courseToStatus: Map<Course, RegistrationStatus>;
-    readonly courseToRequirement: Map<Course, RequirementWithCourses>;
-    readonly requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>;
+    readonly courseToStatus: ReadonlyMap<Course, RegistrationStatus>;
+    readonly courseToRequirement: ReadonlyMap<Course, RequirementWithCourses>;
+    readonly requirementToOthersCount: ReadonlyMap<RequirementWithCourses, RegisteredCreditsCounts>;
     readonly selectionNameToOptionName: ReadonlyMap<string, string>;
 }
 export const emptyPlan: Plan = {
@@ -48,7 +48,7 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
             currentRequirement !== undefined &&
             !await getValueFromModal(
                 CourseMovementConfirmationModal,
-                { currentRequirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount },
+                { currentRequirement, plan },
                 modals, setModals
             )
         ) {
@@ -120,10 +120,9 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
             />
             <div className="my-3">
                 <RequirementView
-                    requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionNameToOptionName={selectionNameToOptionName}
+                    requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                     onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
-                    onSelectionChange={handleSelectionChange} requirementToOthersCount={requirementToOthersCount}
+                    onSelectionChange={handleSelectionChange}
                 />
             </div>
         </>
