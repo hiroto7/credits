@@ -5,16 +5,16 @@
   "dependencies": {
     "@hiroto/json-type-checker": "^1.0.5",
     "@types/jest": "^24.0.19",
-    "@types/node": "^12.11.6",
+    "@types/node": "^12.11.1",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.2",
     "bootstrap": "^4.3.1",
     "gh-pages": "^2.1.1",
-    "react": "^16.11.0",
+    "react": "^16.10.2",
     "react-bootstrap": "^1.0.0-beta.14",
-    "react-dom": "^16.11.0",
+    "react-dom": "^16.10.2",
     "react-scripts": "^3.2.0",
-    "typescript": "^3.7.0-dev.20191021"
+    "typescript": "^3.7.0-dev.20191018"
   },
   "scripts": {
     "start": "react-scripts start",
