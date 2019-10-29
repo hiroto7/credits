@@ -4,6 +4,7 @@ import Course from "./Course";
 import CourseList from "./CourseList";
 import RegistrationStatus from "./RegistrationStatus";
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
+import { Plan } from './RequirementsRootView';
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
@@ -15,16 +16,13 @@ const ExceededCreditsCountLabel = ({ creditsCount }: { creditsCount: number }) =
     </>
 );
 
-const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
+const CreditsCountLabels = ({ requirement, plan }: {
     requirement: Requirements,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
 }) => {
-    const creditsCount = requirement.getRegisteredCreditsCount({ courseToRequirement, courseToStatus, selectionNameToOptionName, requirementToOthersCount, includesExcess: false });
-    const exceededCreditsCount = requirement.getRegisteredCreditsCount({ courseToRequirement, courseToStatus, selectionNameToOptionName, requirementToOthersCount, includesExcess: true });
-    const requiredCreditsCount = requirement.getRequiredCreditsCount(selectionNameToOptionName);
+    const creditsCount = requirement.getRegisteredCreditsCount(plan, false);
+    const exceededCreditsCount = requirement.getRegisteredCreditsCount(plan, true);
+    const requiredCreditsCount = requirement.getRequiredCreditsCount(plan.selectionNameToOptionName);
 
     return (
         <div>
@@ -57,14 +55,11 @@ const CreditsCountLabels = ({ requirement, courseToStatus, courseToRequirement, 
     )
 };
 
-export const RequirementSummaryView = ({ requirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount }: {
+export const RequirementSummaryView = ({ requirement, plan }: {
     requirement: RequirementWithChildren | RequirementWithCourses,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
 }) => {
-    const status = requirement.getStatus({ courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount });
+    const status = requirement.getStatus(plan);
     return (
         <>
             <h5 className="d-flex justify-content-between align-items-center">
@@ -75,42 +70,30 @@ export const RequirementSummaryView = ({ requirement, courseToStatus, courseToRe
             </h5>
             <div>
                 {requirement.description === undefined ? (<></>) : (<div className="text-muted">{requirement.description}</div>)}
-                <CreditsCountLabels
-                    requirement={requirement}
-                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                    selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
-                />
+                <CreditsCountLabels requirement={requirement} plan={plan} />
             </div>
         </>
     );
 }
 
-const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const RequirementWithChildrenView = ({ requirement, showsOnlyRegistered, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: RequirementWithChildren,
     showsOnlyRegistered: boolean,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, RequirementWithCourses>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
 }) => (
         <>
-            <RequirementSummaryView
-                requirement={requirement}
-                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
-            />
+            <RequirementSummaryView requirement={requirement} plan={plan} />
             <ListGroup className="mt-3">
                 {
                     requirement.children.map(child => (
                         <ListGroup.Item key={child.name}>
                             <RequirementView
-                                requirement={child} showsOnlyRegistered={showsOnlyRegistered}
-                                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionNameToOptionName={selectionNameToOptionName}
+                                requirement={child} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                                 onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
-                                onOthersCountsChange={onOthersCountsChange} requirementToOthersCount={requirementToOthersCount}
+                                onOthersCountsChange={onOthersCountsChange}
                             />
                         </ListGroup.Item>
                     ))
@@ -213,13 +196,10 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     )
 }
 
-const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onOthersCountsChange, selectionNameToOptionName, requirementToOthersCount }: {
+const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, plan, onCourseClick, onOthersCountsChange }: {
     requirement: RequirementWithCourses,
     showsOnlyRegistered: boolean,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (newOthersCount: RegisteredCreditsCounts) => void,
 }) => {
@@ -227,18 +207,14 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     const [showsInput, setShowsInput] = useState(false);
 
     const courses = requirement.courses.filter(course =>
-        !showsOnlyRegistered || (courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
-            requirement === courseToRequirement.get(course)));
+        !showsOnlyRegistered || (plan.courseToStatus.get(course) !== RegistrationStatus.Unregistered &&
+            requirement === plan.courseToRequirement.get(course)));
 
     return (
         <>
             <Accordion activeKey={isOpen ? '0' : ''}>
                 <div className={`bg-white ${isOpen ? 'sticky-top' : ''}`}>
-                    <RequirementSummaryView
-                        requirement={requirement}
-                        courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                        selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
-                    />
+                    <RequirementSummaryView requirement={requirement} plan={plan} />
                     {
                         courses.length === 0 ?
                             requirement.allowsOthers ? (
@@ -266,7 +242,7 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                     showsInput ? (
                         <div className="mt-3">
                             <OthersCountInput
-                                currentOthersCount={requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }}
+                                currentOthersCount={plan.requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }}
                                 onReturn={onOthersCountsChange} onHide={() => setShowsInput(false)}
                             />
                         </div>
@@ -276,9 +252,9 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
                     {
                         courses.length === 0 ? (<></>) : (
                             <div className="mt-3">
-                                <CourseList requirement={requirement} courses={courses}
-                                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                                    onCourseClick={course => onCourseClick(course, requirement)} />
+                                <CourseList requirement={requirement} courses={courses} plan={plan}
+                                    onCourseClick={course => onCourseClick(course, requirement)}
+                                />
                             </div>
                         )
                     }
@@ -288,19 +264,16 @@ const RequirementWithCoursesView = ({ requirement, showsOnlyRegistered, courseTo
     );
 }
 
-const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const SelectionRequirementView = ({ requirement, showsOnlyRegistered, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: SelectionRequirement,
     showsOnlyRegistered: boolean,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, RequirementWithCourses>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
 }) => {
-    const selectedOptionName = requirement.getSelectedOptionName(selectionNameToOptionName);
-    const selectedRequirement = requirement.getSelectedRequirement(selectionNameToOptionName);
+    const selectedOptionName = requirement.getSelectedOptionName(plan.selectionNameToOptionName);
+    const selectedRequirement = requirement.getSelectedRequirement(plan.selectionNameToOptionName);
 
     const handleOptionClick = (newOptionName: string) => {
         if (selectedOptionName !== newOptionName) {
@@ -339,10 +312,7 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
                 selectedRequirement === undefined ? (<></>) : (
                     <div className="mt-3">
                         <RequirementView
-                            requirement={selectedRequirement}
-                            showsOnlyRegistered={showsOnlyRegistered}
-                            courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                            selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
+                            requirement={selectedRequirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                             onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange}
                             onSelectionChange={onSelectionChange}
                         />
@@ -353,13 +323,10 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, courseToSt
     );
 }
 
-const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, courseToRequirement, onCourseClick, onOthersCountsChange, onSelectionChange, selectionNameToOptionName, requirementToOthersCount }: {
+const RequirementView = ({ requirement, showsOnlyRegistered, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: Requirements,
     showsOnlyRegistered: boolean,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, RequirementWithCourses>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
@@ -367,18 +334,14 @@ const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, cou
     if (requirement instanceof RequirementWithChildren) {
         return (
             <RequirementWithChildrenView
-                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
+                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                 onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange} onSelectionChange={onSelectionChange}
             />
         )
     } else if (requirement instanceof RequirementWithCourses) {
         return (
             <RequirementWithCoursesView
-                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
+                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                 onCourseClick={onCourseClick}
                 onOthersCountsChange={creditsCounts => onOthersCountsChange(requirement, creditsCounts)}
             />
@@ -386,9 +349,7 @@ const RequirementView = ({ requirement, showsOnlyRegistered, courseToStatus, cou
     } else {
         return (
             <SelectionRequirementView
-                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
+                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                 onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange} onSelectionChange={onSelectionChange}
             />
         );
