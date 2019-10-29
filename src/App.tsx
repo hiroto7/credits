@@ -1,11 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Container, Navbar } from 'react-bootstrap';
 import './App.css';
-import RequirementSelector, { defaultRequirement } from './RequirementSelector';
-import RequirementsRootView, { emptyPlan, Plan } from './RequirementsRootView';
+import Plan, { emptyPlan } from './Plan';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
+import RequirementSelector, { defaultRequirement } from './RequirementSelector';
+import RequirementsRootView from './RequirementsRootView';
 
 const COURSES_STATE = "courses-state"
 
