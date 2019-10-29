@@ -1,9 +1,14 @@
 import React from "react";
 import { Form } from "react-bootstrap";
 import Requirements from "./Requirements";
-import * as requirements from './requirements/';
+import { requirementsAndNames } from './requirements/';
 
-const RequirementSelector = ({ onChange }: { onChange: (requirement: Requirements) => void }) => {
+const RequirementSelector = ({ onChange }: {
+    onChange: (requirementAndName: {
+        name: string,
+        requirement: Requirements,
+    }) => void
+}) => {
     return (
         <Form.Group>
             <Form.Label>学類を選択</Form.Label>
@@ -11,8 +16,8 @@ const RequirementSelector = ({ onChange }: { onChange: (requirement: Requirement
                 as="select"
                 onChange={
                     e => {
-                        const newRequirementName = (e.target as HTMLSelectElement).value as keyof typeof requirements;
-                        onChange(requirements[newRequirementName]);
+                        const newRequirementName = (e.target as HTMLSelectElement).value as keyof typeof requirementsAndNames;
+                        onChange(requirementsAndNames[newRequirementName]);
                     }
                 }
             >
@@ -24,5 +29,5 @@ const RequirementSelector = ({ onChange }: { onChange: (requirement: Requirement
     )
 };
 
-export { coins17 as defaultRequirement } from './requirements/';
+export const defaultRequirementAndName = requirementsAndNames.coins17;
 export default RequirementSelector;

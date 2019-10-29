@@ -80,6 +80,14 @@ const convertJSONToRichRequirement = (json: RequirementsJSON, selectionNameToCou
     }
 }
 
-export const coins17 = convertJSONToRichRequirement(coins17_0, new Map());
-export const mast17 = convertJSONToRichRequirement(mast17_0, new Map());
-export const klis17 = convertJSONToRichRequirement(klis17_0, new Map());
+export const { coins17, mast17, klis17 } = {
+    coins17: convertJSONToRichRequirement(coins17_0, new Map()),
+    mast17: convertJSONToRichRequirement(mast17_0, new Map()),
+    klis17: convertJSONToRichRequirement(klis17_0, new Map()),
+}
+
+export const requirementsAndNames = {
+    coins17: { name: 'coins17', requirement: coins17 },
+    mast17: { name: 'mast17', requirement: mast17 },
+    klis17: { name: 'klist17', requirement: klis17 },
+}

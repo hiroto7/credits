@@ -2,29 +2,25 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import { Alert, Container, Navbar } from 'react-bootstrap';
 import './App.css';
-import RequirementSelector, { defaultRequirement } from './RequirementSelector';
+import RequirementSelector, { defaultRequirementAndName } from './RequirementSelector';
 import RequirementsRootView, { emptyPlan, Plan } from './RequirementsRootView';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 
 const COURSES_STATE = "courses-state"
 
-type CoursesState = {[requirementTitle: string]: {code: string, status: RegistrationStatus}[]}
+type CoursesState = { [requirementTitle: string]: { code: string, status: RegistrationStatus }[] }
 
 const App = () => {
-    const [requirement, setRequirement] = useState(defaultRequirement);
-    const [plan, setPlan] = useState(emptyPlan);
+    const [requirementAndName, setRequirementAndName] = useState(defaultRequirementAndName);
+    const [plan, setPlan] = useState(() => loadStoredCoursesState(requirementAndName));
 
-    if (plan === emptyPlan) {
-        loadStoredCoursesState(requirement, plan)
+    const handleRequirementChange = (requirementAndName: { name: string, requirement: Requirements }) => {
+        setRequirementAndName(requirementAndName);
+        setPlan(loadStoredCoursesState(requirementAndName));
     }
 
-    useEffect(() => {
-        if (plan === emptyPlan) {
-            return
-        }
-        storeCoursesState(plan)
-    }, [plan])
+    useEffect(() => storeCoursesState(plan), [plan]);
 
     return (
         <>
@@ -36,11 +32,8 @@ const App = () => {
                     このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
                     <strong>科目や要件の定義が誤っていたり、実際には認められない履修の組み合わせがある可能性があります。</strong>
                 </Alert>
-                <RequirementSelector onChange={requirement => {
-                    setRequirement(requirement);
-                    setPlan(emptyPlan);
-                }} />
-                <RequirementsRootView requirement={requirement} plan={plan} onChange={newPlan => setPlan(newPlan)} />
+                <RequirementSelector onChange={requirementAndName => handleRequirementChange(requirementAndName)} />
+                <RequirementsRootView requirement={requirementAndName.requirement} plan={plan} onChange={newPlan => setPlan(newPlan)} />
             </Container>
         </>
     );
@@ -59,7 +52,7 @@ const storeCoursesState = (plan: Plan) => {
         }
         const values = prev[requirement.name] || []
         values.push(courseState)
-        return {...prev, [requirement.name]: values}
+        return { ...prev, [requirement.name]: values }
     }, {} as CoursesState)
 
     localStorage.setItem(COURSES_STATE, JSON.stringify(coursesState))
@@ -72,23 +65,28 @@ const flattenRequirements = (requirement: Requirements): RequirementWithCourses[
         return [requirement as RequirementWithCourses]
     } else if (requirement instanceof SelectionRequirement) {
         return requirement.options.map((option) => option.requirement)
-        .filter((req) => req instanceof RequirementWithCourses) as RequirementWithCourses[]
+            .filter((req) => req instanceof RequirementWithCourses) as RequirementWithCourses[]
     }
     return []
 }
 
-const loadStoredCoursesState = (rootRequirement: Requirements, plan: Plan) => {
+const loadStoredCoursesState = ({ requirement: rootRequirement, name }: { requirement: Requirements, name: string }): Plan => {
     const coursesStateJson = localStorage.getItem(COURSES_STATE)
-    if (!coursesStateJson || !(rootRequirement instanceof RequirementWithChildren)) {
-        return
+    if (!coursesStateJson) {
+        return emptyPlan
     }
 
-    const coursesStateGroupedByRequirementTitle = JSON.parse(coursesStateJson) as CoursesState
+    const coursesStateGroupedByRequirementTitle = JSON.parse(coursesStateJson)[name] as CoursesState
+    if (!coursesStateGroupedByRequirementTitle) {
+        return emptyPlan
+    }
 
     const flattenReqs = flattenRequirements(rootRequirement)
 
+    const courseToRequirement = new Map();
+    const courseToStatus = new Map();
+
     Object.entries(coursesStateGroupedByRequirementTitle).forEach(([requirementTitle, coursesState]) => {
-        console.log(requirementTitle)
         const requirement = flattenReqs.find((child) => child.name === requirementTitle)
         if (!requirement) {
             return
@@ -96,13 +94,20 @@ const loadStoredCoursesState = (rootRequirement: Requirements, plan: Plan) => {
 
         coursesState.forEach((courseState) => {
             const course = requirement.courses.find((course) => course.code === courseState.code)
-             if (!course) {
-                 return
-             }
-            plan.courseToRequirement.set(course, requirement)
-            plan.courseToStatus.set(course, courseState.status)
+            if (!course) {
+                return
+            }
+            courseToRequirement.set(course, requirement)
+            courseToStatus.set(course, courseState.status)
         })
-     })
+    })
+
+    return {
+        courseToRequirement,
+        courseToStatus,
+        selectionNameToOptionName: new Map(),
+        requirementToOthersCount: new Map(),
+    }
 }
 
 export default App;
