@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Accordion, Badge, Button, ButtonToolbar, Card, Col, Dropdown, Form, ListGroup } from "react-bootstrap";
 import Course from "./Course";
 import CourseList from "./CourseList";
+import Plan from './Plan';
 import RegistrationStatus from "./RegistrationStatus";
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
-import { Plan } from './RequirementsRootView';
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
