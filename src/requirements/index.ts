@@ -1,4 +1,4 @@
-import { codeToCourse } from '../courses';
+import codeToCourse from '../courses';
 import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from '../Requirements';
 import coins17_0 from './coins17.json';
 import klis17_0 from './klis17.json';
@@ -21,13 +21,20 @@ interface RequirementWithCoursesJSON {
     readonly allowsOthers?: boolean;
 }
 
+type OptionJSON = {
+    readonly name: string;
+    readonly requirement: RequirementsJSON;
+} | RequirementsJSON;
+
 interface SelectionRequirementJSON {
     readonly name?: string;
     readonly selectionName: string;
-    readonly options: readonly ({
-        name: string;
-        requirement: RequirementsJSON;
-    } | RequirementsJSON)[];
+    readonly options: readonly OptionJSON[];
+}
+
+interface RequirementAndDictionary {
+    readonly requirement: Requirements;
+    readonly dictionary: ReadonlyMap<string, RequirementWithCourses>;
 }
 
 const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
@@ -36,9 +43,9 @@ const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
         max: numberOrRange,
     };
 
-const convertJSONToRichRequirement = (json: RequirementsJSON, selectionNameToCount: Map<string, number>): Requirements => {
+const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNameToCount: Map<string, number>): RequirementAndDictionary => {
     if ('courses' in json) {
-        return new RequirementWithCourses({
+        const requirement = new RequirementWithCourses({
             name: json.name,
             description: json.description,
             creditsCount: numberOrRangeToRange(json.creditsCount),
@@ -49,45 +56,60 @@ const convertJSONToRichRequirement = (json: RequirementsJSON, selectionNameToCou
             }),
             allowsOthers: json.allowsOthers,
         });
+        return {
+            requirement,
+            dictionary: new Map([[requirement.name, requirement]]),
+        };
     } else if ('children' in json) {
-        return new RequirementWithChildren({
+        const requirementAndDictionaryArray = json.children.map(child => getRequirementAndDictionaryFromJSON(child, selectionNameToCount));
+        const requirement = new RequirementWithChildren({
             name: json.name,
             description: json.description,
-            children: json.children.map(child => convertJSONToRichRequirement(child, selectionNameToCount)),
+            children: requirementAndDictionaryArray.map(({ requirement }) => requirement),
             creditsCount: json.creditsCount === undefined ? undefined : numberOrRangeToRange(json.creditsCount),
         });
+        return {
+            requirement,
+            dictionary: new Map(
+                requirementAndDictionaryArray.flatMap(({ dictionary }) => [...dictionary.entries()])
+            ),
+        };
     } else {
         const selectionCount = selectionNameToCount.get(json.selectionName) || 0;
         selectionNameToCount.set(json.selectionName, selectionCount + 1);
-        return new SelectionRequirement({
+        const optionAndDictionaryArray = json.options.map(optionJSON => {
+            if ('requirement' in optionJSON) {
+                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON.requirement, selectionNameToCount);
+                return {
+                    option: { requirement, name: optionJSON.name },
+                    dictionary,
+                };
+            } else {
+                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON, selectionNameToCount);
+                return {
+                    option: { requirement, name: requirement.name },
+                    dictionary,
+                };
+            }
+        })
+        const requirement = new SelectionRequirement({
             name: `${json.selectionName}_${selectionCount}`,
             selectionName: json.selectionName,
-            options: json.options.map(option => {
-                if ('requirement' in option) {
-                    return {
-                        name: option.name,
-                        requirement: convertJSONToRichRequirement(option.requirement, selectionNameToCount),
-                    };
-                } else {
-                    const requirement = convertJSONToRichRequirement(option, selectionNameToCount);
-                    return {
-                        name: requirement.name,
-                        requirement
-                    };
-                }
-            }),
-        })
+            options: optionAndDictionaryArray.map(({ option }) => option),
+        });
+        return {
+            requirement,
+            dictionary: new Map(
+                optionAndDictionaryArray.flatMap(({ dictionary }) => [...dictionary.entries()])
+            )
+        };
     }
-}
+};
 
-export const { coins17, mast17, klis17 } = {
-    coins17: convertJSONToRichRequirement(coins17_0, new Map()),
-    mast17: convertJSONToRichRequirement(mast17_0, new Map()),
-    klis17: convertJSONToRichRequirement(klis17_0, new Map()),
-}
+const requirementAndDictionaryMap = new Map([
+    ['coins17', { name: 'coins17', ...getRequirementAndDictionaryFromJSON(coins17_0, new Map()) }],
+    ['mast17', { name: 'mast17', ...getRequirementAndDictionaryFromJSON(mast17_0, new Map()) }],
+    ['klis17', { name: 'klis17', ...getRequirementAndDictionaryFromJSON(klis17_0, new Map()) }],
+]);
 
-export const requirementsAndNames = {
-    coins17: { name: 'coins17', requirement: coins17 },
-    mast17: { name: 'mast17', requirement: mast17 },
-    klis17: { name: 'klist17', requirement: klis17 },
-}
+export default requirementAndDictionaryMap;

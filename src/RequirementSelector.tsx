@@ -1,12 +1,13 @@
 import React from "react";
 import { Form } from "react-bootstrap";
-import Requirements from "./Requirements";
-import { requirementsAndNames } from './requirements/';
+import Requirements, { RequirementWithCourses } from "./Requirements";
+import requirementAndDictionaryMap from './requirements/';
 
 const RequirementSelector = ({ onChange }: {
-    onChange: (requirementAndName: {
+    onChange: (selected: {
         name: string,
         requirement: Requirements,
+        dictionary: ReadonlyMap<string, RequirementWithCourses>,
     }) => void
 }) => {
     return (
@@ -16,8 +17,8 @@ const RequirementSelector = ({ onChange }: {
                 as="select"
                 onChange={
                     e => {
-                        const newRequirementName = (e.target as HTMLSelectElement).value as keyof typeof requirementsAndNames;
-                        onChange(requirementsAndNames[newRequirementName]);
+                        const newRequirementName = (e.target as HTMLSelectElement).value;
+                        onChange(requirementAndDictionaryMap.get(newRequirementName)!);
                     }
                 }
             >
@@ -29,5 +30,5 @@ const RequirementSelector = ({ onChange }: {
     )
 };
 
-export const defaultRequirementAndName = requirementsAndNames.coins17;
+export const defaultSelected = requirementAndDictionaryMap.get('coins17')!;
 export default RequirementSelector;
