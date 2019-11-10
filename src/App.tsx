@@ -8,6 +8,7 @@ import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import Requirements, { RequirementWithCourses } from './Requirements';
 import RequirementSelector, { defaultSelected } from './RequirementSelector';
 import RequirementsRootView from './RequirementsRootView';
+import Course from './Course';
 
 const COURSES_STATE = "courses-state"
 
@@ -15,23 +16,26 @@ const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
     const [json, setJSON] = useLocalStorage<[string, PlanJSON][]>(COURSES_STATE);
     const planJSONMap = new Map(json);
-    const planJSON = planJSONMap.get(selected.name);
-    const storedPlan = planJSON === undefined ?
-        emptyPlan :
-        fromJSON(planJSON, {
-            codeToCourse,
-            nameToRequirement: selected.dictionary,
-        });
-    const [plan, setPlan] = useState(storedPlan);
+    const [plan, setPlan] = useState(getPlanFromJSONMap({
+        planJSONMap,
+        codeToCourse,
+        requirementName: selected.name,
+        nameToRequirement: selected.dictionary,
+    }));
 
-    const setStoredPlan = (newPlan: Plan) => setJSON([...new Map([
+    const setStoredPlan = (newPlan: Plan) => setJSON([...new Map<string, PlanJSON>([
         ...planJSONMap,
         [selected.name, toJSON(newPlan)]
     ])]);
 
     const handleRequirementChange = (selected: { name: string, requirement: Requirements, dictionary: ReadonlyMap<string, RequirementWithCourses> }) => {
         setSelected(selected);
-        setPlan(storedPlan);
+        setPlan(getPlanFromJSONMap({
+            planJSONMap,
+            codeToCourse,
+            requirementName: selected.name,
+            nameToRequirement: selected.dictionary,
+        }));
     }
 
     const handlePlanChange = (newPlan: Plan) => {
@@ -54,6 +58,20 @@ const App = () => {
             </Container>
         </>
     );
+}
+
+const getPlanFromJSONMap = ({ planJSONMap, requirementName, codeToCourse, nameToRequirement }: {
+    planJSONMap: ReadonlyMap<string, PlanJSON>,
+    requirementName: string,
+    codeToCourse: ReadonlyMap<string, Course>,
+    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+}) => {
+    const planJSON = planJSONMap.get(requirementName);
+    if (planJSON === undefined) {
+        return emptyPlan;
+    } else {
+        return fromJSON(planJSON, { codeToCourse, nameToRequirement });
+    }
 }
 
 export default App;
