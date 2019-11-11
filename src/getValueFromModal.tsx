@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const getValueFromModal = async <T, P>(
     ModalType: (props: {
@@ -6,22 +6,47 @@ const getValueFromModal = async <T, P>(
         onExited: () => void,
     } & P) => JSX.Element,
     props: P,
-    modals: JSX.Element[],
-    setModals: React.Dispatch<React.SetStateAction<JSX.Element[]>>,
+    { modalsAndCount, setModalsAndCount }: {
+        modalsAndCount: ModalsAndCount,
+        setModalsAndCount: React.Dispatch<React.SetStateAction<ModalsAndCount>>,
+    }
 ): Promise<T> => new Promise((resolve, reject) => {
     try {
         const modal = (
             <ModalType
                 {...props}
                 onReturn={value => resolve(value)}
-                onExited={() => setModals(newModals.filter(value => value !== modal))}
+                onExited={() => setModalsAndCount(
+                    ({ modals, count }) => ({
+                        modals: modals.filter(value => value !== modal),
+                        count,
+                    })
+                )}
+                key={modalsAndCount.count}
             />
         );
-        const newModals = [...modals, modal];
-        setModals(newModals);
+        setModalsAndCount(({ modals, count }) => ({
+            modals: [...modals, modal],
+            count: count + 1,
+        }));
     } catch (e) {
         reject(e);
     }
 });
+
+export interface ModalsAndCount {
+    readonly modals: readonly JSX.Element[];
+    readonly count: number;
+}
+
+const initialModalsAndCount: ModalsAndCount = {
+    modals: [],
+    count: 0,
+};
+
+export const useModalsAndCount = () => {
+    const [modalsAndCount, setModalsAndCount] = useState(initialModalsAndCount);
+    return { modalsAndCount, setModalsAndCount };
+};
 
 export default getValueFromModal;
