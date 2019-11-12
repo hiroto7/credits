@@ -43,12 +43,9 @@ const initialModalsAndCount: ModalsAndCount = {
     count: 0,
 };
 
-export const useModals = () => {
+export const useModalsAndCount = () => {
     const [modalsAndCount, setModalsAndCount] = useState(initialModalsAndCount);
-    return {
-        modals: modalsAndCount.count,
-        setModalsAndCount,
-    };
+    return { modalsAndCount, setModalsAndCount };
 };
 
 export default getValueFromModal;
