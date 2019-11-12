@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Course from './Course';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
-import getValueFromModal, { useModalsAndCount } from './getValueFromModal';
+import getValueFromModal, { useModals } from './getValueFromModal';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
@@ -28,7 +28,7 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
     const { courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName } = plan;
 
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
-    const { modalsAndCount, setModalsAndCount } = useModalsAndCount();
+    const { modals, setModalsAndCount } = useModals();
 
     const handleCourseClick = async (course: Course, requirement: RequirementWithCourses) => {
         const currentStatus: RegistrationStatus = courseToStatus.get(course) || RegistrationStatus.Unregistered;
@@ -112,7 +112,7 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
 
     return (
         <>
-            {modalsAndCount.modals}
+            {modals}
             <Form.Check custom className="mb-3" id="showsOnlyRegisteredCheck"
                 label="履修する科目のみ表示する"
                 checked={showsOnlyRegistered}
