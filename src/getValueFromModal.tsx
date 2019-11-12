@@ -1,34 +1,33 @@
 import React, { useState } from 'react';
 
 const getValueFromModal = async <T, P>(
-    ModalType: (props: {
+    ModalType: React.ComponentType<{
         onReturn: (value: T) => void,
         onExited: () => void,
-    } & P) => JSX.Element,
+    } & P>,
     props: P,
-    { modalsAndCount, setModalsAndCount }: {
-        modalsAndCount: ModalsAndCount,
-        setModalsAndCount: React.Dispatch<React.SetStateAction<ModalsAndCount>>,
-    }
+    setModalsAndCount: React.Dispatch<React.SetStateAction<ModalsAndCount>>,
 ): Promise<T> => new Promise((resolve, reject) => {
     try {
-        const modal = (
-            <ModalType
-                {...props}
-                onReturn={value => resolve(value)}
-                onExited={() => setModalsAndCount(
-                    ({ modals, count }) => ({
-                        modals: modals.filter(value => value !== modal),
-                        count,
-                    })
-                )}
-                key={modalsAndCount.count}
-            />
-        );
-        setModalsAndCount(({ modals, count }) => ({
-            modals: [...modals, modal],
-            count: count + 1,
-        }));
+        setModalsAndCount(({ modals, count }) => {
+            const modal = (
+                <ModalType
+                    {...props}
+                    onReturn={value => resolve(value)}
+                    onExited={() => setModalsAndCount(
+                        ({ modals, count }) => ({
+                            modals: modals.filter(value => value !== modal),
+                            count,
+                        })
+                    )}
+                    key={count}
+                />
+            );
+            return ({
+                modals: [...modals, modal],
+                count: count + 1,
+            })
+        });
     } catch (e) {
         reject(e);
     }

@@ -49,7 +49,7 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
             !await getValueFromModal(
                 CourseMovementConfirmationModal,
                 { currentRequirement, plan },
-                { modalsAndCount, setModalsAndCount }
+                setModalsAndCount
             )
         ) {
             return;
