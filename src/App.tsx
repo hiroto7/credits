@@ -5,43 +5,15 @@ import { useLocalStorage } from 'react-use';
 import './App.css';
 import codeToCourse from './courses';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
-import Requirements, { RequirementWithCourses } from './Requirements';
+import requirementAndDictionaryMap from './requirements/';
 import RequirementSelector, { defaultSelected } from './RequirementSelector';
 import RequirementsRootView from './RequirementsRootView';
-import Course from './Course';
 
 const COURSES_STATE = "courses-state"
 
 const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
-    const [json, setJSON] = useLocalStorage<[string, PlanJSON][]>(COURSES_STATE);
-    const planJSONMap = new Map(json);
-    const [plan, setPlan] = useState(getPlanFromJSONMap({
-        planJSONMap,
-        codeToCourse,
-        requirementName: selected.name,
-        nameToRequirement: selected.dictionary,
-    }));
-
-    const setStoredPlan = (newPlan: Plan) => setJSON([...new Map<string, PlanJSON>([
-        ...planJSONMap,
-        [selected.name, toJSON(newPlan)]
-    ])]);
-
-    const handleRequirementChange = (selected: { name: string, requirement: Requirements, dictionary: ReadonlyMap<string, RequirementWithCourses> }) => {
-        setSelected(selected);
-        setPlan(getPlanFromJSONMap({
-            planJSONMap,
-            codeToCourse,
-            requirementName: selected.name,
-            nameToRequirement: selected.dictionary,
-        }));
-    }
-
-    const handlePlanChange = (newPlan: Plan) => {
-        setPlan(newPlan);
-        setStoredPlan(newPlan);
-    }
+    const { plan, setPlan } = usePlan(selected.name);
 
     return (
         <>
@@ -53,25 +25,63 @@ const App = () => {
                     このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
                     <strong>科目や要件の定義が誤っていたり、実際には認められない履修の組み合わせがある可能性があります。</strong>
                 </Alert>
-                <RequirementSelector onChange={selected => handleRequirementChange(selected)} />
-                <RequirementsRootView requirement={selected.requirement} plan={plan} onChange={newPlan => handlePlanChange(newPlan)} />
+                <RequirementSelector onChange={setSelected} />
+                <RequirementsRootView requirement={selected.requirement} plan={plan} onChange={setPlan} />
             </Container>
         </>
     );
 }
 
-const getPlanFromJSONMap = ({ planJSONMap, requirementName, codeToCourse, nameToRequirement }: {
-    planJSONMap: ReadonlyMap<string, PlanJSON>,
-    requirementName: string,
-    codeToCourse: ReadonlyMap<string, Course>,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
-}) => {
-    const planJSON = planJSONMap.get(requirementName);
-    if (planJSON === undefined) {
-        return emptyPlan;
-    } else {
-        return fromJSON(planJSON, { codeToCourse, nameToRequirement });
-    }
+const usePlanMap = () => {
+    const [storedJSON, setStoredJSON] = useLocalStorage<readonly (readonly [string, PlanJSON])[]>(COURSES_STATE);
+    const [planMap0, setPlanMap0] = useState(() => {
+        try {
+            const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
+                const requirementAndDictionary = requirementAndDictionaryMap.get(requirementName);
+                if (requirementAndDictionary === undefined) {
+                    return undefined;
+                } else {
+                    try {
+                        return [requirementName, fromJSON(planJSON, {
+                            codeToCourse,
+                            nameToRequirement: requirementAndDictionary.dictionary,
+                        })] as const;
+                    } catch {
+                        return undefined;
+                    }
+                }
+            }).filter((value): value is NonNullable<typeof value> => value !== undefined);
+            const storedPlanMap: ReadonlyMap<string, Plan> = new Map(storedPlanEntries);
+            return storedPlanMap;
+        } catch {
+            const storedPlanMap: ReadonlyMap<string, Plan> = new Map();
+            return storedPlanMap;
+        }
+    });
+    const setPlanMap = (newPlanMap: ReadonlyMap<string, Plan>) => {
+        const planJSONEntries = [...newPlanMap].map(([requirementName, plan]) => [requirementName, toJSON(plan)] as const);
+        setPlanMap0(newPlanMap);
+        setStoredJSON(planJSONEntries);
+    };
+    return {
+        planMap: planMap0,
+        setPlanMap,
+    };
+}
+
+const usePlan = (requirementName: string) => {
+    const { planMap, setPlanMap } = usePlanMap();
+
+    const plan = planMap.get(requirementName) || emptyPlan;
+    const setPlan = (newPlan: Plan) => {
+        const newPlanMap = new Map([
+            ...planMap,
+            [requirementName, newPlan]
+        ]);
+        setPlanMap(newPlanMap);
+    };
+
+    return { plan, setPlan };
 }
 
 export default App;
