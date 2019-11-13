@@ -3,22 +3,10 @@ import { Form } from 'react-bootstrap';
 import Course from './Course';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import getValueFromModal from './getValueFromModal';
+import Plan from './Plan';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
-
-export interface Plan {
-    readonly courseToStatus: ReadonlyMap<Course, RegistrationStatus>;
-    readonly courseToRequirement: ReadonlyMap<Course, RequirementWithCourses>;
-    readonly requirementToOthersCount: ReadonlyMap<RequirementWithCourses, RegisteredCreditsCounts>;
-    readonly selectionNameToOptionName: ReadonlyMap<string, string>;
-}
-export const emptyPlan: Plan = {
-    courseToStatus: new Map(),
-    courseToRequirement: new Map(),
-    requirementToOthersCount: new Map(),
-    selectionNameToOptionName: new Map(),
-};
 
 const RequirementsRootView = ({ requirement, plan, onChange }: {
     requirement: Requirements,

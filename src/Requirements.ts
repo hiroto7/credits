@@ -1,7 +1,7 @@
 import { $number, $object, isCompatible } from "@hiroto/json-type-checker";
 import Course from "./Course";
+import Plan from "./Plan";
 import RegistrationStatus from "./RegistrationStatus";
-import { Plan } from "./RequirementsRootView";
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;
@@ -132,21 +132,20 @@ export class RequirementWithCourses extends Requirement {
     }
 }
 
+interface Option {
+    name: string;
+    requirement: Requirements;
+}
+
 export interface SelectionRequirementInit {
     readonly name: string;
     readonly selectionName: string;
-    readonly options: Iterable<{
-        name: string;
-        requirement: Requirements;
-    }>;
+    readonly options: Iterable<Option>;
 }
 
 export class SelectionRequirement extends Requirement implements SelectionRequirementInit {
     readonly selectionName: string;
-    readonly options: {
-        name: string;
-        requirement: Requirements;
-    }[];
+    readonly options: Option[];
     readonly optionNameToRequirement: ReadonlyMap<string, Requirements>;
     constructor({ name, selectionName, options: options0 }: SelectionRequirementInit) {
         super(name);

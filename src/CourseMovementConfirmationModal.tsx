@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
+import Plan from "./Plan";
 import { RequirementWithCourses } from "./Requirements";
-import { Plan } from "./RequirementsRootView";
 import { RequirementSummaryView } from "./RequirementView";
 
 const CourseMovementConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {
