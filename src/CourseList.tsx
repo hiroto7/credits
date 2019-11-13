@@ -1,9 +1,9 @@
 import React from 'react';
 import { Badge, ListGroup } from "react-bootstrap";
 import Course from "./Course";
+import Plan from './Plan';
 import RegistrationStatus from "./RegistrationStatus";
 import Requirements, { RequirementWithCourses } from "./Requirements";
-import { Plan } from './RequirementsRootView';
 
 const CourseListItem = ({ course, status, onClick, currentRequirement, newRequirement, disabled }: {
     course: Course,
@@ -45,7 +45,7 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
 const CourseList = ({ requirement, courses, plan, onCourseClick }: {
     requirement: RequirementWithCourses,
     courses: readonly Course[],
-    plan: Plan
+    plan: Plan,
     onCourseClick: (course: Course) => void,
 }) => (
         <ListGroup>
