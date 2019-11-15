@@ -2,23 +2,11 @@ import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Course from './Course';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
-import getValueFromModal from './getValueFromModal';
+import getValueFromModal, { useModals } from './getValueFromModal';
+import Plan from './Plan';
 import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
-
-export interface Plan {
-    readonly courseToStatus: Map<Course, RegistrationStatus>;
-    readonly courseToRequirement: Map<Course, RequirementWithCourses>;
-    readonly requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>;
-    readonly selectionNameToOptionName: ReadonlyMap<string, string>;
-}
-export const emptyPlan: Plan = {
-    courseToStatus: new Map(),
-    courseToRequirement: new Map(),
-    requirementToOthersCount: new Map(),
-    selectionNameToOptionName: new Map(),
-};
 
 const RequirementsRootView = ({ requirement, plan, onChange }: {
     requirement: Requirements,
@@ -28,7 +16,7 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
     const { courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName } = plan;
 
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
-    const [modals, setModals] = useState(new Array<JSX.Element>());
+    const { modals, setModalsAndCount } = useModals();
 
     const handleCourseClick = async (course: Course, requirement: RequirementWithCourses) => {
         const currentStatus: RegistrationStatus = courseToStatus.get(course) || RegistrationStatus.Unregistered;
@@ -48,8 +36,8 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
             currentRequirement !== undefined &&
             !await getValueFromModal(
                 CourseMovementConfirmationModal,
-                { currentRequirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount },
-                modals, setModals
+                { currentRequirement, plan },
+                setModalsAndCount
             )
         ) {
             return;
@@ -120,10 +108,9 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
             />
             <div className="my-3">
                 <RequirementView
-                    requirement={requirement} showsOnlyRegistered={showsOnlyRegistered}
-                    courseToStatus={courseToStatus} courseToRequirement={courseToRequirement} selectionNameToOptionName={selectionNameToOptionName}
+                    requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
                     onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
-                    onSelectionChange={handleSelectionChange} requirementToOthersCount={requirementToOthersCount}
+                    onSelectionChange={handleSelectionChange}
                 />
             </div>
         </>

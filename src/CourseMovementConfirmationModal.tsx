@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
-import Course from "./Course";
-import RegistrationStatus from "./RegistrationStatus";
-import Requirements, { RegisteredCreditsCounts, RequirementWithCourses } from "./Requirements";
+import Plan from "./Plan";
+import { RequirementWithCourses } from "./Requirements";
 import { RequirementSummaryView } from "./RequirementView";
 
-const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, courseToRequirement, selectionNameToOptionName, requirementToOthersCount, onReturn, onExited }: {
+const CourseMovementConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {
     currentRequirement: RequirementWithCourses,
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
-    selectionNameToOptionName: ReadonlyMap<string, string>,
-    requirementToOthersCount: Map<RequirementWithCourses, RegisteredCreditsCounts>,
+    plan: Plan,
     onReturn: (value: boolean) => void,
     onExited: () => void,
 }) => {
@@ -25,11 +21,7 @@ const CourseMovementConfirmationModal = ({ currentRequirement, courseToStatus, c
                 </p>
                 <p>各科目に割り当てできる要件は1つまでです。</p>
                 <Card body>
-                    <RequirementSummaryView
-                        requirement={currentRequirement}
-                        courseToStatus={courseToStatus} courseToRequirement={courseToRequirement}
-                        selectionNameToOptionName={selectionNameToOptionName} requirementToOthersCount={requirementToOthersCount}
-                    />
+                    <RequirementSummaryView requirement={currentRequirement} plan={plan} />
                 </Card>
             </Modal.Body>
             <Modal.Footer>
