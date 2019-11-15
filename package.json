@@ -4,17 +4,19 @@
   "private": true,
   "dependencies": {
     "@hiroto/json-type-checker": "^1.0.5",
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.7.12",
-    "@types/react": "^16.9.5",
-    "@types/react-dom": "^16.9.1",
+    "@types/jest": "^24.0.22",
+    "@types/node": "^12.12.7",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.4",
     "bootstrap": "^4.3.1",
     "gh-pages": "^2.1.1",
-    "react": "^16.10.2",
+    "react": "^16.11.0",
+    "react-app-polyfill": "^1.0.4",
     "react-bootstrap": "^1.0.0-beta.14",
-    "react-dom": "^16.10.2",
+    "react-dom": "^16.11.0",
     "react-scripts": "^3.2.0",
-    "typescript": "^3.7.0-dev.20191013"
+    "react-use": "^13.5.0",
+    "typescript": "^3.7.1-rc"
   },
   "scripts": {
     "start": "react-scripts start",

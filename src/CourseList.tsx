@@ -1,6 +1,7 @@
 import React from 'react';
 import { Badge, ListGroup } from "react-bootstrap";
 import Course from "./Course";
+import Plan from './Plan';
 import RegistrationStatus from "./RegistrationStatus";
 import Requirements, { RequirementWithCourses } from "./Requirements";
 
@@ -41,28 +42,29 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
         </ListGroup.Item>
     );
 
-const CourseList = ({ requirement, courses, courseToStatus, courseToRequirement, onCourseClick }: {
+const CourseList = ({ requirement, courses, plan, onCourseClick }: {
     requirement: RequirementWithCourses,
     courses: readonly Course[],
-    courseToStatus: Map<Course, RegistrationStatus>,
-    courseToRequirement: Map<Course, Requirements>,
+    plan: Plan,
     onCourseClick: (course: Course) => void,
 }) => (
         <ListGroup>
             {
                 courses.map((course: Course) => (
-                    <CourseListItem key={course.code} course={course}
-                        currentRequirement={courseToRequirement.get(course)}
+                    <CourseListItem
+                        key={course.code} course={course}
+                        currentRequirement={plan.courseToRequirement.get(course)}
                         newRequirement={requirement}
-                        status={courseToStatus.get(course) || RegistrationStatus.Unregistered}
+                        status={plan.courseToStatus.get(course) || RegistrationStatus.Unregistered}
                         onClick={() => onCourseClick(course)}
                         disabled={
-                            (!courseToStatus.has(course) || courseToStatus.get(course) === RegistrationStatus.Unregistered) &&
-                            [...courseToStatus.entries()]
+                            (!plan.courseToStatus.has(course) || plan.courseToStatus.get(course) === RegistrationStatus.Unregistered) &&
+                            [...plan.courseToStatus.entries()]
                                 .filter(([_, status]) => status !== RegistrationStatus.Unregistered)
                                 .map(([course, _]) => course.title)
                                 .includes(course.title)
-                        } />
+                        }
+                    />
                 ))
             }
         </ListGroup>
