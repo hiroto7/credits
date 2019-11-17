@@ -284,7 +284,7 @@ const SelectionRequirementView = ({ requirement, showsOnlyRegistered, plan, onCo
     return (
         <>
             <Dropdown>
-                <Dropdown.Toggle id="" variant="secondary">
+                <Dropdown.Toggle id="" variant="secondary" disabled={showsOnlyRegistered}>
                     <span style={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
