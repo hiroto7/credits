@@ -124,74 +124,77 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     }
 
     return (
-        <Card body border="primary">
-            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
-                onReturn(computed);
-                onHide();
-            }}>
-                <Form.Row>
-                    <Form.Group as={Col} md="4" controlId="validationCustom01">
-                        <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
-                        <Form.Control
-                            type="number" min={0}
-                            placeholder={`${computed.acquired}`}
-                            value={acquired === undefined ? '' : `${acquired}`}
-                            onChange={
-                                (e: React.ChangeEvent<HTMLInputElement>) =>
-                                    setAcquired(e.target.value === '' ? undefined : +e.target.value)
-                            }
-                            isInvalid={computed.acquired < 0}
-                        />
-                        <Form.Control.Feedback type="invalid">(a) &gt;= 0</Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="4" controlId="validationCustom02">
-                        <Form.Label>履修する単位数 <span className="text-muted">(b)</span></Form.Label>
-                        <Form.Control
-                            type="number" min={0}
-                            placeholder={`${computed.registered - computed.acquired}`}
-                            value={registeredExcludingAcquired === undefined ? '' : `${registeredExcludingAcquired}`}
-                            onChange={
-                                (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (e.target.value === '') {
-                                        setRegisteredExcludingAcquired(undefined);
-                                    } else {
-                                        setRegisteredExcludingAcquired(+e.target.value);
-                                        setRegisteredIncludingAcquired(undefined);
+        <Card border="primary">
+            <Card.Header>単位数を入力</Card.Header>
+            <Card.Body>
+                <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                    e.preventDefault();
+                    onReturn(computed);
+                    onHide();
+                }}>
+                    <Form.Row>
+                        <Form.Group as={Col} md="4" controlId="validationCustom01">
+                            <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
+                            <Form.Control
+                                type="number" min={0}
+                                placeholder={`${computed.acquired}`}
+                                value={acquired === undefined ? '' : `${acquired}`}
+                                onChange={
+                                    (e: React.ChangeEvent<HTMLInputElement>) =>
+                                        setAcquired(e.target.value === '' ? undefined : +e.target.value)
+                                }
+                                isInvalid={computed.acquired < 0}
+                            />
+                            <Form.Control.Feedback type="invalid">(a) &gt;= 0</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} md="4" controlId="validationCustom02">
+                            <Form.Label>履修する単位数 <span className="text-muted">(b)</span></Form.Label>
+                            <Form.Control
+                                type="number" min={0}
+                                placeholder={`${computed.registered - computed.acquired}`}
+                                value={registeredExcludingAcquired === undefined ? '' : `${registeredExcludingAcquired}`}
+                                onChange={
+                                    (e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (e.target.value === '') {
+                                            setRegisteredExcludingAcquired(undefined);
+                                        } else {
+                                            setRegisteredExcludingAcquired(+e.target.value);
+                                            setRegisteredIncludingAcquired(undefined);
+                                        }
                                     }
                                 }
-                            }
-                            isInvalid={computed.acquired > computed.registered}
-                        />
-                        <Form.Control.Feedback type="invalid">(b) &gt;= 0</Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="4" controlId="validationCustom02">
-                        <Form.Label>計 <span className="text-muted">(a) + (b)</span></Form.Label>
-                        <Form.Control
-                            type="number" min={0}
-                            placeholder={`${computed.registered}`}
-                            value={registeredIncludingAcquired === undefined ? '' : `${registeredIncludingAcquired}`}
-                            onChange={
-                                (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (e.target.value === '') {
-                                        setRegisteredIncludingAcquired(undefined);
-                                    } else {
-                                        setRegisteredIncludingAcquired(+e.target.value);
-                                        setRegisteredExcludingAcquired(undefined);
+                                isInvalid={computed.acquired > computed.registered}
+                            />
+                            <Form.Control.Feedback type="invalid">(b) &gt;= 0</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} md="4" controlId="validationCustom02">
+                            <Form.Label>計 <span className="text-muted">(a) + (b)</span></Form.Label>
+                            <Form.Control
+                                type="number" min={0}
+                                placeholder={`${computed.registered}`}
+                                value={registeredIncludingAcquired === undefined ? '' : `${registeredIncludingAcquired}`}
+                                onChange={
+                                    (e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (e.target.value === '') {
+                                            setRegisteredIncludingAcquired(undefined);
+                                        } else {
+                                            setRegisteredIncludingAcquired(+e.target.value);
+                                            setRegisteredExcludingAcquired(undefined);
+                                        }
                                     }
                                 }
-                            }
-                        />
-                    </Form.Group>
-                </Form.Row>
-                <ButtonToolbar>
-                    <Button
-                        type="submit"
-                        disabled={computed.acquired < 0 || computed.acquired > computed.registered}
-                    >OK</Button>
-                    <Button variant="secondary" onClick={onHide}>キャンセル</Button>
-                </ButtonToolbar>
-            </Form>
+                            />
+                        </Form.Group>
+                    </Form.Row>
+                    <ButtonToolbar>
+                        <Button
+                            type="submit"
+                            disabled={computed.acquired < 0 || computed.acquired > computed.registered}
+                        >OK</Button>
+                        <Button variant="secondary" onClick={onHide}>キャンセル</Button>
+                    </ButtonToolbar>
+                </Form>
+            </Card.Body>
         </Card>
     )
 }

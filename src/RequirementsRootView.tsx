@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Form } from 'react-bootstrap';
+import React from 'react';
 import Course from './Course';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import getValueFromModal, { useModals } from './getValueFromModal';
@@ -8,14 +7,13 @@ import RegistrationStatus from './RegistrationStatus';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
 
-const RequirementsRootView = ({ requirement, plan, onChange }: {
+const RequirementsRootView = ({ requirement, plan, showsOnlyRegistered, onChange }: {
     requirement: Requirements,
+    showsOnlyRegistered: boolean,
     plan: Plan,
     onChange: (newPlan: Plan) => void,
 }) => {
     const { courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName } = plan;
-
-    const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
     const { modals, setModalsAndCount } = useModals();
 
     const handleCourseClick = async (course: Course, requirement: RequirementWithCourses) => {
@@ -101,18 +99,11 @@ const RequirementsRootView = ({ requirement, plan, onChange }: {
     return (
         <>
             {modals}
-            <Form.Check custom className="mb-3" id="showsOnlyRegisteredCheck"
-                label="履修する科目のみ表示する"
-                checked={showsOnlyRegistered}
-                onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)}
+            <RequirementView
+                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
+                onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
+                onSelectionChange={handleSelectionChange}
             />
-            <div className="my-3">
-                <RequirementView
-                    requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
-                    onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
-                    onSelectionChange={handleSelectionChange}
-                />
-            </div>
         </>
     );
 }
