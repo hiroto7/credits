@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Alert, Container, Navbar } from 'react-bootstrap';
+import { Alert, Container, Navbar, Form } from 'react-bootstrap';
 import { useLocalStorage } from 'react-use';
 import './App.css';
 import codeToCourse from './courses';
@@ -13,6 +13,7 @@ const COURSES_STATE = "courses-state"
 
 const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
+    const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
     const { plan, setPlan } = usePlan(selected.name);
 
     return (
@@ -21,12 +22,22 @@ const App = () => {
                 <Navbar.Brand>卒業要件を満たしたい</Navbar.Brand>
             </Navbar>
             <Container>
-                <Alert variant="danger" className="mt-3">
+                <Alert variant="danger" className="my-3">
                     このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
                     <strong>科目や要件の定義が誤っていたり、実際には認められない履修の組み合わせがある可能性があります。</strong>
                 </Alert>
                 <RequirementSelector onChange={setSelected} />
-                <RequirementsRootView requirement={selected.requirement} plan={plan} onChange={setPlan} />
+                <Form.Check custom className="mb-3" id="showsOnlyRegisteredCheck"
+                    label="履修する科目のみ表示する"
+                    checked={showsOnlyRegistered}
+                    onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)}
+                />
+                <div className="mb-3">
+                    <RequirementsRootView
+                        requirement={selected.requirement} showsOnlyRegistered={showsOnlyRegistered}
+                        plan={plan} onChange={setPlan}
+                    />
+                </div>
             </Container>
         </>
     );
