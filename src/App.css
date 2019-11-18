@@ -19,3 +19,8 @@
 .dropdown-toggle::after {
     flex-shrink: 0;
 }
+
+.input-monospace {
+    font-family: var(--font-family-monospace);
+    font-size: 87.5%;
+}

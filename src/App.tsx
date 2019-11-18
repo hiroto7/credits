@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Alert, Container, Navbar, Form } from 'react-bootstrap';
+import { Alert, Button, Container, Form, Navbar } from 'react-bootstrap';
 import { useLocalStorage } from 'react-use';
 import './App.css';
 import codeToCourse from './courses';
+import ExportAndImportView from './ExportAndImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import requirementAndDictionaryMap from './requirements/';
 import RequirementSelector, { defaultSelected } from './RequirementSelector';
@@ -14,6 +15,7 @@ const COURSES_STATE = "courses-state"
 const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
     const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
+    const [showsExportAndImportView, setShowsExportAndImportView] = useState(false);
     const { plan, setPlan } = usePlan(selected.name);
 
     return (
@@ -27,6 +29,20 @@ const App = () => {
                     <strong>科目や要件の定義が誤っていたり、実際には認められない履修の組み合わせがある可能性があります。</strong>
                 </Alert>
                 <RequirementSelector onChange={setSelected} />
+                <div className="mb-3">
+                    {
+                        showsExportAndImportView ? (
+                            <ExportAndImportView
+                                plan={plan} codeToCourse={codeToCourse} nameToRequirement={selected.dictionary}
+                                onReturn={setPlan} onHide={() => setShowsExportAndImportView(false)}
+                            />
+                        ) : (
+                                <Button variant="secondary" onClick={() => setShowsExportAndImportView(true)}>
+                                    エクスポート / インポート
+                                </Button>
+                            )
+                    }
+                </div>
                 <Form.Check custom className="mb-3" id="showsOnlyRegisteredCheck"
                     label="履修する科目のみ表示する"
                     checked={showsOnlyRegistered}
