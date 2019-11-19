@@ -25,6 +25,15 @@ const ExportAndImportView = ({ plan, codeToCourse, nameToRequirement, onHide, on
     })();
     const isInvalid = nextPlan === undefined;
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (nextPlan === undefined) {
+            return;
+        }
+        onReturn(nextPlan);
+        onHide();
+    };
+
     return (
         <Card>
             <Card.Header>エクスポート / インポート</Card.Header>
@@ -40,7 +49,7 @@ const ExportAndImportView = ({ plan, codeToCourse, nameToRequirement, onHide, on
                     </dd>
                 </dl>
 
-                <Form>
+                <Form onSubmit={handleSubmit}>
                     <Form.Group>
                         <Form.Label>JSON</Form.Label>
                         <Form.Control
@@ -48,19 +57,12 @@ const ExportAndImportView = ({ plan, codeToCourse, nameToRequirement, onHide, on
                             value={jsonString}
                             isInvalid={isInvalid}
                             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJSONString(e.target.value)}
+                            onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
                         />
                         <Form.Control.Feedback type="invalid">JSONが不正です</Form.Control.Feedback>
                     </Form.Group>
                     <ButtonToolbar>
-                        <Button
-                            variant="danger" disabled={isInvalid}
-                            onClick={() => {
-                                if (nextPlan !== undefined) {
-                                    onReturn(nextPlan);
-                                    onHide();
-                                }
-                            }}
-                        >
+                        <Button variant="danger" type="submit" disabled={isInvalid}>
                             インポート
                         </Button>
                         <Button variant="secondary" onClick={onHide}>閉じる</Button>
