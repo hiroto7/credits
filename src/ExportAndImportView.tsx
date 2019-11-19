@@ -40,7 +40,7 @@ const ExportAndImportView = ({ plan, codeToCourse, nameToRequirement, onHide, on
             <Card.Body>
                 <dl>
                     <dt>エクスポート</dt>
-                    <dd>テキストボックスの内容をコピーしてテキストファイルなどに保存します。</dd>
+                    <dd>テキストボックスの内容をコピーして、テキストファイルなどに保存します。</dd>
 
                     <dt>インポート</dt>
                     <dd>
