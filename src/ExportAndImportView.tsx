@@ -48,6 +48,7 @@ const ExportAndImportView = ({ plan, codeToCourse, nameToRequirement, onHide, on
                             value={jsonString}
                             isInvalid={isInvalid}
                             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJSONString(e.target.value)}
+                            onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
                         />
                         <Form.Control.Feedback type="invalid">JSONが不正です</Form.Control.Feedback>
                     </Form.Group>
