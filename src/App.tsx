@@ -26,7 +26,7 @@ const App = () => {
             <Container>
                 <Alert variant="danger" className="my-3">
                     このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
-                    <strong>科目や要件の定義が誤っていたり、実際には認められない履修の組み合わせがある可能性があります。</strong>
+                    <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
                 </Alert>
                 <RequirementSelector onChange={setSelected} />
                 <Accordion className="mb-3">
