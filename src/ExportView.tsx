@@ -14,7 +14,7 @@ const ExportView = ({ plan, eventKey }: {
             </Card.Header>
             <Accordion.Collapse eventKey={eventKey}>
                 <Card.Body>
-                    <p>テキストボックスの内容をコピーしてテキストファイルなどに保存します。</p>
+                    <p>テキストボックスの内容をコピーして、テキストファイルなどに保存します。</p>
                     <Form>
                         <Form.Group className="mb-0">
                             <Form.Label>JSON</Form.Label>
