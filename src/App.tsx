@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Accordion, Alert, Container, Form, Navbar } from 'react-bootstrap';
 import { useLocalStorage } from 'react-use';
 import './App.css';
-import Component1 from './Component1';
+import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
 import FilterType from './FilterType';
@@ -34,7 +34,7 @@ const App = () => {
                 </Alert>
                 <RequirementSelector onChange={setSelected} />
                 <Accordion className="mb-3">
-                    <Component1
+                    <CollectivelyCourseSetView
                         eventKey="0" codeToCourse={codeToCourse}
                         onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
                     />

@@ -7,7 +7,7 @@ import RegistrationStatus from './RegistrationStatus';
 
 const placeholder = ['GB10615', 'GB10664'].join('\n');
 
-const Modal1 = ({ onReturn, onExited }: {
+const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
     onReturn: (value: boolean) => void,
     onExited: () => void
 }) => {
@@ -30,7 +30,7 @@ const Modal1 = ({ onReturn, onExited }: {
     );
 }
 
-const Component2 = ({ label, codeToCourse, onChange }: {
+const CodesInput = ({ label, codeToCourse, onChange }: {
     label: string,
     codeToCourse: ReadonlyMap<string, Course>,
     onChange: (courses: ReadonlySet<Course>) => void,
@@ -80,7 +80,7 @@ const Component2 = ({ label, codeToCourse, onChange }: {
     );
 }
 
-const Component1 = ({ eventKey, codeToCourse, onSubmit }: {
+const CollectivelyCourseSetView = ({ eventKey, codeToCourse, onSubmit }: {
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
     onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus.Acquired | RegistrationStatus.Registered>) => void,
@@ -92,7 +92,7 @@ const Component1 = ({ eventKey, codeToCourse, onSubmit }: {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!await getValueFromModal(Modal1, {}, setModalsAndCount)) {
+        if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
             return;
         }
         onSubmit(new Map([
@@ -123,8 +123,8 @@ const Component1 = ({ eventKey, codeToCourse, onSubmit }: {
                         <p>[OK] を押すと、現在の設定状態のうち、<strong>科目の履修 / 修得に関するものが失われます</strong>。</p>
                         <Form onSubmit={handleSubmit}>
                             <Form.Row>
-                                <Component2 label="履修する科目" codeToCourse={codeToCourse} onChange={setRegisteredCourses} />
-                                <Component2 label="修得済みの科目" codeToCourse={codeToCourse} onChange={setAcquiredCourses} />
+                                <CodesInput label="履修する科目" codeToCourse={codeToCourse} onChange={setRegisteredCourses} />
+                                <CodesInput label="修得済みの科目" codeToCourse={codeToCourse} onChange={setAcquiredCourses} />
                             </Form.Row>
                             {
                                 coursesOfIntersection.length === 0 ? (<></>) : (
@@ -156,4 +156,4 @@ const Component1 = ({ eventKey, codeToCourse, onSubmit }: {
     )
 };
 
-export default Component1;
+export default CollectivelyCourseSetView;
