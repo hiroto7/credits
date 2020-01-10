@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import Plan from "./Plan";
 import { RequirementWithCourses } from "./Requirements";
-import { RequirementSummaryView } from "./RequirementView";
+import { RequirementSummaryView } from "./RequirementSummaryView";
 
 const CourseMovementConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {
     currentRequirement: RequirementWithCourses,

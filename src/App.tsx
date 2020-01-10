@@ -6,8 +6,10 @@ import './App.css';
 import Component1 from './Component1';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
+import FilterType from './FilterType';
 import ImportView from './ImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
+import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryMap from './requirements/';
 import RequirementSelector, { defaultSelected } from './RequirementSelector';
 import RequirementsRootView from './RequirementsRootView';
@@ -16,7 +18,8 @@ const COURSES_STATE = "courses-state"
 
 const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
-    const [showsOnlyRegistered, setShowsOnlyRegistered] = useState(false);
+    const [filterType, setFilterType] = useState(FilterType.None);
+    const [lockTarget, setLockTarget] = useState(RegistrationStatusLockTarget.None);
     const { plan, setPlan } = usePlan(selected.name);
 
     return (
@@ -41,14 +44,74 @@ const App = () => {
                         codeToCourse={codeToCourse} nameToRequirement={selected.dictionary}
                     />
                 </Accordion>
-                <Form.Check custom className="mb-3" id="showsOnlyRegisteredCheck"
-                    label="履修する科目のみ表示する"
-                    checked={showsOnlyRegistered}
-                    onChange={() => setShowsOnlyRegistered(!showsOnlyRegistered)}
-                />
+                <Form.Group>
+                    <Form.Label>科目の履修状態のロック</Form.Label>
+                    {
+                        [
+                            {
+                                label: "ロックしない",
+                                lockTarget: RegistrationStatusLockTarget.None,
+                            },
+                            {
+                                label: "[履修する] と [修得済み] の間の変更のみ許可",
+                                lockTarget: RegistrationStatusLockTarget.Unregistered,
+                            },
+                            {
+                                label: "[履修しない] と [履修する] の間の変更のみ許可",
+                                lockTarget: RegistrationStatusLockTarget.Acquired,
+                            },
+                            {
+                                label: "すべてロックする",
+                                lockTarget: RegistrationStatusLockTarget.All,
+                            },
+                        ].map(({ label, lockTarget: lockTarget1 }) => (
+                            <Form.Check
+                                custom type="radio"
+                                id={`lockTargetCheck${lockTarget1}`}
+                                label={label} key={lockTarget1}
+                                checked={lockTarget === lockTarget1}
+                                onChange={() => setLockTarget(lockTarget1)}
+                            />
+                        ))
+                    }
+                </Form.Group>
+                <Form.Group>
+                    <Form.Check
+                        custom
+                        id="filterTypeCheck0"
+                        label="履修する科目のみ表示する"
+                        checked={filterType !== FilterType.None}
+                        onChange={
+                            () => {
+                                if (filterType === FilterType.None) {
+                                    setFilterType(FilterType.Registered);
+                                } else {
+                                    setFilterType(FilterType.None);
+                                }
+                            }
+                        }
+                    />
+                    <Form.Check
+                        custom
+                        id="filterTypeCheck1"
+                        label="単位数の計算に含まれる科目のみ表示する"
+                        checked={filterType === FilterType.Valid}
+                        onChange={
+                            () => {
+                                if (filterType === FilterType.Valid) {
+                                    setFilterType(FilterType.Registered);
+                                } else {
+                                    setFilterType(FilterType.Valid);
+                                }
+                            }
+                        }
+                    />
+                </Form.Group>
+                <hr />
                 <div className="mb-3">
                     <RequirementsRootView
-                        requirement={selected.requirement} showsOnlyRegistered={showsOnlyRegistered}
+                        requirement={selected.requirement}
+                        lockTarget={lockTarget} filterType={filterType}
                         plan={plan} onChange={setPlan}
                     />
                 </div>
