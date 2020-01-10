@@ -116,7 +116,7 @@ const Component1 = ({ eventKey, codeToCourse, onSubmit }: {
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
                         <p>
-                            <strong> [科目の履修状態のロック] と組み合わせる</strong>と、
+                            <strong>[科目の履修状態のロック] と組み合わせる</strong>と、
                             実際には履修していない科目を<strong>誤って [履修済み] / [修得済み] にすることを防げます</strong>。
                             なお、 "卒業要件を満たしているかどうか" を自動で判定することはできません。
                         </p>
@@ -136,7 +136,7 @@ const Component1 = ({ eventKey, codeToCourse, onSubmit }: {
                                         <ul className="mb-0">
                                             {
                                                 coursesOfIntersection.map(course => (
-                                                    <li>
+                                                    <li key={course.code}>
                                                         <code>{course.code}</code>
                                                         <> : </>
                                                         {course.title}
