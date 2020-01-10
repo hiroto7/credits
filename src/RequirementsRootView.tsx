@@ -1,15 +1,19 @@
 import React from 'react';
 import Course from './Course';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
+import FilterType from './FilterType';
+import getNextStatus from './getNextStatus';
 import getValueFromModal, { useModals } from './getValueFromModal';
 import Plan from './Plan';
 import RegistrationStatus from './RegistrationStatus';
+import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
 
-const RequirementsRootView = ({ requirement, plan, showsOnlyRegistered, onChange }: {
+const RequirementsRootView = ({ requirement, plan, filterType, lockTarget, onChange }: {
     requirement: Requirements,
-    showsOnlyRegistered: boolean,
+    filterType: FilterType,
+    lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onChange: (newPlan: Plan) => void,
 }) => {
@@ -19,17 +23,10 @@ const RequirementsRootView = ({ requirement, plan, showsOnlyRegistered, onChange
     const handleCourseClick = async (course: Course, requirement: RequirementWithCourses) => {
         const currentStatus: RegistrationStatus = courseToStatus.get(course) || RegistrationStatus.Unregistered;
         const currentRequirement = courseToRequirement.get(course);
-        let newCourseToStatus = courseToStatus;
+        let nextCourseToStatus = courseToStatus;
         if (currentStatus === RegistrationStatus.Unregistered || currentRequirement === requirement) {
-            newCourseToStatus = new Map([
-                ...courseToStatus,
-                [
-                    course,
-                    showsOnlyRegistered ?
-                        currentStatus === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired :
-                        (currentStatus + 1) % 3
-                ]
-            ]);
+            const nextStatus = getNextStatus({ currentStatus, lockTarget });
+            nextCourseToStatus = new Map([...courseToStatus, [course, nextStatus]]);
         } else if (
             currentRequirement !== undefined &&
             !await getValueFromModal(
@@ -42,7 +39,7 @@ const RequirementsRootView = ({ requirement, plan, showsOnlyRegistered, onChange
         }
         onChange({
             ...plan,
-            courseToStatus: newCourseToStatus,
+            courseToStatus: nextCourseToStatus,
             courseToRequirement: new Map([...courseToRequirement, [course, requirement]]),
         });
     }
@@ -100,7 +97,8 @@ const RequirementsRootView = ({ requirement, plan, showsOnlyRegistered, onChange
         <>
             {modals}
             <RequirementView
-                requirement={requirement} showsOnlyRegistered={showsOnlyRegistered} plan={plan}
+                requirement={requirement} plan={plan}
+                filterType={filterType} lockTarget={lockTarget}
                 onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
                 onSelectionChange={handleSelectionChange}
             />
