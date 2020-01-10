@@ -107,12 +107,12 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     onReturn: (newOthersCount: RegisteredCreditsCounts) => void,
     onHide: () => void,
 }) => {
-    const [acquired, setAcquired] = useState(undefined as number | undefined);
-    const [registeredExcludingAcquired, setRegisteredExcludingAcquired] = useState(undefined as number | undefined);
-    const [registeredIncludingAcquired, setRegisteredIncludingAcquired] = useState(undefined as number | undefined);
+    const [acquired, setAcquired] = useState<number | undefined>();
+    const [registeredExcludingAcquired, setRegisteredExcludingAcquired] = useState<number | undefined>();
+    const [registeredIncludingAcquired, setRegisteredIncludingAcquired] = useState<number | undefined>();
 
     const computed = {
-        acquired: acquired || currentOthersCount.acquired,
+        acquired: acquired ?? currentOthersCount.acquired,
         registered:
             registeredIncludingAcquired !== undefined ?
                 registeredIncludingAcquired :
@@ -133,7 +133,7 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                     onHide();
                 }}>
                     <Form.Row>
-                        <Form.Group as={Col} md="4" controlId="validationCustom01">
+                        <Form.Group as={Col} md="4">
                             <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
                             <Form.Control
                                 type="number" min={0}
@@ -147,7 +147,7 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                             />
                             <Form.Control.Feedback type="invalid">(a) &gt;= 0</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="validationCustom02">
+                        <Form.Group as={Col} md="4">
                             <Form.Label>履修する単位数 <span className="text-muted">(b)</span></Form.Label>
                             <Form.Control
                                 type="number" min={0}
@@ -167,7 +167,7 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                             />
                             <Form.Control.Feedback type="invalid">(b) &gt;= 0</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="validationCustom02">
+                        <Form.Group as={Col} md="4">
                             <Form.Label>計 <span className="text-muted">(a) + (b)</span></Form.Label>
                             <Form.Control
                                 type="number" min={0}
@@ -190,7 +190,9 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                         <Button
                             type="submit"
                             disabled={computed.acquired < 0 || computed.acquired > computed.registered}
-                        >OK</Button>
+                        >
+                            OK
+                        </Button>
                         <Button variant="secondary" onClick={onHide}>キャンセル</Button>
                     </ButtonToolbar>
                 </Form>
