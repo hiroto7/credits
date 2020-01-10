@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Accordion, Alert, Container, Form, Navbar } from 'react-bootstrap';
 import { useLocalStorage } from 'react-use';
 import './App.css';
+import Component1 from './Component1';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
 import ImportView from './ImportView';
@@ -30,9 +31,13 @@ const App = () => {
                 </Alert>
                 <RequirementSelector onChange={setSelected} />
                 <Accordion className="mb-3">
-                    <ExportView plan={plan} eventKey="0" />
+                    <Component1
+                        eventKey="0" codeToCourse={codeToCourse}
+                        onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
+                    />
+                    <ExportView eventKey="1" plan={plan} />
                     <ImportView
-                        eventKey="1" onSubmit={setPlan}
+                        eventKey="2" onSubmit={setPlan}
                         codeToCourse={codeToCourse} nameToRequirement={selected.dictionary}
                     />
                 </Accordion>
