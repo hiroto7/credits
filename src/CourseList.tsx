@@ -1,25 +1,45 @@
 import React from 'react';
 import { Badge, ListGroup } from "react-bootstrap";
 import Course from "./Course";
+import getNextStatus from './getNextStatus';
 import Plan from './Plan';
 import RegistrationStatus from "./RegistrationStatus";
+import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from "./Requirements";
 
-const CourseListItem = ({ course, status, onClick, currentRequirement, newRequirement, disabled }: {
+const isRegistrable = ({ course, plan }: {
     course: Course,
-    status: RegistrationStatus,
-    onClick: () => void,
-    currentRequirement: Requirements | undefined,
+    plan: Plan,
+}) => ![...plan.courseToStatus.entries()].some(
+    ([course1, status]) =>
+        course1 !== course && course1.title === course.title && status !== RegistrationStatus.Unregistered
+);
+
+const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
+    course: Course,
     newRequirement: Requirements,
-    disabled: boolean,
-}) => (
-        <ListGroup.Item action disabled={disabled} onClick={onClick}
+    plan: Plan,
+    lockTarget: RegistrationStatusLockTarget,
+    onClick: () => void,
+}) => {
+    const status = plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered;
+    const currentRequirement = plan.courseToRequirement.get(course);
+    const isRegisteredButInvalid = status !== RegistrationStatus.Unregistered && currentRequirement !== newRequirement;
+    const disabled = !isRegistrable({ course, plan });
+    const action = getNextStatus({ currentStatus: status, lockTarget }) !== status || isRegisteredButInvalid;
+
+    return (
+        <ListGroup.Item
+            action={action}
+            onClick={onClick}
+            disabled={disabled}
             variant={
-                status === RegistrationStatus.Unregistered ? undefined :
-                    currentRequirement === newRequirement ?
-                        status === RegistrationStatus.Acquired ? 'success' : 'primary' :
-                        'dark'
-            }>
+                isRegisteredButInvalid ? 'dark' :
+                    status === RegistrationStatus.Acquired ? 'success' :
+                        status === RegistrationStatus.Registered ? 'primary' :
+                            undefined
+            }
+        >
             <div className="d-flex justify-content-between align-items-center">
                 <div>
                     <div>{course.title}</div>
@@ -27,11 +47,11 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
                 </div>
                 <div className="ml-2 text-right flex-shrink-0">
                     {
-                        status === RegistrationStatus.Unregistered || currentRequirement === newRequirement ?
-                            (<></>) :
+                        isRegisteredButInvalid ?
                             currentRequirement === undefined ?
                                 (<Badge variant="secondary">?</Badge>) :
-                                (<Badge variant="warning">!</Badge>)
+                                (<Badge variant="warning">!</Badge>) :
+                            (<></>)
                     }
                     <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
                         {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}
@@ -40,30 +60,25 @@ const CourseListItem = ({ course, status, onClick, currentRequirement, newRequir
                 </div>
             </div>
         </ListGroup.Item>
-    );
+    )
+};
 
-const CourseList = ({ requirement, courses, plan, onCourseClick }: {
+const CourseList = ({ requirement, courses, plan, onCourseClick, lockTarget }: {
     requirement: RequirementWithCourses,
     courses: readonly Course[],
     plan: Plan,
+    lockTarget: RegistrationStatusLockTarget
     onCourseClick: (course: Course) => void,
 }) => (
         <ListGroup>
             {
                 courses.map((course: Course) => (
                     <CourseListItem
-                        key={course.code} course={course}
-                        currentRequirement={plan.courseToRequirement.get(course)}
+                        key={course.code}
+                        course={course} plan={plan}
                         newRequirement={requirement}
-                        status={plan.courseToStatus.get(course) || RegistrationStatus.Unregistered}
+                        lockTarget={lockTarget}
                         onClick={() => onCourseClick(course)}
-                        disabled={
-                            (!plan.courseToStatus.has(course) || plan.courseToStatus.get(course) === RegistrationStatus.Unregistered) &&
-                            [...plan.courseToStatus.entries()]
-                                .filter(([_, status]) => status !== RegistrationStatus.Unregistered)
-                                .map(([course, _]) => course.title)
-                                .includes(course.title)
-                        }
                     />
                 ))
             }

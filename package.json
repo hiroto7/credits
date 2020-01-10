@@ -5,11 +5,13 @@
   "dependencies": {
     "@hiroto/json-type-checker": "^1.0.5",
     "@types/jest": "^24.0.24",
+    "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.21",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
     "bootstrap": "^4.4.1",
     "gh-pages": "^2.1.1",
+    "lodash": "^4.17.15",
     "react": "^16.12.0",
     "react-app-polyfill": "^1.0.5",
     "react-bootstrap": "^1.0.0-beta.16",
