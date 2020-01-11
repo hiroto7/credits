@@ -19,7 +19,7 @@ const COURSES_STATE = "courses-state"
 const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
     const [filterType, setFilterType] = useState(FilterType.None);
-    const [lockTarget, setLockTarget] = useState(RegistrationStatusLockTarget.None);
+    const { lockTarget, setLockTarget } = useLockTarget(filterType);
     const { plan, setPlan } = usePlan(selected.name);
 
     return (
@@ -51,6 +51,7 @@ const App = () => {
                             {
                                 label: "ロックしない",
                                 lockTarget: RegistrationStatusLockTarget.None,
+                                disabled: filterType !== FilterType.None,
                             },
                             {
                                 label: "[履修する] と [修得済み] の間の変更のみ許可",
@@ -59,16 +60,18 @@ const App = () => {
                             {
                                 label: "[履修しない] と [履修する] の間の変更のみ許可",
                                 lockTarget: RegistrationStatusLockTarget.Acquired,
+                                disabled: filterType !== FilterType.None,
                             },
                             {
                                 label: "すべてロックする",
                                 lockTarget: RegistrationStatusLockTarget.All,
                             },
-                        ].map(({ label, lockTarget: lockTarget1 }) => (
+                        ].map(({ label, disabled, lockTarget: lockTarget1 }) => (
                             <Form.Check
                                 custom type="radio"
                                 id={`lockTargetCheck${lockTarget1}`}
                                 label={label} key={lockTarget1}
+                                disabled={disabled}
                                 checked={lockTarget === lockTarget1}
                                 onChange={() => setLockTarget(lockTarget1)}
                             />
@@ -118,6 +121,26 @@ const App = () => {
             </Container>
         </>
     );
+}
+
+const useLockTarget = (filterType: FilterType) => {
+    const [lockTarget, setLockTarget] = useState(RegistrationStatusLockTarget.None);
+
+    if (filterType === FilterType.None) {
+        return { lockTarget, setLockTarget };
+    } else if (lockTarget === RegistrationStatusLockTarget.None) {
+        return {
+            lockTarget: RegistrationStatusLockTarget.Unregistered,
+            setLockTarget,
+        };
+    } else if (lockTarget === RegistrationStatusLockTarget.Acquired) {
+        return {
+            lockTarget: RegistrationStatusLockTarget.All,
+            setLockTarget,
+        };
+    } else {
+        return { lockTarget, setLockTarget };
+    }
 }
 
 const usePlanMap = () => {
