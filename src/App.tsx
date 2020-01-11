@@ -19,17 +19,8 @@ const COURSES_STATE = "courses-state"
 const App = () => {
     const [selected, setSelected] = useState(defaultSelected);
     const [filterType, setFilterType] = useState(FilterType.None);
-    const [lockTarget, setLockTarget] = useState(RegistrationStatusLockTarget.None);
+    const { lockTarget, setLockTarget } = useLockTarget(filterType);
     const { plan, setPlan } = usePlan(selected.name);
-
-    const actualLockTarget =
-        filterType === FilterType.None ?
-            lockTarget :
-            lockTarget === RegistrationStatusLockTarget.None ?
-                RegistrationStatusLockTarget.Unregistered :
-                lockTarget === RegistrationStatusLockTarget.Acquired ?
-                    RegistrationStatusLockTarget.All :
-                    lockTarget;
 
     return (
         <>
@@ -81,7 +72,7 @@ const App = () => {
                                 id={`lockTargetCheck${lockTarget1}`}
                                 label={label} key={lockTarget1}
                                 disabled={disabled}
-                                checked={actualLockTarget === lockTarget1}
+                                checked={lockTarget === lockTarget1}
                                 onChange={() => setLockTarget(lockTarget1)}
                             />
                         ))
@@ -123,13 +114,33 @@ const App = () => {
                 <div className="mb-3">
                     <RequirementsRootView
                         requirement={selected.requirement}
-                        lockTarget={actualLockTarget} filterType={filterType}
+                        lockTarget={lockTarget} filterType={filterType}
                         plan={plan} onChange={setPlan}
                     />
                 </div>
             </Container>
         </>
     );
+}
+
+const useLockTarget = (filterType: FilterType) => {
+    const [lockTarget, setLockTarget] = useState(RegistrationStatusLockTarget.None);
+
+    if (filterType === FilterType.None) {
+        return { lockTarget, setLockTarget };
+    } else if (lockTarget === RegistrationStatusLockTarget.None) {
+        return {
+            lockTarget: RegistrationStatusLockTarget.Unregistered,
+            setLockTarget,
+        };
+    } else if (lockTarget === RegistrationStatusLockTarget.Acquired) {
+        return {
+            lockTarget: RegistrationStatusLockTarget.All,
+            setLockTarget,
+        };
+    } else {
+        return { lockTarget, setLockTarget };
+    }
 }
 
 const usePlanMap = () => {
