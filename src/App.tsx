@@ -22,6 +22,15 @@ const App = () => {
     const [lockTarget, setLockTarget] = useState(RegistrationStatusLockTarget.None);
     const { plan, setPlan } = usePlan(selected.name);
 
+    const actualLockTarget =
+        filterType === FilterType.None ?
+            lockTarget :
+            lockTarget === RegistrationStatusLockTarget.None ?
+                RegistrationStatusLockTarget.Unregistered :
+                lockTarget === RegistrationStatusLockTarget.Acquired ?
+                    RegistrationStatusLockTarget.All :
+                    lockTarget;
+
     return (
         <>
             <Navbar variant="dark" bg="dark">
@@ -51,6 +60,7 @@ const App = () => {
                             {
                                 label: "ロックしない",
                                 lockTarget: RegistrationStatusLockTarget.None,
+                                disabled: filterType !== FilterType.None,
                             },
                             {
                                 label: "[履修する] と [修得済み] の間の変更のみ許可",
@@ -59,17 +69,19 @@ const App = () => {
                             {
                                 label: "[履修しない] と [履修する] の間の変更のみ許可",
                                 lockTarget: RegistrationStatusLockTarget.Acquired,
+                                disabled: filterType !== FilterType.None,
                             },
                             {
                                 label: "すべてロックする",
                                 lockTarget: RegistrationStatusLockTarget.All,
                             },
-                        ].map(({ label, lockTarget: lockTarget1 }) => (
+                        ].map(({ label, disabled, lockTarget: lockTarget1 }) => (
                             <Form.Check
                                 custom type="radio"
                                 id={`lockTargetCheck${lockTarget1}`}
                                 label={label} key={lockTarget1}
-                                checked={lockTarget === lockTarget1}
+                                disabled={disabled}
+                                checked={actualLockTarget === lockTarget1}
                                 onChange={() => setLockTarget(lockTarget1)}
                             />
                         ))
@@ -111,7 +123,7 @@ const App = () => {
                 <div className="mb-3">
                     <RequirementsRootView
                         requirement={selected.requirement}
-                        lockTarget={lockTarget} filterType={filterType}
+                        lockTarget={actualLockTarget} filterType={filterType}
                         plan={plan} onChange={setPlan}
                     />
                 </div>
