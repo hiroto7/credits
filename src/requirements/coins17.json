@@ -4,13 +4,14 @@
     "children": [
         {
             "name": "専門科目 - 必修科目",
-            "description": "主専攻実験と卒業研究を除く",
-            "creditsCount": 22,
+            "description": "主専攻実験を除く",
+            "creditsCount": 28,
             "courses": [
                 "GB10615", "GB10625", "GB10664", "GB10684",
                 "GB10754", "GB10804", "GB10981", "GB10991",
                 "GB11931", "GB11936", "GB11946", "GB11954",
-                "GB12016"
+                "GB12016",
+                "GB19948", "GB19958", "GB19848", "GB19858"
             ]
         },
         {
@@ -45,25 +46,6 @@
                             "GB46403", "GB46503"
                         ]
                     }
-                }
-            ]
-        },
-        {
-            "selectionName": "卒業研究",
-            "options": [
-                {
-                    "name": "卒業研究",
-                    "creditsCount": 6,
-                    "courses": [
-                        "GB19948", "GB19958"
-                    ]
-                },
-                {
-                    "name": "特別卒業研究",
-                    "creditsCount": 6,
-                    "courses": [
-                        "GB19848", "GB19858"
-                    ]
                 }
             ]
         },
