@@ -115,11 +115,6 @@ const CollectivelyCourseSetView = ({ eventKey, codeToCourse, onSubmit }: {
                 </Card.Header>
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
-                        <p>
-                            <strong>[科目の履修状態のロック] と組み合わせる</strong>と、
-                            実際には履修していない科目を<strong>誤って [履修済み] / [修得済み] にすることを防げます</strong>。
-                            なお、 "卒業要件を満たしているかどうか" を自動で判定することはできません。
-                        </p>
                         <p>[OK] を押すと、現在の設定状態のうち、<strong>科目の履修 / 修得に関するものが失われます</strong>。</p>
                         <Form onSubmit={handleSubmit}>
                             <Form.Row>
