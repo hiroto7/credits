@@ -19,7 +19,7 @@ const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
                 <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                続けると、現在の設定状態のうち、<strong>科目の履修 / 修得に関するものが失われます</strong>。
+                続けると、<strong>現在の履修 / 修得状態が失われます</strong>。
                 よろしいですか？
             </Modal.Body>
             <Modal.Footer>
@@ -116,11 +116,10 @@ const CollectivelyCourseSetView = ({ eventKey, codeToCourse, onSubmit }: {
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
                         <p>
-                            <strong>[科目の履修状態のロック] と組み合わせる</strong>と、
-                            実際には履修していない科目を<strong>誤って [履修済み] / [修得済み] にすることを防げます</strong>。
-                            なお、 "卒業要件を満たしているかどうか" を自動で判定することはできません。
+                            履修する科目や修得済みの科目の番号を、それぞれのテキストボックスへ1行ごとに入力します。
+                            いずれにも入力されなかった科目は、履修しない科目として設定されます。
+                            <strong>現在の履修 / 修得状態は失われます。</strong>
                         </p>
-                        <p>[OK] を押すと、現在の設定状態のうち、<strong>科目の履修 / 修得に関するものが失われます</strong>。</p>
                         <Form onSubmit={handleSubmit}>
                             <Form.Row>
                                 <CodesInput label="履修する科目" codeToCourse={codeToCourse} onChange={setRegisteredCourses} />
