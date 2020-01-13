@@ -7,10 +7,10 @@ import RegistrationStatus from "./RegistrationStatus";
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from "./Requirements";
 
-const isRegistrable = ({ course, plan }: {
+const isRegistrable = ({ course, courseToStatus }: {
     course: Course,
-    plan: Plan,
-}) => ![...plan.courseToStatus.entries()].some(
+    courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
+}) => ![...courseToStatus].some(
     ([course1, status]) =>
         course1 !== course && course1.title === course.title && status !== RegistrationStatus.Unregistered
 );
@@ -25,7 +25,10 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
     const status = plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered;
     const currentRequirement = plan.courseToRequirement.get(course);
     const isRegisteredButInvalid = status !== RegistrationStatus.Unregistered && currentRequirement !== newRequirement;
-    const disabled = !isRegistrable({ course, plan });
+    const disabled = !isRegistrable({
+        course,
+        courseToStatus: plan.courseToStatus
+    });
     const action = getNextStatus({ currentStatus: status, lockTarget }) !== status || isRegisteredButInvalid;
 
     return (
