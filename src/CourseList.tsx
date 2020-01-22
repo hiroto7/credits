@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, ListGroup } from "react-bootstrap";
+import { Badge, ListGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Course from "./Course";
 import getNextStatus from './getNextStatus';
 import Plan from './Plan';
@@ -51,9 +51,25 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
                 <div className="ml-2 text-right flex-shrink-0">
                     {
                         isRegisteredButInvalid ?
-                            currentRequirement === undefined ?
-                                (<Badge variant="secondary">?</Badge>) :
-                                (<Badge variant="warning">!</Badge>) :
+                            (
+                                <OverlayTrigger
+                                    overlay={
+                                        <Tooltip id="tooltip1">
+                                            {
+                                                currentRequirement === undefined ?
+                                                    'この科目はどの科目群にも割り当てられていません。' :
+                                                    'この科目はほかの科目群に割り当てられています。'
+                                            }
+                                        </Tooltip>
+                                    }
+                                >
+                                    {
+                                        currentRequirement === undefined ?
+                                            (<Badge variant="secondary">?</Badge>) :
+                                            (<Badge variant="warning">!</Badge>)
+                                    }
+                                </OverlayTrigger>
+                            ) :
                             (<></>)
                     }
                     <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
