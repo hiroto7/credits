@@ -107,9 +107,9 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
 };
 
 const requirementAndDictionaryMap = new Map([
-    ['coins17', { name: 'coins17', ...getRequirementAndDictionaryFromJSON(coins17_0, new Map()) }],
-    ['mast17', { name: 'mast17', ...getRequirementAndDictionaryFromJSON(mast17_0, new Map()) }],
-    ['klis17', { name: 'klis17', ...getRequirementAndDictionaryFromJSON(klis17_0, new Map()) }],
+    ['coins17', getRequirementAndDictionaryFromJSON(coins17_0, new Map())],
+    ['mast17', getRequirementAndDictionaryFromJSON(mast17_0, new Map())],
+    ['klis17', getRequirementAndDictionaryFromJSON(klis17_0, new Map())],
 ]);
 
 export default requirementAndDictionaryMap;
