@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Accordion, Alert, Container, Dropdown, DropdownButton, Form, Navbar } from 'react-bootstrap';
-import { HashRouter, Route, Link, useParams, Switch, Redirect } from 'react-router-dom';
+import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
@@ -11,9 +11,9 @@ import FilterType from './FilterType';
 import ImportView from './ImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import requirementAndDictionaryMap from './requirements/';
-import RequirementsRootView from './RequirementsRootView';
 import Requirements, { RequirementWithCourses } from './Requirements';
+import requirementAndDictionaryMap from './requirements/';
+import RequirementView from './RequirementView';
 
 const RequirementWithConfiguration = ({ requirement, nameToRequirement, plan, setPlan }: {
     requirement: Requirements,
@@ -108,7 +108,7 @@ const RequirementWithConfiguration = ({ requirement, nameToRequirement, plan, se
             </Form.Group>
             <hr />
             <div className="mb-3">
-                <RequirementsRootView
+                <RequirementView
                     requirement={requirement}
                     lockTarget={lockTarget} filterType={filterType}
                     plan={plan} onChange={setPlan}

@@ -1,9 +1,14 @@
 import Course from "./Course";
-import RegistrationStatus from "./RegistrationStatus";
 import { RegisteredCreditsCounts, RequirementWithCourses } from "./Requirements";
 
 export type CourseCode = string;
 export type RequirementName = string;
+
+export enum RegistrationStatus {
+    Unregistered = 0,
+    Registered = 1,
+    Acquired = 2,
+}
 
 export interface PlanJSON {
     readonly courseToStatus: readonly [CourseCode, RegistrationStatus][];

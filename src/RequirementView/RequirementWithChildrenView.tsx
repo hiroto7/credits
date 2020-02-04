@@ -1,12 +1,12 @@
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
-import Course from './Course';
-import FilterType from './FilterType';
-import Plan from './Plan';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses } from './Requirements';
+import Course from '../Course';
+import FilterType from '../FilterType';
+import Plan from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses } from '../Requirements';
+import InnerRequirementView from './InnerRequirementView';
 import { RequirementSummaryView } from './RequirementSummaryView';
-import RequirementView from './RequirementView';
 
 const RequirementWithChildrenView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: RequirementWithChildren,
@@ -23,7 +23,7 @@ const RequirementWithChildrenView = ({ requirement, filterType, lockTarget, plan
                 {
                     requirement.children.map(child => (
                         <ListGroup.Item key={child.name}>
-                            <RequirementView
+                            <InnerRequirementView
                                 requirement={child} plan={plan}
                                 filterType={filterType} lockTarget={lockTarget}
                                 onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}

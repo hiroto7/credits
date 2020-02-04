@@ -1,9 +1,9 @@
 import { intersection } from 'lodash';
 import React, { useState } from 'react';
-import { Accordion, Button, Card, Col, Form, Modal, useAccordionToggle, Alert } from "react-bootstrap";
+import { Accordion, Alert, Button, Card, Col, Form, Modal, useAccordionToggle } from "react-bootstrap";
 import Course from './Course';
 import getValueFromModal, { useModals } from './getValueFromModal';
-import RegistrationStatus from './RegistrationStatus';
+import { RegistrationStatus } from './Plan';
 
 const placeholder = ['GB10615', 'GB10664'].join('\n');
 
