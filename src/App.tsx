@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Accordion, Alert, Container, Dropdown, DropdownButton, Form, Navbar } from 'react-bootstrap';
+import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
@@ -129,12 +129,12 @@ const A = ({ requirementName, requirement, nameToRequirement }: {
 
 
 const Main = () => {
-    const { requirementName } = useParams();
-    if (requirementName === undefined) {
+    const { id: selectedId } = useParams();
+    if (selectedId === undefined) {
         return (<Redirect to="/coins17" />);
     }
-    const { requirement, dictionary } = requirementAndDictionaryMap.get(requirementName) ?? {};
-    if (requirement === undefined || dictionary === undefined) {
+    const { requirement, nameToRequirement, name } = requirementAndDictionaryMap.get(selectedId) ?? {};
+    if (requirement === undefined || nameToRequirement === undefined) {
         return (<Redirect to="/coins17" />);
     }
 
@@ -144,12 +144,32 @@ const Main = () => {
                 このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
                 <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
             </Alert>
-            <DropdownButton id="" title="学類を選択" variant="secondary" className="mb-3">
-                <Dropdown.Item as={Link} to="/coins17">情報科学類（2017年度入学）</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/mast17">情報メディア創成学類（2017年度入学）</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/klis17">知識情報・図書館学類（2017年度入学）</Dropdown.Item>
-            </DropdownButton>
-            <A requirementName={requirementName} requirement={requirement} nameToRequirement={dictionary} />
+            <Dropdown className="mb-3">
+                <Dropdown.Toggle id="" variant="secondary">
+                    <span
+                        style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
+                    >
+                        学類
+                    <> : </>
+                        <strong>{name}</strong>
+                    </span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                    {
+                        [...requirementAndDictionaryMap.values()].map(
+                            ({ id, name }) => (
+                                <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId}>
+                                    {name}
+                                </Dropdown.Item>
+                            )
+                        )
+                    }
+                </Dropdown.Menu>
+            </Dropdown>
+            <A requirementName={selectedId} requirement={requirement} nameToRequirement={nameToRequirement} />
         </>
     );
 }
@@ -161,7 +181,7 @@ const App = () => (
         </Navbar>
         <Container>
             <Switch>
-                <Route path="/:requirementName">
+                <Route path="/:id">
                     <Main />
                 </Route>
                 <Route path="/">
@@ -199,15 +219,12 @@ const usePlanMap = () => {
     const [planMap0, setPlanMap0] = useState(() => {
         try {
             const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                const requirementAndDictionary = requirementAndDictionaryMap.get(requirementName);
-                if (requirementAndDictionary === undefined) {
+                const nameToRequirement = requirementAndDictionaryMap.get(requirementName)?.nameToRequirement;
+                if (nameToRequirement === undefined) {
                     return undefined;
                 } else {
                     try {
-                        return [requirementName, fromJSON(planJSON, {
-                            codeToCourse,
-                            nameToRequirement: requirementAndDictionary.dictionary,
-                        })] as const;
+                        return [requirementName, fromJSON(planJSON, { codeToCourse, nameToRequirement })] as const;
                     } catch {
                         return undefined;
                     }

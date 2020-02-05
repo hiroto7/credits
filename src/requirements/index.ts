@@ -34,7 +34,7 @@ interface SelectionRequirementJSON {
 
 interface RequirementAndDictionary {
     readonly requirement: Requirements;
-    readonly dictionary: ReadonlyMap<string, RequirementWithCourses>;
+    readonly nameToRequirement: ReadonlyMap<string, RequirementWithCourses>;
 }
 
 const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
@@ -43,7 +43,7 @@ const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
         max: numberOrRange,
     };
 
-const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNameToCount: Map<string, number>): RequirementAndDictionary => {
+const getInnerRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNameToCount: Map<string, number>): RequirementAndDictionary => {
     if ('courses' in json) {
         const requirement = new RequirementWithCourses({
             name: json.name,
@@ -58,10 +58,10 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
         });
         return {
             requirement,
-            dictionary: new Map([[requirement.name, requirement]]),
+            nameToRequirement: new Map([[requirement.name, requirement]]),
         };
     } else if ('children' in json) {
-        const requirementAndDictionaryArray = json.children.map(child => getRequirementAndDictionaryFromJSON(child, selectionNameToCount));
+        const requirementAndDictionaryArray = json.children.map(child => getInnerRequirementAndDictionaryFromJSON(child, selectionNameToCount));
         const requirement = new RequirementWithChildren({
             name: json.name,
             description: json.description,
@@ -70,8 +70,8 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
         });
         return {
             requirement,
-            dictionary: new Map(
-                requirementAndDictionaryArray.flatMap(({ dictionary }) => [...dictionary.entries()])
+            nameToRequirement: new Map(
+                requirementAndDictionaryArray.flatMap(({ nameToRequirement: dictionary }) => [...dictionary.entries()])
             ),
         };
     } else {
@@ -79,13 +79,13 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
         selectionNameToCount.set(json.selectionName, selectionCount + 1);
         const optionAndDictionaryArray = json.options.map(optionJSON => {
             if ('requirement' in optionJSON) {
-                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON.requirement, selectionNameToCount);
+                const { requirement, nameToRequirement: dictionary } = getInnerRequirementAndDictionaryFromJSON(optionJSON.requirement, selectionNameToCount);
                 return {
                     option: { requirement, name: optionJSON.name },
                     dictionary,
                 };
             } else {
-                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON, selectionNameToCount);
+                const { requirement, nameToRequirement: dictionary } = getInnerRequirementAndDictionaryFromJSON(optionJSON, selectionNameToCount);
                 return {
                     option: { requirement, name: requirement.name },
                     dictionary,
@@ -99,17 +99,31 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
         });
         return {
             requirement,
-            dictionary: new Map(
+            nameToRequirement: new Map(
                 optionAndDictionaryArray.flatMap(({ dictionary }) => [...dictionary.entries()])
             )
         };
     }
 };
 
+const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON) => getInnerRequirementAndDictionaryFromJSON(json, new Map())
+
 const requirementAndDictionaryMap = new Map([
-    ['coins17', getRequirementAndDictionaryFromJSON(coins17_0, new Map())],
-    ['mast17', getRequirementAndDictionaryFromJSON(mast17_0, new Map())],
-    ['klis17', getRequirementAndDictionaryFromJSON(klis17_0, new Map())],
+    ['coins17', {
+        id: 'coins17',
+        name: '情報科学類 / 2017年度入学',
+        ...getRequirementAndDictionaryFromJSON(coins17_0)
+    }],
+    ['mast17', {
+        id: 'mast17',
+        name: '情報メディア創成学類 / 2017年度入学',
+        ...getRequirementAndDictionaryFromJSON(mast17_0)
+    }],
+    ['klis17', {
+        id: 'klis17',
+        name: '知識情報・図書館学類 / 2017年度入学',
+        ...getRequirementAndDictionaryFromJSON(klis17_0)
+    }],
 ]);
 
 export default requirementAndDictionaryMap;
