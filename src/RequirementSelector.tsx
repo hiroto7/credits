@@ -1,7 +1,7 @@
 import React from "react";
 import { Form } from "react-bootstrap";
+import requirementAndDictionaryMap from './requirementInstances';
 import Requirements, { RequirementWithCourses } from "./Requirements";
-import requirementAndDictionaryMap from './requirements/index';
 
 const RequirementSelector = ({ onChange }: {
     onChange: (selected: {

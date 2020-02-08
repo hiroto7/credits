@@ -1,36 +1,6 @@
-import codeToCourse from '../courses';
-import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from '../Requirements';
-import coins17_0 from './coins17.json';
-import klis17_0 from './klis17.json';
-import mast17_0 from './mast17.json';
-
-type RequirementsJSON = RequirementWithChildrenJSON | RequirementWithCoursesJSON | SelectionRequirementJSON;
-
-interface RequirementWithChildrenJSON {
-    readonly name: string;
-    readonly description?: string;
-    readonly children: readonly RequirementsJSON[];
-    readonly creditsCount?: number | Range;
-}
-
-interface RequirementWithCoursesJSON {
-    readonly name: string;
-    readonly description?: string;
-    readonly courses: readonly string[];
-    readonly creditsCount: number | Range;
-    readonly allowsOthers?: boolean;
-}
-
-type OptionJSON = {
-    readonly name: string;
-    readonly requirement: RequirementsJSON;
-} | RequirementsJSON;
-
-interface SelectionRequirementJSON {
-    readonly name?: string;
-    readonly selectionName: string;
-    readonly options: readonly OptionJSON[];
-}
+import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from ".";
+import Course from "../Course";
+import RequirementsJSON from "./RequirementsJSON";
 
 interface RequirementAndDictionary {
     readonly requirement: Requirements;
@@ -43,7 +13,11 @@ const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
         max: numberOrRange,
     };
 
-const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNameToCount: Map<string, number>): RequirementAndDictionary => {
+const getRequirementAndDictionaryFromJSON = (
+    json: RequirementsJSON,
+    codeToCourse: ReadonlyMap<string, Course>,
+    selectionNameToCount: Map<string, number>
+): RequirementAndDictionary => {
     if ('courses' in json) {
         const requirement = new RequirementWithCourses({
             name: json.name,
@@ -61,17 +35,17 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
             dictionary: new Map([[requirement.name, requirement]]),
         };
     } else if ('children' in json) {
-        const requirementAndDictionaryArray = json.children.map(child => getRequirementAndDictionaryFromJSON(child, selectionNameToCount));
+        const requirementAndDictionaryPairs = json.children.map(child => getRequirementAndDictionaryFromJSON(child, codeToCourse, selectionNameToCount));
         const requirement = new RequirementWithChildren({
             name: json.name,
             description: json.description,
-            children: requirementAndDictionaryArray.map(({ requirement }) => requirement),
+            children: requirementAndDictionaryPairs.map(({ requirement }) => requirement),
             creditsCount: json.creditsCount === undefined ? undefined : numberOrRangeToRange(json.creditsCount),
         });
         return {
             requirement,
             dictionary: new Map(
-                requirementAndDictionaryArray.flatMap(({ dictionary }) => [...dictionary.entries()])
+                requirementAndDictionaryPairs.flatMap(({ dictionary }) => [...dictionary.entries()])
             ),
         };
     } else {
@@ -79,13 +53,13 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
         selectionNameToCount.set(json.selectionName, selectionCount + 1);
         const optionAndDictionaryArray = json.options.map(optionJSON => {
             if ('requirement' in optionJSON) {
-                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON.requirement, selectionNameToCount);
+                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON.requirement, codeToCourse, selectionNameToCount);
                 return {
                     option: { requirement, name: optionJSON.name },
                     dictionary,
                 };
             } else {
-                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON, selectionNameToCount);
+                const { requirement, dictionary } = getRequirementAndDictionaryFromJSON(optionJSON, codeToCourse, selectionNameToCount);
                 return {
                     option: { requirement, name: requirement.name },
                     dictionary,
@@ -106,10 +80,4 @@ const getRequirementAndDictionaryFromJSON = (json: RequirementsJSON, selectionNa
     }
 };
 
-const requirementAndDictionaryMap = new Map([
-    ['coins17', { name: 'coins17', ...getRequirementAndDictionaryFromJSON(coins17_0, new Map()) }],
-    ['mast17', { name: 'mast17', ...getRequirementAndDictionaryFromJSON(mast17_0, new Map()) }],
-    ['klis17', { name: 'klis17', ...getRequirementAndDictionaryFromJSON(klis17_0, new Map()) }],
-]);
-
-export default requirementAndDictionaryMap;
+export default getRequirementAndDictionaryFromJSON;
