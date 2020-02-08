@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Accordion, Button, ButtonToolbar, Card, Col, Form } from 'react-bootstrap';
-import Course from './Course';
+import Course from '../Course';
+import FilterType from '../FilterType';
+import Plan, { RegistrationStatus } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import { RegisteredCreditsCounts, RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
-import FilterType from './FilterType';
-import Plan from './Plan';
-import RegistrationStatus from './RegistrationStatus';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import { RegisteredCreditsCounts, RequirementWithCourses } from './Requirements';
 import { RequirementSummaryView } from './RequirementSummaryView';
+
 
 const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     currentOthersCount: RegisteredCreditsCounts,

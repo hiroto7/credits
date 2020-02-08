@@ -12,7 +12,7 @@ import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryMap from './requirementInstances';
 import RequirementSelector, { defaultSelected } from './RequirementSelector';
-import RequirementsRootView from './RequirementsRootView';
+import RequirementView from './RequirementView';
 
 const COURSES_STATE = "courses-state"
 
@@ -112,7 +112,7 @@ const App = () => {
                 </Form.Group>
                 <hr />
                 <div className="mb-3">
-                    <RequirementsRootView
+                    <RequirementView
                         requirement={selected.requirement}
                         lockTarget={lockTarget} filterType={filterType}
                         plan={plan} onChange={setPlan}
