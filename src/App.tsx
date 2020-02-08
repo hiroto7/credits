@@ -10,7 +10,7 @@ import FilterType from './FilterType';
 import ImportView from './ImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import requirementAndDictionaryMap from './requirements/';
+import requirementAndDictionaryMap from './requirementInstances';
 import RequirementSelector, { defaultSelected } from './RequirementSelector';
 import RequirementsRootView from './RequirementsRootView';
 
