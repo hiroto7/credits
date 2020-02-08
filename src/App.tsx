@@ -12,7 +12,7 @@ import ImportView from './ImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from './Requirements';
-import requirementAndDictionaryMap from './requirements/';
+import requirementAndDictionaryMap from './requirementInstances';
 import RequirementView from './RequirementView';
 
 const RequirementWithConfiguration = ({ requirement, nameToRequirement, plan, setPlan }: {

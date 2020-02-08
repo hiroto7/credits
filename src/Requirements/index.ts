@@ -1,6 +1,8 @@
 import { $number, $object, isCompatible } from "@hiroto/json-type-checker";
-import Course from "./Course";
-import Plan, { RegistrationStatus } from "./Plan";
+import Course from "../Course";
+import Plan, { RegistrationStatus } from "../Plan";
+
+export { default as getRequirementAndDictionaryFromJSON } from './getRequirementAndDictionaryFromJSON';
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;
