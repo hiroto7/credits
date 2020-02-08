@@ -1,6 +1,6 @@
 import { $number, $object, isCompatible } from "@hiroto/json-type-checker";
 import Course from "../Course";
-import Plan, { RegistrationStatus } from "../Plan";
+import Plan, { RegistrationStatus, RegisteredCreditsCounts } from "../Plan";
 
 export { default as getRequirementAndDictionaryFromJSON } from './getRequirementAndDictionaryFromJSON';
 
@@ -27,11 +27,6 @@ export interface Range {
     max: number;
 }
 export const isRange = (obj: unknown): obj is Range => isCompatible(obj, $object({ min: $number, max: $number }));
-
-export interface RegisteredCreditsCounts {
-    acquired: number;
-    registered: number;
-}
 
 export interface RequirementWithChildrenInit {
     readonly name: string;

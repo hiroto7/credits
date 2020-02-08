@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Accordion, Button, ButtonToolbar, Card, Col, Form } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
-import Plan, { RegistrationStatus } from '../Plan';
+import Plan, { RegisteredCreditsCounts, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import { RegisteredCreditsCounts, RequirementWithCourses } from '../Requirements';
+import { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
 
