@@ -2,9 +2,9 @@ import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import Course from './Course';
 import FilterType from './FilterType';
-import Plan from './Plan';
+import Plan, { RegisteredCreditsCounts } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import { RegisteredCreditsCounts, RequirementWithCourses, SelectionRequirement } from './Requirements';
+import { RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
 
 const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {

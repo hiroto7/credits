@@ -1,12 +1,12 @@
 import React from 'react';
 import Course from "./Course";
 import FilterType from './FilterType';
-import Plan from './Plan';
-import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses } from "./Requirements";
+import Plan, { RegisteredCreditsCounts } from './Plan';
+import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
+import Requirements, { RequirementWithChildren, RequirementWithCourses } from "./Requirements";
 import RequirementWithChildrenView from './RequirementWithChildrenView';
 import RequirementWithCoursesView from './RequirementWithCoursesView';
 import SelectionRequirementView from './SelectionRequirementView';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 
 const RequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: Requirements,

@@ -4,10 +4,10 @@ import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import FilterType from './FilterType';
 import getNextStatus from './getNextStatus';
 import getValueFromModal, { useModals } from './getValueFromModal';
-import Plan from './Plan';
+import Plan, { RegisteredCreditsCounts } from './Plan';
 import RegistrationStatus from './RegistrationStatus';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
+import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
 import RequirementView from './RequirementView';
 
 const RequirementsRootView = ({ requirement, plan, filterType, lockTarget, onChange }: {
