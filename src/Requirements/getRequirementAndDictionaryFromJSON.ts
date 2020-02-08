@@ -1,4 +1,4 @@
-import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from ".";
+import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
 import Course from "../Course";
 import RequirementsJSON from "./RequirementsJSON";
 
