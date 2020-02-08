@@ -2,9 +2,9 @@ import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
-import Plan from '../Plan';
+import Plan, { RegisteredCreditsCounts } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses } from '../Requirements';
+import { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
 import InnerRequirementView from './InnerRequirementView';
 import { RequirementSummaryView } from './RequirementSummaryView';
 
