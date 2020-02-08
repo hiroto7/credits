@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Accordion, Button, Card, Form, Modal, useAccordionToggle } from "react-bootstrap";
 import Course from "./Course";
 import getValueFromModal, { useModals } from './getValueFromModal';
-import Plan, { emptyPlan, fromJSON, toJSON } from "./Plan";
+import Plan, { emptyPlan, fromJSONSafely, toJSON } from "./Plan";
 import { RequirementWithCourses } from "./Requirements";
 
 const ImportConfirmationModal = ({ onReturn, onExited }: {
@@ -37,16 +37,10 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     const toggle = useAccordionToggle(eventKey, () => { });
     const { modals, setModalsAndCount } = useModals();
 
-    const nextPlan = (() => {
-        try {
-            return fromJSON(
-                JSON.parse(jsonString),
-                { codeToCourse, nameToRequirement }
-            );
-        } catch {
-            return undefined;
-        }
-    })();
+    const nextPlan = fromJSONSafely(
+        JSON.parse(jsonString),
+        { codeToCourse, nameToRequirement }
+    );
     const isInvalid = nextPlan === undefined;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
