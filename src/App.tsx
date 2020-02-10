@@ -145,7 +145,7 @@ const Main = () => {
                 <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
             </Alert>
             <Dropdown className="mb-3">
-                <Dropdown.Toggle id="" variant="secondary">
+                <Dropdown.Toggle id="department-dropdown" variant="secondary">
                     <span
                         style={{
                             overflow: 'hidden',
