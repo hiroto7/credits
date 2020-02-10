@@ -11,16 +11,16 @@ import FilterType from './FilterType';
 import ImportView from './ImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
+import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
-import requirementAndDictionaryMap from './requirementInstances';
 import RequirementView from './RequirementView';
 
-const RequirementWithConfiguration = ({ requirement, nameToRequirement, plan, setPlan }: {
+const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
     nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     plan: Plan,
     setPlan: (nextPlan: Plan) => void,
-}) => {
+}> = ({ requirement, nameToRequirement, plan, setPlan }) => {
     const [filterType, setFilterType] = useState(FilterType.None);
     const { lockTarget, setLockTarget } = useLockTarget(filterType);
 
@@ -118,24 +118,16 @@ const RequirementWithConfiguration = ({ requirement, nameToRequirement, plan, se
     );
 }
 
-const A = ({ requirementName, requirement, nameToRequirement }: {
-    requirementName: string,
-    requirement: Requirements,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
-}) => {
-    const { plan, setPlan } = usePlan(requirementName);
-    return (<RequirementWithConfiguration requirement={requirement} nameToRequirement={nameToRequirement} plan={plan} setPlan={setPlan} />);
-}
+const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
+    const { plan, setPlan } = usePlan(selectedId);
 
-
-const Main = () => {
-    const { id: selectedId } = useParams();
-    if (selectedId === undefined) {
-        return (<Redirect to="/coins17" />);
-    }
-    const { requirement, nameToRequirement, name } = requirementAndDictionaryMap.get(selectedId) ?? {};
-    if (requirement === undefined || nameToRequirement === undefined) {
-        return (<Redirect to="/coins17" />);
+    const {
+        requirement,
+        nameToRequirement,
+        name: selectedName,
+    } = requirementAndDictionaryPairs.get(selectedId) ?? {};
+    if (requirement === undefined || nameToRequirement === undefined || selectedName === undefined) {
+        return (<Redirect to="/" />);
     }
 
     return (
@@ -154,12 +146,12 @@ const Main = () => {
                     >
                         学類
                     <> : </>
-                        <strong>{name}</strong>
+                        <strong>{selectedName}</strong>
                     </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {
-                        [...requirementAndDictionaryMap.values()].map(
+                        [...requirementAndDictionaryPairs.values()].map(
                             ({ id, name }) => (
                                 <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId}>
                                     {name}
@@ -169,19 +161,28 @@ const Main = () => {
                     }
                 </Dropdown.Menu>
             </Dropdown>
-            <A requirementName={selectedId} requirement={requirement} nameToRequirement={nameToRequirement} />
+            <RequirementWithConfiguration requirement={requirement} nameToRequirement={nameToRequirement} plan={plan} setPlan={setPlan} />
         </>
     );
 }
 
-const App = () => (
+const Main: React.FC = () => {
+    const { requirementId } = useParams();
+    if (requirementId === undefined) {
+        return (<Redirect to="/" />);
+    } else {
+        return (<InnerMain selectedId={requirementId} />);
+    }
+}
+
+const App: React.FC = () => (
     <HashRouter>
         <Navbar variant="dark" bg="dark">
             <Navbar.Brand>卒業要件を満たしたい</Navbar.Brand>
         </Navbar>
         <Container>
             <Switch>
-                <Route path="/:id">
+                <Route path="/:requirementId">
                     <Main />
                 </Route>
                 <Route path="/">
@@ -219,7 +220,7 @@ const usePlanMap = () => {
     const [planMap0, setPlanMap0] = useState(() => {
         try {
             const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                const nameToRequirement = requirementAndDictionaryMap.get(requirementName)?.nameToRequirement;
+                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.nameToRequirement;
                 if (nameToRequirement === undefined) {
                     return undefined;
                 } else {
