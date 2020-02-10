@@ -1,11 +1,10 @@
 import React from 'react';
 import { Badge, ListGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
-import Course from "./Course";
+import Course from "../Course";
+import Plan, { RegistrationStatus } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import Requirements, { RequirementWithCourses } from "../Requirements";
 import getNextStatus from './getNextStatus';
-import Plan from './Plan';
-import RegistrationStatus from "./RegistrationStatus";
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import Requirements, { RequirementWithCourses } from "./Requirements";
 
 const isRegistrable = ({ course, courseToStatus }: {
     course: Course,

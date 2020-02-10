@@ -1,6 +1,6 @@
 {
   "name": "credits",
-  "version": "0.1.0",
+  "version": "2.5.0",
   "private": true,
   "dependencies": {
     "@hiroto/json-type-checker": "^1.0.5",
@@ -9,15 +9,18 @@
     "@types/node": "^12.12.21",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
+    "@types/react-router-dom": "^5.1.3",
     "bootstrap": "^4.4.1",
-    "gh-pages": "^2.1.1",
+    "gh-pages": "^2.2.0",
     "lodash": "^4.17.15",
     "react": "^16.12.0",
-    "react-app-polyfill": "^1.0.5",
+    "react-app-polyfill": "^1.0.6",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
-    "react-scripts": "^3.3.0",
-    "react-use": "^13.12.2",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.3.1",
+    "react-use": "^13.24.0",
     "typescript": "^3.7.3"
   },
   "scripts": {

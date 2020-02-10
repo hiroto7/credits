@@ -1,15 +1,9 @@
 import Course from "./Course";
-import RegistrationStatus from "./RegistrationStatus";
-import { RegisteredCreditsCounts, RequirementWithCourses } from "./Requirements";
+import { RequirementWithCourses } from "./Requirements";
 
-export type CourseCode = string;
-export type RequirementName = string;
-
-export interface PlanJSON {
-    readonly courseToStatus: readonly [CourseCode, RegistrationStatus][];
-    readonly courseToRequirement: readonly [CourseCode, RequirementName][];
-    readonly requirementToOthersCount: readonly [RequirementName, RegisteredCreditsCounts][];
-    readonly selectionNameToOptionName: readonly [string, string][];
+export interface RegisteredCreditsCounts {
+    acquired: number;
+    registered: number;
 }
 
 export default interface Plan {
@@ -17,6 +11,22 @@ export default interface Plan {
     readonly courseToRequirement: ReadonlyMap<Course, RequirementWithCourses>;
     readonly requirementToOthersCount: ReadonlyMap<RequirementWithCourses, RegisteredCreditsCounts>;
     readonly selectionNameToOptionName: ReadonlyMap<string, string>;
+}
+
+export type CourseCode = string;
+export type RequirementName = string;
+
+export enum RegistrationStatus {
+    Unregistered = 0,
+    Registered = 1,
+    Acquired = 2,
+}
+
+export interface PlanJSON {
+    readonly courseToStatus: readonly [CourseCode, RegistrationStatus][];
+    readonly courseToRequirement: readonly [CourseCode, RequirementName][];
+    readonly requirementToOthersCount: readonly [RequirementName, RegisteredCreditsCounts][];
+    readonly selectionNameToOptionName: readonly [string, string][];
 }
 
 export const toJSON =

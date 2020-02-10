@@ -1,14 +1,14 @@
 import React from 'react';
-import Course from "./Course";
-import FilterType from './FilterType';
-import Plan from './Plan';
-import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses } from "./Requirements";
+import Course from "../Course";
+import FilterType from '../FilterType';
+import Plan, { RegisteredCreditsCounts } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import Requirements, { RequirementWithChildren, RequirementWithCourses } from "../Requirements";
 import RequirementWithChildrenView from './RequirementWithChildrenView';
 import RequirementWithCoursesView from './RequirementWithCoursesView';
 import SelectionRequirementView from './SelectionRequirementView';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 
-const RequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const InnerRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: Requirements,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
@@ -45,4 +45,4 @@ const RequirementView = ({ requirement, filterType, lockTarget, plan, onCourseCl
     }
 }
 
-export default RequirementView;
+export default InnerRequirementView;
