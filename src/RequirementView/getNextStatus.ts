@@ -1,5 +1,5 @@
-import RegistrationStatus from './RegistrationStatus';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
+import { RegistrationStatus } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 
 const getNextStatus = ({ currentStatus, lockTarget }: {
     currentStatus: RegistrationStatus,

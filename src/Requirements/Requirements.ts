@@ -1,7 +1,6 @@
 import { $number, $object, isCompatible } from "@hiroto/json-type-checker";
 import Course from "../Course";
-import Plan, { RegisteredCreditsCounts } from "../Plan";
-import RegistrationStatus from "../RegistrationStatus";
+import Plan, { RegisteredCreditsCounts, RegistrationStatus } from "../Plan";
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;

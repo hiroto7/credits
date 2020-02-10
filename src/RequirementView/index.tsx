@@ -1,16 +1,15 @@
 import React from 'react';
-import Course from './Course';
+import Course from '../Course';
+import FilterType from '../FilterType';
+import getValueFromModal, { useModals } from '../getValueFromModal';
+import Plan, { RegisteredCreditsCounts, RegistrationStatus } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from '../Requirements';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
-import FilterType from './FilterType';
 import getNextStatus from './getNextStatus';
-import getValueFromModal, { useModals } from './getValueFromModal';
-import Plan, { RegisteredCreditsCounts } from './Plan';
-import RegistrationStatus from './RegistrationStatus';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from './Requirements';
-import RequirementView from './RequirementView';
+import InnerRequirementView from './InnerRequirementView';
 
-const RequirementsRootView = ({ requirement, plan, filterType, lockTarget, onChange }: {
+const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }: {
     requirement: Requirements,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
@@ -96,7 +95,7 @@ const RequirementsRootView = ({ requirement, plan, filterType, lockTarget, onCha
     return (
         <>
             {modals}
-            <RequirementView
+            <InnerRequirementView
                 requirement={requirement} plan={plan}
                 filterType={filterType} lockTarget={lockTarget}
                 onCourseClick={handleCourseClick} onOthersCountsChange={handleOthersCountsChange}
@@ -106,4 +105,4 @@ const RequirementsRootView = ({ requirement, plan, filterType, lockTarget, onCha
     );
 }
 
-export default RequirementsRootView;
+export default RequirementView;

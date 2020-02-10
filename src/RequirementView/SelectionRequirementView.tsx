@@ -1,11 +1,11 @@
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
-import Course from './Course';
-import FilterType from './FilterType';
-import Plan, { RegisteredCreditsCounts } from './Plan';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import { RequirementWithCourses, SelectionRequirement } from './Requirements';
-import RequirementView from './RequirementView';
+import Course from '../Course';
+import FilterType from '../FilterType';
+import Plan, { RegisteredCreditsCounts } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import { RequirementWithCourses, SelectionRequirement } from '../Requirements';
+import InnerRequirementView from './InnerRequirementView';
 
 const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: SelectionRequirement,
@@ -57,7 +57,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
             {
                 selectedRequirement === undefined ? (<></>) : (
                     <div className="mt-3">
-                        <RequirementView
+                        <InnerRequirementView
                             requirement={selectedRequirement} plan={plan}
                             filterType={filterType} lockTarget={lockTarget}
                             onCourseClick={onCourseClick} onOthersCountsChange={onOthersCountsChange}
