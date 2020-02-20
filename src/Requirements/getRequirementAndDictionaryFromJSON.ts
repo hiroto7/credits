@@ -1,4 +1,4 @@
-import Requirements, { isRange, Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from ".";
+import Requirements, { Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from ".";
 import Course from "../Course";
 import RequirementsJSON from "./RequirementsJSON";
 
@@ -8,10 +8,10 @@ interface RequirementAndDictionary {
 }
 
 const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
-    isRange(numberOrRange) ? numberOrRange : {
+    typeof numberOrRange === 'number' ? {
         min: numberOrRange,
         max: numberOrRange,
-    };
+    } : numberOrRange;
 
 const getInnerRequirementAndDictionaryFromJSON = (
     json: RequirementsJSON,

@@ -3,7 +3,6 @@
   "version": "2.5.1",
   "private": true,
   "dependencies": {
-    "@hiroto/json-type-checker": "^1.0.5",
     "@types/jest": "^24.0.24",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.21",
