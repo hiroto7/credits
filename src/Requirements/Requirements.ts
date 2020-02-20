@@ -1,4 +1,3 @@
-import { $number, $object, isCompatible } from "@hiroto/json-type-checker";
 import Course from "../Course";
 import Plan, { RegisteredCreditsCounts, RegistrationStatus } from "../Plan";
 
@@ -24,7 +23,6 @@ export interface Range {
     min: number;
     max: number;
 }
-export const isRange = (obj: unknown): obj is Range => isCompatible(obj, $object({ min: $number, max: $number }));
 
 export interface RequirementWithChildrenInit {
     readonly name: string;

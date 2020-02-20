@@ -1456,13 +1456,6 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hiroto/json-type-checker@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@hiroto/json-type-checker/-/json-type-checker-1.0.5.tgz#44f6acbf6270f177c62f79bd75b1e86bcbb4ad1d"
-  integrity sha512-vyckklCpuUMZe/93Th+9mDaqHOw8QoD7QTzx7HoB7CMZ0XHQ48cqJ2oP0nJ65lHwYdOPwWh0m+nG/z//hP5MZg==
-  dependencies:
-    pretty-format "^24.9.0"
-
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
