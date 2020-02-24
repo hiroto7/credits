@@ -192,6 +192,15 @@ const Table1AndButton: React.FC<{
     )
 }
 
+const parseSafely = (...args: Parameters<typeof parse>): ReturnType<typeof parse> | undefined => {
+    try {
+        const records = parse(...args);
+        return records;
+    } catch {
+        return undefined;
+    }
+}
+
 const CollectivelyCourseSetView: React.FC<{
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
@@ -201,14 +210,7 @@ const CollectivelyCourseSetView: React.FC<{
     const { modals, setModalsAndCount } = useModals();
     const [csv, setCSV] = useState("");
 
-    const records = (() => {
-        try {
-            const records: readonly string[][] = parse(csv);
-            return records;
-        } catch {
-            return undefined;
-        }
-    })();
+    const records: readonly string[][] | undefined = parseSafely(csv);
     const isInvalid = records === undefined;
 
     const handleSubmit = async (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {
