@@ -27,6 +27,14 @@ const ImportConfirmationModal = ({ onReturn, onExited }: {
     );
 }
 
+const parseJSONSafely = (...args: Parameters<typeof JSON.parse>): ReturnType<typeof JSON.parse> | undefined => {
+    try {
+        return JSON.parse(...args)
+    } catch {
+        return undefined;
+    }
+}
+
 const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
@@ -38,7 +46,7 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     const { modals, setModalsAndCount } = useModals();
 
     const nextPlan = fromJSONSafely(
-        JSON.parse(jsonString),
+        parseJSONSafely(jsonString),
         { codeToCourse, nameToRequirement }
     );
     const isInvalid = nextPlan === undefined;
