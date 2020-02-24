@@ -230,7 +230,7 @@ const CollectivelyCourseSetView: React.FC<{
                 </Card.Header>
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
-                        <Form.Group>
+                        <Form.Group className={records === undefined || records.length === 0 ? 'mb-0' : ''}>
                             <Form.Label>科目番号のリストまたはCSV</Form.Label>
                             <Form.Control
                                 as="textarea"
