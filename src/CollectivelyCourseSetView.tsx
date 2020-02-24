@@ -1,11 +1,18 @@
-import { intersection } from 'lodash';
+import parse from 'csv-parse/lib/sync';
+import { zip } from 'lodash';
 import React, { useState } from 'react';
-import { Accordion, Alert, Button, Card, Col, Form, Modal, useAccordionToggle } from "react-bootstrap";
+import { Accordion, Badge, Button, Card, Form, Modal, OverlayTrigger, Table, Tooltip, useAccordionToggle } from "react-bootstrap";
 import Course from './Course';
 import getValueFromModal, { useModals } from './getValueFromModal';
 import { RegistrationStatus } from './Plan';
 
-const placeholder = ['GB10615', 'GB10664'].join('\n');
+const placeholder = `
+"学籍番号","学生氏名","科目番号","科目名 ","単位数","春学期","秋学期","総合評価","科目区分","開講年度","開講区分"
+"201700000","＊＊ ＊＊","GB10615","コンピュータリテラシ"," 2.0","-","-","A","A","2017","通常"
+"201700000","＊＊ ＊＊","GB10664","プログラミング入門A"," 1.0","-","-","A","A","2017","通常"
+`.trim();
+
+type RegistrationStatus12 = RegistrationStatus.Registered | RegistrationStatus.Acquired
 
 const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
     onReturn: (value: boolean) => void,
@@ -30,79 +37,166 @@ const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
     );
 }
 
-const CodesInput = ({ label, codeToCourse, onChange }: {
-    label: string,
-    codeToCourse: ReadonlyMap<string, Course>,
-    onChange: (courses: ReadonlySet<Course>) => void,
-}) => {
-    const [value, setValue] = useState("");
-    const [coursesCount, setCoursesCount] = useState(0);
-    const [undefinedCodes, setUndefinedCodes] = useState<string[]>([]);
+const Table1: React.FC<{
+    codeColumnIndex: number,
+    titleColumnIndex: number,
+    courseAndRecordPairs: {
+        course: Course | undefined,
+        record: readonly string[],
+    }[],
+    courseToStatus: ReadonlyMap<Course, RegistrationStatus12>,
+    setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+}> = ({ codeColumnIndex, titleColumnIndex, courseAndRecordPairs, courseToStatus, setCourseToStatus }) => (
+    <Table
+        bordered hover responsive
+        style={{ whiteSpace: 'nowrap' }}
+    >
+        <tbody>
+            {
+                courseAndRecordPairs.map(
+                    ({ course, record }, recordIndex) => {
+                        const tds = record.map((cell, index) => (
+                            <td>
+                                {
+                                    index === codeColumnIndex ?
+                                        (<code>{cell}</code>) :
+                                        index === titleColumnIndex ?
+                                            cell :
+                                            (<span className="text-muted">{cell}</span>)
+                                }
+                            </td>
+                        ));
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const nextValue = e.target.value;
-        const codes = nextValue.split('\n').map(line => line.trim()).filter(line => line !== '');
-        const courses = new Set(
-            codes.map(code => codeToCourse.get(code))
+                        if (course === undefined) {
+                            return (
+                                <tr>
+                                    <th style={{ textAlign: 'center' }}>
+                                        <OverlayTrigger
+                                            overlay={
+                                                <Tooltip id={`record${recordIndex}-tooltip`}>この科目は見つかりません。</Tooltip>
+                                            }
+                                        >
+                                            <Badge variant="secondary">?</Badge>
+                                        </OverlayTrigger>
+                                    </th>
+                                    {tds}
+                                </tr>
+                            )
+                        } else {
+                            const status = courseToStatus.get(course);
+                            const nextStatus = status === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired;
+                            const variant = status === RegistrationStatus.Acquired ? 'success' : 'primary';
+
+                            return (
+                                <tr
+                                    onClick={
+                                        () => setCourseToStatus(new Map([
+                                            ...courseToStatus,
+                                            [course, nextStatus]
+                                        ]))
+                                    }
+                                    style={{
+                                        cursor: 'pointer'
+                                    }}
+                                    className={`table-${variant}`}
+                                >
+                                    <th>
+                                        <Badge variant={variant}>
+                                            {status === RegistrationStatus.Acquired ? '修得済み' : '履修する'}
+                                        </Badge>
+                                    </th>
+                                    {tds}
+                                </tr>
+                            )
+                        }
+                    }
+                )
+            }
+        </tbody>
+    </Table>
+);
+
+const getColumnIndex = (records: readonly string[][], callbackfn: (value: string, index: number, array: readonly string[]) => boolean) =>
+    zip(...records)
+        .map(row => row
+            .map((value, index, array) => value !== undefined && callbackfn(value, index, array as string[]))
+            .map(cell => +cell)
+            .reduce((previous, current) => previous + current, 0))
+        .reduce((previous, currentValue, currentIndex) => previous.value < currentValue ? {
+            index: currentIndex,
+            value: currentValue,
+        } : previous, {
+            index: -1,
+            value: -Infinity,
+        }).index;
+
+const Table1AndButton: React.FC<{
+    codeToCourse: ReadonlyMap<string, Course>,
+    records: readonly string[][],
+    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+}> = ({ codeToCourse, records, onSubmit }) => {
+    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
+
+    const codeColumnIndex = getColumnIndex(records, cell => codeToCourse.has(cell));
+    const titleColumnIndex = getColumnIndex(records, (cell, index) => {
+        const course = codeToCourse.get(records[index][codeColumnIndex]);
+        return course !== undefined && cell === course.title;
+    });
+
+    const courseAndRecordPairs = records.map(record => ({
+        record,
+        course: codeToCourse.get(record[codeColumnIndex])
+    }));
+
+    const handleOKClick = () => {
+        onSubmit(new Map(
+            courseAndRecordPairs
+                .map(({ course }) => course)
                 .filter((course): course is NonNullable<typeof course> => course !== undefined)
-        );
-        const nextUndefinedCodes = [...new Set(codes.filter(code => !codeToCourse.has(code)))];
-        setValue(nextValue);
-        setCoursesCount(courses.size);
-        setUndefinedCodes(nextUndefinedCodes);
-        onChange(courses);
+                .map(course => [course, courseToStatus.get(course) ?? RegistrationStatus.Registered])
+        ));
     }
 
     return (
-        <Form.Group as={Col}>
-            <Form.Label>{label}</Form.Label>
-            <Form.Control
-                as="textarea" className="input-monospace" rows={5}
-                placeholder={placeholder} value={value} onChange={handleChange}
+        <>
+            <Table1
+                codeColumnIndex={codeColumnIndex}
+                titleColumnIndex={titleColumnIndex}
+                courseAndRecordPairs={courseAndRecordPairs}
+                courseToStatus={courseToStatus}
+                setCourseToStatus={setCourseToStatus}
             />
-            <Form.Text>
-                {coursesCount}個の科目
-            </Form.Text>
-            {
-                undefinedCodes.length === 0 ? <></> : (
-                    <Form.Text>
-                        次の科目は見つかりません
-                        <> : </>
-                        {
-                            undefinedCodes
-                                .map<React.ReactNode>(code => (<code key={code}>{code}</code>))
-                                .reduce((previous, current) => [previous, ', ', current])
-                        }
-                    </Form.Text>
-                )
-            }
-        </Form.Group>
-    );
+            <Button onClick={handleOKClick}>OK</Button>
+        </>
+    )
 }
 
-const CollectivelyCourseSetView = ({ eventKey, codeToCourse, onSubmit }: {
+const CollectivelyCourseSetView: React.FC<{
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
-    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus.Acquired | RegistrationStatus.Registered>) => void,
-}) => {
-    const [registeredCourses, setRegisteredCourses] = useState<ReadonlySet<Course>>(new Set());
-    const [acquiredCourses, setAcquiredCourses] = useState<ReadonlySet<Course>>(new Set<Course>());
+    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+}> = ({ eventKey, codeToCourse, onSubmit }) => {
     const toggle = useAccordionToggle(eventKey, () => { });
     const { modals, setModalsAndCount } = useModals();
+    const [csv, setCSV] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const records = (() => {
+        try {
+            const records: readonly string[][] = parse(csv);
+            return records;
+        } catch {
+            return undefined;
+        }
+    })();
+    const isInvalid = records === undefined;
+
+    const handleSubmit = async (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {
         if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
             return;
         }
-        onSubmit(new Map([
-            ...[...registeredCourses].map(course => [course, RegistrationStatus.Registered] as const),
-            ...[...acquiredCourses].map(course => [course, RegistrationStatus.Acquired] as const),
-        ]));
+        onSubmit(courseToStatus);
         toggle();
     }
-
-    const coursesOfIntersection = intersection([...registeredCourses], [...acquiredCourses]);
 
     return (
         <>
@@ -115,39 +209,29 @@ const CollectivelyCourseSetView = ({ eventKey, codeToCourse, onSubmit }: {
                 </Card.Header>
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
-                        <p>
-                            履修する科目や修得済みの科目の番号を、それぞれのテキストボックスへ1行ごとに入力します。
-                            いずれにも入力されなかった科目は、履修しない科目として設定されます。
-                            <strong>現在の履修 / 修得状態は失われます。</strong>
-                        </p>
-                        <Form onSubmit={handleSubmit}>
-                            <Form.Row>
-                                <CodesInput label="履修する科目" codeToCourse={codeToCourse} onChange={setRegisteredCourses} />
-                                <CodesInput label="修得済みの科目" codeToCourse={codeToCourse} onChange={setAcquiredCourses} />
-                            </Form.Row>
-                            {
-                                coursesOfIntersection.length === 0 ? (<></>) : (
-                                    <Alert variant="warning">
-                                        <p>
-                                            次の科目は [履修する科目] と [修得済みの科目] の両方に入力されています。
-                                            このまま [OK] を押すと、<strong>修得済みの科目として設定されます</strong>。
-                                        </p>
-                                        <ul className="mb-0">
-                                            {
-                                                coursesOfIntersection.map(course => (
-                                                    <li key={course.code}>
-                                                        <code>{course.code}</code>
-                                                        <> : </>
-                                                        {course.title}
-                                                    </li>
-                                                ))
-                                            }
-                                        </ul>
-                                    </Alert>
-                                )
-                            }
-                            <Button type="submit">OK</Button>
-                        </Form>
+                        <Form.Group>
+                            <Form.Label>科目番号のリストまたはCSV</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={5}
+                                placeholder={placeholder}
+                                value={csv}
+                                className="text-monospace"
+                                onChange={
+                                    (e: React.ChangeEvent<HTMLTextAreaElement>) => setCSV(e.target.value)
+                                }
+                                style={{ whiteSpace: 'pre' }}
+                                isInvalid={isInvalid}
+                            />
+                            <Form.Control.Feedback type="invalid">不正な形式です</Form.Control.Feedback>
+                        </Form.Group>
+                        {
+                            records === undefined || records.length === 0 ? <></> : <Table1AndButton
+                                codeToCourse={codeToCourse}
+                                records={records}
+                                onSubmit={handleSubmit}
+                            />
+                        }
                     </Card.Body>
                 </Accordion.Collapse>
             </Card>
