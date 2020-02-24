@@ -68,14 +68,6 @@ export const fromJSON = (json: PlanJSON, { codeToCourse, nameToRequirement }: {
     return { courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName }
 }
 
-export const fromJSONSafely = (...args: Parameters<typeof fromJSON>): Plan | undefined => {
-    try {
-        return fromJSON(...args);
-    } catch {
-        return undefined;
-    }
-}
-
 export const emptyPlan: Plan = {
     courseToStatus: new Map(),
     courseToRequirement: new Map(),

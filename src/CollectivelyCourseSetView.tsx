@@ -5,6 +5,7 @@ import { Accordion, Badge, Button, ButtonGroup, Card, Form, Modal, OverlayTrigge
 import Course from './Course';
 import getValueFromModal, { useModals } from './getValueFromModal';
 import { RegistrationStatus } from './Plan';
+import safely from './safely';
 
 const placeholder = `
 "学籍番号","学生氏名","科目番号","科目名 ","単位数","春学期","秋学期","総合評価","科目区分","開講年度","開講区分"
@@ -192,15 +193,6 @@ const Table1AndButton: React.FC<{
     )
 }
 
-const parseSafely = (...args: Parameters<typeof parse>): ReturnType<typeof parse> | undefined => {
-    try {
-        const records = parse(...args);
-        return records;
-    } catch {
-        return undefined;
-    }
-}
-
 const CollectivelyCourseSetView: React.FC<{
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
@@ -210,7 +202,7 @@ const CollectivelyCourseSetView: React.FC<{
     const { modals, setModalsAndCount } = useModals();
     const [csv, setCSV] = useState("");
 
-    const records: readonly string[][] | undefined = parseSafely(csv);
+    const records: readonly string[][] | undefined = safely(parse, csv);
     const isInvalid = records === undefined;
 
     const handleSubmit = async (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {

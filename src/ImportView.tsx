@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Accordion, Button, Card, Form, Modal, useAccordionToggle } from "react-bootstrap";
 import Course from "./Course";
 import getValueFromModal, { useModals } from './getValueFromModal';
-import Plan, { emptyPlan, fromJSONSafely, toJSON } from "./Plan";
+import Plan, { emptyPlan, fromJSON, toJSON } from "./Plan";
 import { RequirementWithCourses } from "./Requirements";
+import safely from './safely';
 
 const ImportConfirmationModal = ({ onReturn, onExited }: {
     onReturn: (value: boolean) => void,
@@ -27,28 +28,18 @@ const ImportConfirmationModal = ({ onReturn, onExited }: {
     );
 }
 
-const parseJSONSafely = (...args: Parameters<typeof JSON.parse>): ReturnType<typeof JSON.parse> | undefined => {
-    try {
-        return JSON.parse(...args)
-    } catch {
-        return undefined;
-    }
-}
-
 const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
     nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     onSubmit: (nextPlan: Plan) => void,
 }) => {
-    const [jsonString, setJSONString] = useState("");
+    const [jsonText, setJSONText] = useState("");
     const toggle = useAccordionToggle(eventKey, () => { });
     const { modals, setModalsAndCount } = useModals();
 
-    const nextPlan = fromJSONSafely(
-        parseJSONSafely(jsonString),
-        { codeToCourse, nameToRequirement }
-    );
+    const json = safely(JSON.parse, jsonText);
+    const nextPlan = json && safely(fromJSON, json, { codeToCourse, nameToRequirement });
     const isInvalid = nextPlan === undefined;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -83,8 +74,8 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
                                 <Form.Label>JSON</Form.Label>
                                 <Form.Control
                                     className="input-monospace" isInvalid={isInvalid}
-                                    value={jsonString} placeholder={JSON.stringify(toJSON(emptyPlan))}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJSONString(e.target.value)}
+                                    value={jsonText} placeholder={JSON.stringify(toJSON(emptyPlan))}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJSONText(e.target.value)}
                                 />
                                 <Form.Control.Feedback type="invalid">JSONが不正です</Form.Control.Feedback>
                             </Form.Group>
