@@ -95,12 +95,10 @@ const Table1: React.FC<{
                                             [course, nextStatus]
                                         ]))
                                     }
-                                    style={{
-                                        cursor: 'pointer'
-                                    }}
+                                    style={{ cursor: 'pointer' }}
                                     className={`table-${variant}`}
                                 >
-                                    <th>
+                                    <th style={{ textAlign: 'center' }}>
                                         <Badge variant={variant}>
                                             {status === RegistrationStatus.Acquired ? '修得済み' : '履修する'}
                                         </Badge>
