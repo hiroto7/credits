@@ -1,7 +1,7 @@
 import parse from 'csv-parse/lib/sync';
 import { zip } from 'lodash';
 import React, { useState } from 'react';
-import { Accordion, Badge, Button, Card, Form, Modal, OverlayTrigger, Table, Tooltip, useAccordionToggle } from "react-bootstrap";
+import { Accordion, Badge, Button, ButtonGroup, Card, Form, Modal, OverlayTrigger, Table, Tooltip, useAccordionToggle } from "react-bootstrap";
 import Course from './Course';
 import getValueFromModal, { useModals } from './getValueFromModal';
 import { RegistrationStatus } from './Plan';
@@ -155,10 +155,33 @@ const Table1AndButton: React.FC<{
                 .filter((course): course is NonNullable<typeof course> => course !== undefined)
                 .map(course => [course, courseToStatus.get(course) ?? RegistrationStatus.Registered])
         ));
+    };
+
+    const setAllCourseStatus = (status: RegistrationStatus12) => {
+        setCourseToStatus(new Map(
+            courseAndRecordPairs
+                .map(({ course }) => course)
+                .filter((course): course is NonNullable<typeof course> => course !== undefined)
+                .map(course => [course, status])
+        ));
     }
 
     return (
         <>
+            <ButtonGroup className="mb-3">
+                <Button
+                    variant="outline-primary"
+                    onClick={() => setAllCourseStatus(RegistrationStatus.Registered)}
+                >
+                    すべて履修する
+                </Button>
+                <Button
+                    variant="outline-success"
+                    onClick={() => setAllCourseStatus(RegistrationStatus.Acquired)}
+                >
+                    すべて修得済み
+                </Button>
+            </ButtonGroup>
             <Table1
                 codeColumnIndex={codeColumnIndex}
                 titleColumnIndex={titleColumnIndex}
