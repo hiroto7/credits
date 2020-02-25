@@ -224,8 +224,8 @@ const CollectivelyCourseSetView: React.FC<{
                 </Card.Header>
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
-                        <Form.Group className={records === undefined || records.length === 0 ? 'mb-0' : ''}>
-                            <Form.Label>科目番号のリストまたはCSV</Form.Label>
+                        <Form.Group>
+                            <Form.Label>CSV / 科目番号のリスト</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={5}
@@ -233,12 +233,39 @@ const CollectivelyCourseSetView: React.FC<{
                                 value={csv}
                                 className="text-monospace"
                                 onChange={
-                                    (e: React.ChangeEvent<HTMLTextAreaElement>) => setCSV(e.target.value)
+                                    (event: React.ChangeEvent<HTMLTextAreaElement>) => setCSV(event.target.value)
                                 }
                                 style={{ whiteSpace: 'pre' }}
                                 isInvalid={isInvalid}
                             />
                             <Form.Control.Feedback type="invalid">不正な形式です</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className={records === undefined || records.length === 0 ? 'mb-0' : ''}>
+                            <Form.Label>CSVファイル / 科目番号のリストが記述されたファイル</Form.Label>
+                            <div className="custom-file">
+                                <input
+                                    type="file"
+                                    accept="text/plain"
+                                    className="custom-file-input"
+                                    id="csv-file-input"
+                                    onChange={
+                                        (event: React.ChangeEvent<HTMLInputElement>) => {
+                                            const file = event.target.files?.item(0);
+                                            if (file === null || file === undefined) {
+                                                return;
+                                            }
+                                            const reader = new FileReader();
+                                            reader.addEventListener('load', () => {
+                                                if (typeof reader.result === 'string') {
+                                                    setCSV(reader.result);
+                                                }
+                                            });
+                                            reader.readAsText(file);
+                                        }
+                                    }
+                                />
+                                <label className="custom-file-label" htmlFor="csv-file-input">Choose file</label>
+                            </div>
                         </Form.Group>
                         {
                             records === undefined || records.length === 0 ? <></> : <Table1AndButton
