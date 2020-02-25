@@ -40,83 +40,141 @@ const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
 
 const Table1: React.FC<{
     codeColumnIndex: number,
-    titleColumnIndex: number,
+    titleColumnIndex: number | undefined,
+    creditsCountColumnIndex: number | undefined,
     courseAndRecordPairs: {
         course: Course | undefined,
         record: readonly string[],
     }[],
     courseToStatus: ReadonlyMap<Course, RegistrationStatus12>,
     setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
-}> = ({ codeColumnIndex, titleColumnIndex, courseAndRecordPairs, courseToStatus, setCourseToStatus }) => (
-    <Table
-        bordered hover responsive
-        style={{ whiteSpace: 'nowrap' }}
-    >
-        <tbody>
-            {
-                courseAndRecordPairs.map(
-                    ({ course, record }, recordIndex) => {
-                        const tds = record.map((cell, index) => (
-                            <td>
-                                {
-                                    index === codeColumnIndex ?
-                                        (<code>{cell}</code>) :
-                                        index === titleColumnIndex ?
-                                            cell :
-                                            (<span className="text-muted">{cell}</span>)
-                                }
-                            </td>
-                        ));
+}> = ({ codeColumnIndex, titleColumnIndex, creditsCountColumnIndex, courseAndRecordPairs, courseToStatus, setCourseToStatus }) => {
+    const {
+        course: firstCourse,
+        record: firstRecord,
+    } = courseAndRecordPairs[0];
 
-                        if (course === undefined) {
-                            return (
-                                <tr>
-                                    <th style={{ textAlign: 'center' }}>
-                                        <OverlayTrigger
-                                            overlay={
-                                                <Tooltip id={`record${recordIndex}-tooltip`}>この科目は見つかりません。</Tooltip>
-                                            }
-                                        >
-                                            <Badge variant="secondary">?</Badge>
-                                        </OverlayTrigger>
-                                    </th>
-                                    {tds}
-                                </tr>
-                            )
-                        } else {
-                            const status = courseToStatus.get(course);
-                            const nextStatus = status === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired;
-                            const variant = status === RegistrationStatus.Acquired ? 'success' : 'primary';
+    const firstRecordIsHeader =
+        firstCourse === undefined &&
+        firstRecord[codeColumnIndex].trim() === '科目番号' &&
+        (titleColumnIndex === undefined || firstRecord[titleColumnIndex].trim() === '科目名') &&
+        (creditsCountColumnIndex === undefined || firstRecord[creditsCountColumnIndex].trim() === '単位数');
 
-                            return (
-                                <tr
-                                    onClick={
-                                        () => setCourseToStatus(new Map([
-                                            ...courseToStatus,
-                                            [course, nextStatus]
-                                        ]))
-                                    }
-                                    style={{ cursor: 'pointer' }}
-                                    className={`table-${variant}`}
-                                >
-                                    <th style={{ textAlign: 'center' }}>
-                                        <Badge variant={variant}>
-                                            {status === RegistrationStatus.Acquired ? '修得済み' : '履修する'}
-                                        </Badge>
-                                    </th>
-                                    {tds}
-                                </tr>
-                            )
+    return (
+        <Table
+            bordered hover responsive
+            style={{ whiteSpace: 'nowrap' }}
+        >
+            <thead>
+                <th></th>
+                <th>科目番号</th>
+                <th>科目名</th>
+                <th>単位数</th>
+                {
+                    firstRecord
+                        .filter((_, index) => index !== codeColumnIndex && index !== titleColumnIndex && index !== creditsCountColumnIndex)
+                        .map(cell => (<th>{firstRecordIsHeader ? cell : (<></>)}</th>))
+                }
+            </thead>
+            <tbody>
+                {
+                    (firstRecordIsHeader ? courseAndRecordPairs.slice(1) : courseAndRecordPairs).map(
+                        ({ course, record }, recordIndex) => {
+                            const getTdContent = <T,>(index: number | undefined, f0: (course: Course) => T, f1: (recordData: string) => T) => {
+                                const recordData = index === undefined ? undefined : record[index];
+                                return (
+                                    course === undefined ?
+                                        recordData :
+                                        recordData === undefined || f0(course) === f1(recordData) ?
+                                            f0(course) :
+                                            (
+                                                <>
+                                                    <div><del>{recordData}</del></div>
+                                                    <div><ins>{f0(course)}</ins></div>
+                                                </>
+                                            )
+                                );
+                            }
+
+                            const tds0 = (
+                                <>
+                                    <td><code>{record[codeColumnIndex]}</code></td>
+                                    <td>{getTdContent(titleColumnIndex, course => course.title, recordTitle => recordTitle.trim())}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {getTdContent(creditsCountColumnIndex, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)}
+                                    </td>
+                                </>
+                            );
+                            const tds1 = record
+                                .map((cell, index) => (
+                                    <td>
+                                        {
+                                            index === codeColumnIndex ?
+                                                (<code>{cell}</code>) :
+                                                index === titleColumnIndex ?
+                                                    cell :
+                                                    (<span className="text-muted">{cell}</span>)
+                                        }
+                                    </td>
+                                ))
+                                .filter((_, index) =>
+                                    index !== codeColumnIndex &&
+                                    index !== titleColumnIndex &&
+                                    index !== creditsCountColumnIndex
+                                );
+
+                            const tds = (<>{tds0}{tds1}</>);
+
+                            if (course === undefined) {
+                                return (
+                                    <tr>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <OverlayTrigger
+                                                overlay={
+                                                    <Tooltip id={`record${recordIndex}-tooltip`}>この科目は見つかりません。</Tooltip>
+                                                }
+                                            >
+                                                <Badge variant="secondary">?</Badge>
+                                            </OverlayTrigger>
+                                        </td>
+                                        {tds}
+                                    </tr>
+                                )
+                            } else {
+                                const status = courseToStatus.get(course);
+                                const nextStatus = status === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired;
+                                const variant = status === RegistrationStatus.Acquired ? 'success' : 'primary';
+
+                                return (
+                                    <tr
+                                        onClick={
+                                            () => setCourseToStatus(new Map([
+                                                ...courseToStatus,
+                                                [course, nextStatus]
+                                            ]))
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                        className={`table-${variant}`}
+                                    >
+                                        <td style={{ textAlign: 'center' }}>
+                                            <Badge variant={variant}>
+                                                {status === RegistrationStatus.Acquired ? '修得済み' : '履修する'}
+                                            </Badge>
+                                        </td>
+                                        {tds}
+                                    </tr>
+                                )
+                            }
                         }
-                    }
-                )
-            }
-        </tbody>
-    </Table>
-);
+                    )
+                }
+            </tbody>
+        </Table>
+    );
+}
 
-const getColumnIndex = (records: readonly string[][], callbackfn: (value: string, index: number, array: readonly string[]) => boolean) =>
-    zip(...records)
+const getColumnIndex = (records: readonly string[][], callbackfn: (value: string, index: number, array: readonly string[]) => boolean) => {
+    const { index, value } = zip(...records)
         .map(row => row
             .map((value, index, array) => value !== undefined && callbackfn(value, index, array as string[]))
             .map(cell => +cell)
@@ -127,25 +185,33 @@ const getColumnIndex = (records: readonly string[][], callbackfn: (value: string
         } : previous, {
             index: -1,
             value: -Infinity,
-        }).index;
-
+        });
+    if (value === 0) {
+        return undefined;
+    } else {
+        return index;
+    }
+}
 const Table1AndButton: React.FC<{
+    codeColumnIndex: number,
     codeToCourse: ReadonlyMap<string, Course>,
     records: readonly string[][],
     onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
-}> = ({ codeToCourse, records, onSubmit }) => {
+}> = ({ codeColumnIndex, codeToCourse, records, onSubmit }) => {
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
-
-    const codeColumnIndex = getColumnIndex(records, cell => codeToCourse.has(cell));
-    const titleColumnIndex = getColumnIndex(records, (cell, index) => {
-        const course = codeToCourse.get(records[index][codeColumnIndex]);
-        return course !== undefined && cell === course.title;
-    });
 
     const courseAndRecordPairs = records.map(record => ({
         record,
         course: codeToCourse.get(record[codeColumnIndex])
     }));
+    const titleColumnIndex = getColumnIndex(records, (cell, index) => {
+        const course = codeToCourse.get(records[index][codeColumnIndex]);
+        return course !== undefined && cell === course.title;
+    });
+    const creditsCountColumnIndex = getColumnIndex(records, (cell, index) => {
+        const course = codeToCourse.get(records[index][codeColumnIndex]);
+        return course !== undefined && +cell === course.creditsCount;
+    })
 
     const handleOKClick = () => {
         onSubmit(new Map(
@@ -190,6 +256,7 @@ const Table1AndButton: React.FC<{
             <Table1
                 codeColumnIndex={codeColumnIndex}
                 titleColumnIndex={titleColumnIndex}
+                creditsCountColumnIndex={creditsCountColumnIndex}
                 courseAndRecordPairs={courseAndRecordPairs}
                 courseToStatus={courseToStatus}
                 setCourseToStatus={setCourseToStatus}
@@ -207,9 +274,16 @@ const CollectivelyCourseSetView: React.FC<{
     const toggle = useAccordionToggle(eventKey, () => { });
     const { modals, setModalsAndCount } = useModals();
     const [csv, setCSV] = useState("");
+    const [validated, setValidated] = useState(false);
 
     const records: readonly string[][] | undefined = safely(parse, csv);
-    const isInvalid = records === undefined;
+    const codeColumnIndex = records && getColumnIndex(records, cell => codeToCourse.has(cell))!;
+
+    const feedback =
+        records === undefined ? '形式が不正です' :
+            records.length === 0 ? '入力してください' :
+                codeColumnIndex === undefined ? '科目がひとつも見つかりません' :
+                    undefined;
 
     const handleSubmit = async (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {
         if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
@@ -217,6 +291,11 @@ const CollectivelyCourseSetView: React.FC<{
         }
         onSubmit(courseToStatus);
         toggle();
+    }
+
+    const handleCSVChange = (nextCSV: string) => {
+        setCSV(nextCSV);
+        setValidated(true);
     }
 
     return (
@@ -249,12 +328,12 @@ const CollectivelyCourseSetView: React.FC<{
                                 value={csv}
                                 className="text-monospace"
                                 onChange={
-                                    (event: React.ChangeEvent<HTMLTextAreaElement>) => setCSV(event.target.value)
+                                    (event: React.ChangeEvent<HTMLTextAreaElement>) => handleCSVChange(event.target.value)
                                 }
                                 style={{ whiteSpace: 'pre' }}
-                                isInvalid={isInvalid}
+                                isInvalid={validated && feedback !== undefined}
                             />
-                            <Form.Control.Feedback type="invalid">不正な形式です</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className={records === undefined || records.length === 0 ? 'mb-0' : ''}>
                             <Form.Label>CSVファイル / 科目番号のリストが記述されたファイル</Form.Label>
@@ -273,7 +352,7 @@ const CollectivelyCourseSetView: React.FC<{
                                             const reader = new FileReader();
                                             reader.addEventListener('load', () => {
                                                 if (typeof reader.result === 'string') {
-                                                    setCSV(reader.result);
+                                                    handleCSVChange(reader.result);
                                                 }
                                             });
                                             reader.readAsText(file);
@@ -284,11 +363,14 @@ const CollectivelyCourseSetView: React.FC<{
                             </div>
                         </Form.Group>
                         {
-                            records === undefined || records.length === 0 ? <></> : <Table1AndButton
-                                codeToCourse={codeToCourse}
-                                records={records}
-                                onSubmit={handleSubmit}
-                            />
+                            records === undefined || records.length === 0 || codeColumnIndex === undefined ?
+                                <></> :
+                                <Table1AndButton
+                                    codeColumnIndex={codeColumnIndex}
+                                    codeToCourse={codeToCourse}
+                                    records={records}
+                                    onSubmit={handleSubmit}
+                                />
                         }
                     </Card.Body>
                 </Accordion.Collapse>
