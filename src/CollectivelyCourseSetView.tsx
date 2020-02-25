@@ -167,6 +167,12 @@ const Table1AndButton: React.FC<{
 
     return (
         <>
+            <hr />
+            <p>
+                読み込んだ科目が以下に表示されています。
+                それぞれの科目を [履修する] / [修得済み] のいずれかに設定し、 [OK] ボタンを押します。
+                <strong>現在の履修 / 修得状態は失われます。</strong>
+            </p>
             <ButtonGroup className="mb-3">
                 <Button
                     variant="outline-primary"
@@ -224,6 +230,16 @@ const CollectivelyCourseSetView: React.FC<{
                 </Card.Header>
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
+                        <p>
+                            履修する科目や修得する科目の番号が含まれるCSVデータを用意します。
+                        </p>
+                        <ul>
+                            <li>[成績照会] 画面から出力したCSVファイルを、そのまま使用できます。</li>
+                            <li>1行ごとに科目番号だけが記述したデータでも構いません。</li>
+                        </ul>
+                        <p>
+                            用意したデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
+                        </p>
                         <Form.Group>
                             <Form.Label>CSV / 科目番号のリスト</Form.Label>
                             <Form.Control
