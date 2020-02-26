@@ -202,11 +202,11 @@ const Table1AndButton: React.FC<{
 
     const courseAndRecordPairs = records.map(record => ({
         record,
-        course: codeToCourse.get(record[codeColumnIndex])
+        course: codeToCourse.get(record[codeColumnIndex].trim())
     }));
     const titleColumnIndex = getColumnIndex(records, (cell, index) => {
         const course = codeToCourse.get(records[index][codeColumnIndex]);
-        return course !== undefined && cell === course.title;
+        return course !== undefined && cell.trim() === course.title;
     });
     const creditsCountColumnIndex = getColumnIndex(records, (cell, index) => {
         const course = codeToCourse.get(records[index][codeColumnIndex]);
@@ -277,7 +277,7 @@ const CollectivelyCourseSetView: React.FC<{
     const [validated, setValidated] = useState(false);
 
     const records: readonly string[][] | undefined = safely(parse, csv);
-    const codeColumnIndex = records && getColumnIndex(records, cell => codeToCourse.has(cell))!;
+    const codeColumnIndex = records && getColumnIndex(records, cell => codeToCourse.has(cell.trim()))!;
 
     const feedback =
         records === undefined ? '形式が不正です' :
