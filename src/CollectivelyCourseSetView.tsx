@@ -1,5 +1,4 @@
 import parse from 'csv-parse/lib/sync';
-import { zip } from 'lodash';
 import React, { useState } from 'react';
 import { Accordion, Badge, Button, ButtonGroup, Card, Form, Modal, OverlayTrigger, Table, Tooltip, useAccordionToggle } from "react-bootstrap";
 import Course from './Course';
@@ -42,10 +41,7 @@ const Table1: React.FC<{
     codeColumnIndex: number,
     titleColumnIndex: number | undefined,
     creditsCountColumnIndex: number | undefined,
-    courseAndRecordPairs: {
-        course: Course | undefined,
-        record: readonly string[],
-    }[],
+    courseAndRecordPairs: readonly CourseAndRecordPair[],
     courseToStatus: ReadonlyMap<Course, RegistrationStatus12>,
     setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
 }> = ({ codeColumnIndex, titleColumnIndex, creditsCountColumnIndex, courseAndRecordPairs, courseToStatus, setCourseToStatus }) => {
@@ -80,17 +76,17 @@ const Table1: React.FC<{
                 {
                     (firstRecordIsHeader ? courseAndRecordPairs.slice(1) : courseAndRecordPairs).map(
                         ({ course, record }, recordIndex) => {
-                            const getTdContent = <T,>(index: number | undefined, f0: (course: Course) => T, f1: (recordData: string) => T) => {
-                                const recordData = index === undefined ? undefined : record[index];
+                            const getTdContent = <T,>(index: number | undefined, mapCourse: (course: Course) => T, mapRecord: (recordValue: string) => T) => {
+                                const recordValue = index === undefined ? undefined : record[index];
                                 return (
                                     course === undefined ?
-                                        recordData :
-                                        recordData === undefined || f0(course) === f1(recordData) ?
-                                            f0(course) :
+                                        recordValue :
+                                        recordValue === undefined || mapRecord(recordValue) === mapCourse(course) ?
+                                            mapCourse(course) :
                                             (
                                                 <>
-                                                    <div><del>{recordData}</del></div>
-                                                    <div><ins>{f0(course)}</ins></div>
+                                                    <div><del>{recordValue}</del></div>
+                                                    <div><ins>{mapCourse(course)}</ins></div>
                                                 </>
                                             )
                                 );
@@ -173,45 +169,47 @@ const Table1: React.FC<{
     );
 }
 
-const getColumnIndex = (records: readonly string[][], callbackfn: (value: string, index: number, array: readonly string[]) => boolean) => {
-    const { index, value } = zip(...records)
-        .map(row => row
-            .map((value, index, array) => value !== undefined && callbackfn(value, index, array as string[]))
-            .map(cell => +cell)
-            .reduce((previous, current) => previous + current, 0))
-        .reduce((previous, currentValue, currentIndex) => previous.value < currentValue ? {
-            index: currentIndex,
-            value: currentValue,
-        } : previous, {
-            index: -1,
-            value: -Infinity,
-        });
-    if (value === 0) {
-        return undefined;
-    } else {
-        return index;
-    }
+interface CourseAndRecordPair {
+    course: Course | undefined;
+    record: readonly string[];
 }
+
+const getColumnIndex = <T,>(courseAndRecordPairs: readonly CourseAndRecordPair[], mapCourse: (course: Course) => T, mapRecord: (recordValue: string) => T) =>
+    courseAndRecordPairs[0].record
+        .map((_, index) => courseAndRecordPairs.reduce((count, { course, record }) => {
+            const recordValue = record[index];
+            if (course !== undefined && mapRecord(recordValue) === mapCourse(course)) {
+                return count + 1;
+            } else {
+                return count;
+            }
+        }, 0))
+        .reduce<{
+            count: number,
+            index: number | undefined,
+        }>((previous, current, index) => {
+            if (current > previous.count) {
+                return {
+                    count: current,
+                    index,
+                }
+            } else {
+                return previous;
+            }
+        }, {
+            count: 0,
+            index: undefined,
+        }).index;
+
 const Table1AndButton: React.FC<{
     codeColumnIndex: number,
-    codeToCourse: ReadonlyMap<string, Course>,
-    records: readonly string[][],
+    courseAndRecordPairs: readonly CourseAndRecordPair[],
     onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
-}> = ({ codeColumnIndex, codeToCourse, records, onSubmit }) => {
+}> = ({ codeColumnIndex, courseAndRecordPairs, onSubmit }) => {
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
 
-    const courseAndRecordPairs = records.map(record => ({
-        record,
-        course: codeToCourse.get(record[codeColumnIndex].trim())
-    }));
-    const titleColumnIndex = getColumnIndex(records, (cell, index) => {
-        const course = codeToCourse.get(records[index][codeColumnIndex]);
-        return course !== undefined && cell.trim() === course.title;
-    });
-    const creditsCountColumnIndex = getColumnIndex(records, (cell, index) => {
-        const course = codeToCourse.get(records[index][codeColumnIndex]);
-        return course !== undefined && +cell === course.creditsCount;
-    })
+    const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
+    const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)
 
     const handleOKClick = () => {
         onSubmit(new Map(
@@ -276,8 +274,36 @@ const CollectivelyCourseSetView: React.FC<{
     const [csv, setCSV] = useState("");
     const [validated, setValidated] = useState(false);
 
-    const records: readonly string[][] | undefined = safely(parse, csv);
-    const codeColumnIndex = records && getColumnIndex(records, cell => codeToCourse.has(cell.trim()))!;
+    const records: readonly (readonly string[])[] | undefined = safely(parse, csv);
+    const { courseAndRecordPairs, index: codeColumnIndex } = (
+        records && records[0]
+            ?.map((_, index) => records.reduce(({ count, courseAndRecordPairs }, record) => {
+                const code = record[index];
+                const course = codeToCourse.get(code.trim());
+                return {
+                    count: course === undefined ? count : count + 1,
+                    courseAndRecordPairs: [...courseAndRecordPairs, { record, course }],
+                };
+            }, { count: 0, courseAndRecordPairs: new Array<CourseAndRecordPair>() }))
+            .reduce<{
+                count: number;
+                courseAndRecordPairs: readonly CourseAndRecordPair[] | undefined;
+                index: number | undefined;
+            }>((previous, current, index) => {
+                if (current.count > previous.count) {
+                    return { ...current, index };
+                } else {
+                    return previous;
+                }
+            }, {
+                count: 0,
+                courseAndRecordPairs: undefined,
+                index: undefined,
+            })
+    ) ?? {
+        courseAndRecordPairs: undefined,
+        index: undefined,
+    };
 
     const feedback =
         records === undefined ? '形式が不正です' :
@@ -363,12 +389,11 @@ const CollectivelyCourseSetView: React.FC<{
                             </div>
                         </Form.Group>
                         {
-                            records === undefined || records.length === 0 || codeColumnIndex === undefined ?
+                            courseAndRecordPairs === undefined || courseAndRecordPairs.length === 0 || codeColumnIndex === undefined ?
                                 <></> :
                                 <Table1AndButton
                                     codeColumnIndex={codeColumnIndex}
-                                    codeToCourse={codeToCourse}
-                                    records={records}
+                                    courseAndRecordPairs={courseAndRecordPairs}
                                     onSubmit={handleSubmit}
                                 />
                         }
