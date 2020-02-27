@@ -154,7 +154,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     {
                         [...requirementAndDictionaryPairs.values()].map(
                             ({ id, name }) => (
-                                <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId}>
+                                <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId} key={id}>
                                     {name}
                                 </Dropdown.Item>
                             )

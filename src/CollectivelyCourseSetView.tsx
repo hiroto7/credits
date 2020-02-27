@@ -62,15 +62,17 @@ const Table1: React.FC<{
             style={{ whiteSpace: 'nowrap' }}
         >
             <thead>
-                <th></th>
-                <th>科目番号</th>
-                <th>科目名</th>
-                <th>単位数</th>
-                {
-                    firstRecord
-                        .filter((_, index) => index !== codeColumnIndex && index !== titleColumnIndex && index !== creditsCountColumnIndex)
-                        .map(cell => (<th>{firstRecordIsHeader ? cell : (<></>)}</th>))
-                }
+                <tr>
+                    <th></th>
+                    <th>科目番号</th>
+                    <th>科目名</th>
+                    <th>単位数</th>
+                    {
+                        firstRecord
+                            .map((cell, index) => (<th key={index}>{firstRecordIsHeader ? cell : (<></>)}</th>))
+                            .filter((_, index) => index !== codeColumnIndex && index !== titleColumnIndex && index !== creditsCountColumnIndex)
+                    }
+                </tr>
             </thead>
             <tbody>
                 {
@@ -103,7 +105,7 @@ const Table1: React.FC<{
                             );
                             const tds1 = record
                                 .map((cell, index) => (
-                                    <td>
+                                    <td key={index}>
                                         {
                                             index === codeColumnIndex ?
                                                 (<code>{cell}</code>) :
@@ -123,7 +125,7 @@ const Table1: React.FC<{
 
                             if (course === undefined) {
                                 return (
-                                    <tr>
+                                    <tr key={recordIndex}>
                                         <td style={{ textAlign: 'center' }}>
                                             <OverlayTrigger
                                                 overlay={
@@ -143,6 +145,7 @@ const Table1: React.FC<{
 
                                 return (
                                     <tr
+                                        key={recordIndex}
                                         onClick={
                                             () => setCourseToStatus(new Map([
                                                 ...courseToStatus,
