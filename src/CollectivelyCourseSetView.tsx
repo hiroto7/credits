@@ -174,32 +174,50 @@ interface CourseAndRecordPair {
     record: readonly string[];
 }
 
-const getColumnIndex = <T,>(courseAndRecordPairs: readonly CourseAndRecordPair[], mapCourse: (course: Course) => T, mapRecord: (recordValue: string) => T) =>
-    courseAndRecordPairs[0].record
-        .map((_, index) => courseAndRecordPairs.reduce((count, { course, record }) => {
+const f0 = <T, U, V, W>(
+    recordLikeList: readonly T[],
+    getRecord: (recordLike: T) => readonly string[],
+    getInitial0: (count: number) => U,
+    getCount0: (countLike: U) => number,
+    getTemp0: (recordValue: string, recordLike: T) => V,
+    determine: (temp0: V) => boolean,
+    getReturnValue0: (count: number, previous: U, temp0: V) => U,
+    getInitial1: ({ count, index }: { count: number, index: number | undefined }) => W,
+    getCount1: (countLike: W) => number,
+    getReturnValue1: (current: U, index: number) => W,
+) => {
+    const firstRecord = getRecord(recordLikeList[0]);
+    return firstRecord
+        .map((_, index) => recordLikeList.reduce((previous, recordLike) => {
+            const record = getRecord(recordLike);
             const recordValue = record[index];
-            if (course !== undefined && mapRecord(recordValue) === mapCourse(course)) {
-                return count + 1;
-            } else {
-                return count;
-            }
-        }, 0))
-        .reduce<{
-            count: number,
-            index: number | undefined,
-        }>((previous, current, index) => {
-            if (current > previous.count) {
-                return {
-                    count: current,
-                    index,
-                }
+            const count = getCount0(previous);
+            const t = getTemp0(recordValue, recordLike);
+            const nextCount = determine(t) ? count + 1 : count;
+            return getReturnValue0(nextCount, previous, t);
+        }, getInitial0(0)))
+        .reduce((previous, current, index) => {
+            if (getCount0(current) > getCount1(previous)) {
+                return getReturnValue1(current, index);
             } else {
                 return previous;
             }
-        }, {
-            count: 0,
-            index: undefined,
-        }).index;
+        }, getInitial1({ count: 0, index: undefined }));
+}
+
+const getColumnIndex = <T,>(courseAndRecordPairs: readonly CourseAndRecordPair[], mapCourse: (course: Course) => T, mapRecord: (recordValue: string) => T) =>
+    f0(
+        courseAndRecordPairs,
+        courseAndRecordPair => courseAndRecordPair.record,
+        count => count,
+        count => count,
+        (recordValue, { course }) => ({ recordValue, course }),
+        ({ recordValue, course }) => course !== undefined && mapRecord(recordValue) === mapCourse(course),
+        count => count,
+        ({ count, index }) => ({ count, index }),
+        ({ count }) => count,
+        (count, index) => ({ count, index })
+    ).index;
 
 const Table1AndButton: React.FC<{
     codeColumnIndex: number,
@@ -276,30 +294,34 @@ const CollectivelyCourseSetView: React.FC<{
 
     const records: readonly (readonly string[])[] | undefined = safely(parse, csv);
     const { courseAndRecordPairs, index: codeColumnIndex } = (
-        records && records[0]
-            ?.map((_, index) => records.reduce(({ count, courseAndRecordPairs }, record) => {
-                const code = record[index];
-                const course = codeToCourse.get(code.trim());
-                return {
-                    count: course === undefined ? count : count + 1,
-                    courseAndRecordPairs: [...courseAndRecordPairs, { record, course }],
-                };
-            }, { count: 0, courseAndRecordPairs: new Array<CourseAndRecordPair>() }))
-            .reduce<{
-                count: number;
-                courseAndRecordPairs: readonly CourseAndRecordPair[] | undefined;
-                index: number | undefined;
-            }>((previous, current, index) => {
-                if (current.count > previous.count) {
-                    return { ...current, index };
-                } else {
-                    return previous;
-                }
-            }, {
-                count: 0,
+        records && records[0] &&
+        f0(records,
+            record => record,
+            count => ({
+                count,
+                courseAndRecordPairs: new Array<CourseAndRecordPair>()
+            }),
+            ({ count }) => count,
+            (code, record) => ({
+                course: codeToCourse.get(code.trim()),
+                record,
+            }),
+            ({ course }) => course !== undefined,
+            (count, { courseAndRecordPairs }, { record, course }) => ({
+                count,
+                courseAndRecordPairs: [...courseAndRecordPairs, { record, course }],
+            }),
+            ({ count, index }): {
+                count: number,
+                index: number | undefined,
+                courseAndRecordPairs: readonly CourseAndRecordPair[] | undefined
+            } => ({
+                count, index,
                 courseAndRecordPairs: undefined,
-                index: undefined,
-            })
+            }),
+            ({ count }) => count,
+            ({ count, courseAndRecordPairs }, index) => ({ count, courseAndRecordPairs, index })
+        )
     ) ?? {
         courseAndRecordPairs: undefined,
         index: undefined,
