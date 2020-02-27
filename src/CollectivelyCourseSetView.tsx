@@ -295,7 +295,8 @@ const CollectivelyCourseSetView: React.FC<{
     const records: readonly (readonly string[])[] | undefined = safely(parse, csv);
     const { courseAndRecordPairs, index: codeColumnIndex } = (
         records && records[0] &&
-        f0(records,
+        f0(
+            records,
             record => record,
             count => ({
                 count,
