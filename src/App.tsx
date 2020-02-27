@@ -27,19 +27,20 @@ const RequirementWithConfiguration: React.FC<{
     return (
         <>
             <Accordion className="mb-3">
-                <CollectivelyCourseSetView
-                    eventKey="0"
-                    codeToCourse={codeToCourse}
-                    onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
-                />
-                <ExportView eventKey="1" plan={plan} />
+                <ExportView eventKey="0" plan={plan} />
                 <ImportView
-                    eventKey="2"
+                    eventKey="1"
                     onSubmit={setPlan}
                     codeToCourse={codeToCourse}
                     nameToRequirement={nameToRequirement}
                 />
             </Accordion>
+            <div className="mb-3">
+                <CollectivelyCourseSetView
+                    codeToCourse={codeToCourse}
+                    onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
+                />
+            </div>
             <Form.Group>
                 <Form.Label>科目の履修状態のロック</Form.Label>
                 {
