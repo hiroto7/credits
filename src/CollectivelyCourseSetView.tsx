@@ -1,6 +1,6 @@
 import parse from 'csv-parse/lib/sync';
 import React, { useState } from 'react';
-import { Accordion, Badge, Button, ButtonGroup, Card, Form, Modal, OverlayTrigger, Table, Tooltip, useAccordionToggle } from "react-bootstrap";
+import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import Course from './Course';
 import getValueFromModal, { useModals } from './getValueFromModal';
 import { RegistrationStatus } from './Plan';
@@ -201,17 +201,24 @@ const getColumnIndex = <T,>(courseAndRecordPairs: readonly CourseAndRecordPair[]
             index: undefined,
         }).index;
 
-const Table1AndButton: React.FC<{
+const Modal1: React.FC<{
     codeColumnIndex: number,
     courseAndRecordPairs: readonly CourseAndRecordPair[],
+    show: boolean,
+    onHide: () => void,
+    onBack: () => void,
     onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
-}> = ({ codeColumnIndex, courseAndRecordPairs, onSubmit }) => {
+}> = ({ codeColumnIndex, courseAndRecordPairs, show, onHide, onBack, onSubmit }) => {
+    const { modals, setModalsAndCount } = useModals();
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
 
     const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
     const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)
 
-    const handleOKClick = () => {
+    const handleOKClick = async () => {
+        if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
+            return;
+        }
         onSubmit(new Map(
             courseAndRecordPairs
                 .map(({ course }) => course)
@@ -231,53 +238,66 @@ const Table1AndButton: React.FC<{
 
     return (
         <>
-            <hr />
-            <p>
-                読み込んだ科目が以下に表示されています。
-                それぞれの科目を [履修する] / [修得済み] のいずれかに設定し、 [OK] ボタンを押します。
-                <strong>現在の履修 / 修得状態は失われます。</strong>
-            </p>
-            <ButtonGroup className="mb-3">
-                <Button
-                    variant="outline-primary"
-                    onClick={() => setAllCourseStatus(RegistrationStatus.Registered)}
-                >
-                    すべて履修する
-                </Button>
-                <Button
-                    variant="outline-success"
-                    onClick={() => setAllCourseStatus(RegistrationStatus.Acquired)}
-                >
-                    すべて修得済み
-                </Button>
-            </ButtonGroup>
-            <Table1
-                codeColumnIndex={codeColumnIndex}
-                titleColumnIndex={titleColumnIndex}
-                creditsCountColumnIndex={creditsCountColumnIndex}
-                courseAndRecordPairs={courseAndRecordPairs}
-                courseToStatus={courseToStatus}
-                setCourseToStatus={setCourseToStatus}
-            />
-            <Button onClick={handleOKClick}>OK</Button>
+            {modals}
+            <Modal size="xl" show={show} onHide={onHide}>
+                <Modal.Header closeButton>
+                    <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        読み込んだ科目が以下に表示されています。
+                        それぞれの科目を [履修する] / [修得済み] のいずれかに設定し、 [OK] ボタンを押します。
+                        <strong>現在の履修 / 修得状態は失われます。</strong>
+                    </p>
+                    <ButtonGroup className="mb-3">
+                        <Button
+                            variant="outline-primary"
+                            onClick={() => setAllCourseStatus(RegistrationStatus.Registered)}
+                        >
+                            すべて履修する
+                        </Button>
+                        <Button
+                            variant="outline-success"
+                            onClick={() => setAllCourseStatus(RegistrationStatus.Acquired)}
+                        >
+                            すべて修得済み
+                        </Button>
+                    </ButtonGroup>
+                    <Table1
+                        codeColumnIndex={codeColumnIndex}
+                        titleColumnIndex={titleColumnIndex}
+                        creditsCountColumnIndex={creditsCountColumnIndex}
+                        courseAndRecordPairs={courseAndRecordPairs}
+                        courseToStatus={courseToStatus}
+                        setCourseToStatus={setCourseToStatus}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={onHide}>キャンセル</Button>
+                    <Button variant="secondary" onClick={onBack}>戻る</Button>
+                    <Button onClick={handleOKClick}>OK</Button>
+                </Modal.Footer>
+            </Modal>
         </>
-    )
+    );
 }
 
-const CollectivelyCourseSetView: React.FC<{
-    eventKey: string,
+const Modal0: React.FC<{
     codeToCourse: ReadonlyMap<string, Course>,
-    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
-}> = ({ eventKey, codeToCourse, onSubmit }) => {
-    const toggle = useAccordionToggle(eventKey, () => { });
-    const { modals, setModalsAndCount } = useModals();
+    show: boolean,
+    onHide: () => void,
+    onSubmit: ({ courseAndRecordPairs, codeColumnIndex }: {
+        courseAndRecordPairs: readonly CourseAndRecordPair[],
+        codeColumnIndex: number,
+    }) => void,
+}> = ({ codeToCourse, show, onHide, onSubmit }) => {
     const [csv, setCSV] = useState("");
     const [validated, setValidated] = useState(false);
 
     const records: readonly (readonly string[])[] | undefined = safely(parse, csv);
     const { courseAndRecordPairs, index: codeColumnIndex } = (
-        records && records[0]
-            ?.map((_, index) => records.reduce(({ count, courseAndRecordPairs }, record) => {
+        records === undefined || records.length === 0 ? undefined : records[0]
+            .map((_, index) => records.reduce(({ count, courseAndRecordPairs }, record) => {
                 const code = record[index];
                 const course = codeToCourse.get(code.trim());
                 return {
@@ -311,97 +331,125 @@ const CollectivelyCourseSetView: React.FC<{
                 codeColumnIndex === undefined ? '科目がひとつも見つかりません' :
                     undefined;
 
-    const handleSubmit = async (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {
-        if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
-            return;
-        }
-        onSubmit(courseToStatus);
-        toggle();
-    }
-
     const handleCSVChange = (nextCSV: string) => {
         setCSV(nextCSV);
         setValidated(true);
     }
 
     return (
-        <>
-            {modals}
-            <Card>
-                <Card.Header>
-                    <Accordion.Toggle eventKey={eventKey} variant="link" as={Button}>
-                        科目の履修 / 修得状態をまとめて設定
-                    </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey={eventKey}>
-                    <Card.Body>
-                        <p>
-                            履修する科目や修得する科目の番号が含まれるCSVデータを用意します。
-                        </p>
-                        <ul>
-                            <li>[成績照会] 画面から出力したCSVファイルをそのまま使用できます。</li>
-                            <li>1行ごとに科目番号のみを記述したデータでも構いません。</li>
-                        </ul>
-                        <p>
-                            用意したデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
-                        </p>
-                        <Form.Group>
-                            <Form.Label>CSV / 科目番号のリスト</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={5}
-                                placeholder={placeholder}
-                                value={csv}
-                                className="text-monospace"
-                                onChange={
-                                    (event: React.ChangeEvent<HTMLTextAreaElement>) => handleCSVChange(event.target.value)
-                                }
-                                style={{ whiteSpace: 'pre' }}
-                                isInvalid={validated && feedback !== undefined}
-                            />
-                            <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className={records === undefined || records.length === 0 ? 'mb-0' : ''}>
-                            <Form.Label>CSVファイル / 科目番号のリストが記述されたファイル</Form.Label>
-                            <div className="custom-file">
-                                <input
-                                    type="file"
-                                    accept="text/plain"
-                                    className="custom-file-input"
-                                    id="csv-file-input"
-                                    onChange={
-                                        (event: React.ChangeEvent<HTMLInputElement>) => {
-                                            const file = event.target.files?.item(0);
-                                            if (file === null || file === undefined) {
-                                                return;
-                                            }
-                                            const reader = new FileReader();
-                                            reader.addEventListener('load', () => {
-                                                if (typeof reader.result === 'string') {
-                                                    handleCSVChange(reader.result);
-                                                }
-                                            });
-                                            reader.readAsText(file);
-                                        }
-                                    }
-                                />
-                                <label className="custom-file-label" htmlFor="csv-file-input">Choose file</label>
-                            </div>
-                        </Form.Group>
-                        {
-                            courseAndRecordPairs === undefined || courseAndRecordPairs.length === 0 || codeColumnIndex === undefined ?
-                                <></> :
-                                <Table1AndButton
-                                    codeColumnIndex={codeColumnIndex}
-                                    courseAndRecordPairs={courseAndRecordPairs}
-                                    onSubmit={handleSubmit}
-                                />
+        <Modal size="lg" show={show} onHide={onHide}>
+            <Modal.Header closeButton>
+                <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>
+                    履修する科目や修得する科目の番号が含まれるCSVデータを用意します。
+                </p>
+                <ul>
+                    <li>[成績照会] 画面から出力したCSVファイルをそのまま使用できます。</li>
+                    <li>1行ごとに科目番号のみを記述したデータでも構いません。</li>
+                </ul>
+                <p>
+                    用意したデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
+                </p>
+                <Form.Group>
+                    <Form.Label>CSV / 科目番号のリスト</Form.Label>
+                    <Form.Control
+                        as="textarea"
+                        rows={5}
+                        placeholder={placeholder}
+                        value={csv}
+                        className="text-monospace"
+                        onChange={
+                            (event: React.ChangeEvent<HTMLTextAreaElement>) => handleCSVChange(event.target.value)
                         }
-                    </Card.Body>
-                </Accordion.Collapse>
-            </Card>
-        </>
+                        style={{ whiteSpace: 'pre' }}
+                        isInvalid={validated && feedback !== undefined}
+                    />
+                    <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>CSVファイル / 科目番号のリストが記述されたファイル</Form.Label>
+                    <div className="custom-file">
+                        <input
+                            type="file"
+                            accept="text/plain"
+                            className="custom-file-input"
+                            id="csv-file-input"
+                            onChange={
+                                (event: React.ChangeEvent<HTMLInputElement>) => {
+                                    const file = event.target.files?.item(0);
+                                    if (file === null || file === undefined) {
+                                        return;
+                                    }
+                                    const reader = new FileReader();
+                                    reader.addEventListener('load', () => {
+                                        if (typeof reader.result === 'string') {
+                                            handleCSVChange(reader.result);
+                                        }
+                                    });
+                                    reader.readAsText(file);
+                                }
+                            }
+                        />
+                        <label className="custom-file-label" htmlFor="csv-file-input">Choose file</label>
+                    </div>
+                </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onHide}>キャンセル</Button>
+                {
+                    courseAndRecordPairs === undefined || codeColumnIndex === undefined ?
+                        (<Button disabled>次へ</Button>) :
+                        (<Button onClick={() => onSubmit({ courseAndRecordPairs, codeColumnIndex })}>次へ</Button>)
+                }
+            </Modal.Footer>
+        </Modal>
     )
 };
+
+const CollectivelyCourseSetView: React.FC<{
+    codeToCourse: ReadonlyMap<string, Course>,
+    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+}> = ({ codeToCourse, onSubmit }) => {
+    const [page, setPage] = useState<number | undefined>();
+    const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly CourseAndRecordPair[] | undefined>();
+    const [codeColumnIndex, setCodeColumnIndex] = useState<number | undefined>();
+
+    return (
+        <>
+            <Button variant="secondary" onClick={() => setPage(0)}>科目の履修 / 修得状態をまとめて設定</Button>
+            <Modal0
+                codeToCourse={codeToCourse}
+                show={page === 0}
+                onHide={() => setPage(undefined)}
+                onSubmit={
+                    ({ courseAndRecordPairs, codeColumnIndex }) => {
+                        setCourseAndRecordPairs(courseAndRecordPairs);
+                        setCodeColumnIndex(codeColumnIndex);
+                        setPage(1);
+                    }
+                }
+            />
+            {
+                courseAndRecordPairs === undefined || codeColumnIndex === undefined ? (<></>) : (
+                    <Modal1
+                        courseAndRecordPairs={courseAndRecordPairs}
+                        codeColumnIndex={codeColumnIndex}
+                        show={page === 1}
+                        onHide={() => setPage(undefined)}
+                        onBack={() => setPage(0)}
+                        onSubmit={
+                            (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {
+                                onSubmit(courseToStatus);
+                                setPage(undefined);
+                            }
+                        }
+                    />
+                )
+            }
+        </>
+    )
+}
 
 export default CollectivelyCourseSetView;
