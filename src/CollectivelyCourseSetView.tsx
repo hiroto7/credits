@@ -62,15 +62,17 @@ const Table1: React.FC<{
             style={{ whiteSpace: 'nowrap' }}
         >
             <thead>
-                <th></th>
-                <th>科目番号</th>
-                <th>科目名</th>
-                <th>単位数</th>
-                {
-                    firstRecord
-                        .map((cell, index) => (<th key={index}>{firstRecordIsHeader ? cell : (<></>)}</th>))
-                        .filter((_, index) => index !== codeColumnIndex && index !== titleColumnIndex && index !== creditsCountColumnIndex)
-                }
+                <tr>
+                    <th></th>
+                    <th>科目番号</th>
+                    <th>科目名</th>
+                    <th>単位数</th>
+                    {
+                        firstRecord
+                            .map((cell, index) => (<th key={index}>{firstRecordIsHeader ? cell : (<></>)}</th>))
+                            .filter((_, index) => index !== codeColumnIndex && index !== titleColumnIndex && index !== creditsCountColumnIndex)
+                    }
+                </tr>
             </thead>
             <tbody>
                 {
