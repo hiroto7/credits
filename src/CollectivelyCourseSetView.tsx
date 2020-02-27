@@ -245,8 +245,8 @@ const Modal1: React.FC<{
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-                        読み込んだ科目が以下に表示されています。
-                        それぞれの科目を [履修する] / [修得済み] のいずれかに設定し、 [OK] ボタンを押します。
+                        CSVデータから見つかった科目が以下に表示されています。
+                        それぞれの科目を [履修する] / [修得済み] のどちらかに設定し、 [OK] ボタンを押します。
                         <strong>現在の履修 / 修得状態は失われます。</strong>
                     </p>
                     <ButtonGroup className="mb-3">
@@ -326,8 +326,8 @@ const Modal0: React.FC<{
     };
 
     const feedback =
-        records === undefined ? '形式が不正です' :
-            records.length === 0 ? '入力してください' :
+        records === undefined ? 'CSVの形式が不正です' :
+            records.length === 0 ? 'CSVを入力してください' :
                 codeColumnIndex === undefined ? '科目がひとつも見つかりません' :
                     undefined;
 
@@ -343,11 +343,11 @@ const Modal0: React.FC<{
             </Modal.Header>
             <Modal.Body>
                 <p>
-                    履修する科目や修得する科目の番号が含まれるCSVデータを用意します。
+                    ひとつの列に履修 / 修得する科目の番号が記述されたCSVデータを用意します。
                 </p>
                 <ul>
-                    <li>[成績照会] 画面から出力したCSVファイルをそのまま使用できます。</li>
-                    <li>1行ごとに科目番号のみを記述したデータでも構いません。</li>
+                    <li>TWINS の [成績照会] 画面からダウンロードしたCSVファイルをそのまま使用できます。</li>
+                    <li>科目番号のみを各行に記述したデータも使用できます。</li>
                 </ul>
                 <p>
                     用意したデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
@@ -369,7 +369,7 @@ const Modal0: React.FC<{
                     <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>CSVファイル / 科目番号のリストが記述されたファイル</Form.Label>
+                    <Form.Label>CSVファイル</Form.Label>
                     <div className="custom-file">
                         <input
                             type="file"
