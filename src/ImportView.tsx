@@ -72,7 +72,7 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
                         <p>
-                            保存したテキストデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
+                            保存したJSONデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
                             次に [インポート] ボタンを押します。
                             <strong>現在の設定状態は失われます。</strong>
                         </p>
