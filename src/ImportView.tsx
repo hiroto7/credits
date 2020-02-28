@@ -35,12 +35,18 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     onSubmit: (nextPlan: Plan) => void,
 }) => {
     const [jsonText, setJSONText] = useState("");
+    const [validated, setValidated] = useState(false);
     const toggle = useAccordionToggle(eventKey, () => { });
     const { modals, setModalsAndCount } = useModals();
 
     const json = safely(JSON.parse, jsonText);
     const nextPlan = json && safely(fromJSON, json, { codeToCourse, nameToRequirement });
     const isInvalid = nextPlan === undefined;
+
+    const handleJSONChange = (nextJSON: string) => {
+        setJSONText(nextJSON);
+        setValidated(true);
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -66,18 +72,48 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
                         <p>
-                            テキストボックスに保存したテキストを貼り付けてから、 [インポート] ボタンを押します。
-                            <strong>インポートすると現在の設定状態は失われます。</strong>
+                            保存したテキストデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
+                            次に [インポート] ボタンを押します。
+                            <strong>現在の設定状態は失われます。</strong>
                         </p>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
                                 <Form.Label>JSON</Form.Label>
                                 <Form.Control
-                                    className="input-monospace" isInvalid={isInvalid}
-                                    value={jsonText} placeholder={JSON.stringify(toJSON(emptyPlan))}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJSONText(e.target.value)}
+                                    className="input-monospace"
+                                    isInvalid={validated && isInvalid}
+                                    value={jsonText}
+                                    placeholder={JSON.stringify(toJSON(emptyPlan))}
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJSONChange(event.target.value)}
                                 />
-                                <Form.Control.Feedback type="invalid">JSONが不正です</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">JSONの形式が不正です</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>JSONファイル</Form.Label>
+                                <div className="custom-file">
+                                    <input
+                                        type="file"
+                                        accept=".json,application/json"
+                                        className="custom-file-input"
+                                        id="json-file-input"
+                                        onChange={
+                                            (event: React.ChangeEvent<HTMLInputElement>) => {
+                                                const file = event.target.files?.item(0);
+                                                if (file === null || file === undefined) {
+                                                    return;
+                                                }
+                                                const reader = new FileReader();
+                                                reader.addEventListener('load', () => {
+                                                    if (typeof reader.result === 'string') {
+                                                        handleJSONChange(reader.result);
+                                                    }
+                                                });
+                                                reader.readAsText(file);
+                                            }
+                                        }
+                                    />
+                                    <label className="custom-file-label" htmlFor="json-file-input">Choose file</label>
+                                </div>
                             </Form.Group>
                             <Button type="submit" disabled={isInvalid}>インポート</Button>
                         </Form>
