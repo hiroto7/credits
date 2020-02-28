@@ -9,10 +9,17 @@ const ExportView = ({ plan, eventKey }: {
     const jsonText = JSON.stringify(toJSON(plan));
     const [url, setURL] = useState<string | undefined>();
     useEffect(() => {
-        const blob = new Blob([jsonText], { type: 'application/json' })
-        const url = URL.createObjectURL(blob);
-        setURL(url);
-        return () => URL.revokeObjectURL(url);
+        const blob = new Blob([jsonText], { type: 'application/json' });
+        const reader = new FileReader();
+        const onLoad = () => {
+            const url = reader.result;
+            if (typeof url === 'string') {
+                setURL(url);
+            }
+        }
+        reader.addEventListener('load', onLoad);
+        reader.readAsDataURL(blob);
+        return () => reader.removeEventListener('load', onLoad);
     }, [jsonText]);
 
     return (
