@@ -376,7 +376,7 @@ const Modal0: React.FC<{
                     <div className="custom-file">
                         <input
                             type="file"
-                            accept="text/plain"
+                            accept=".csv,text/csv,text/plain"
                             className="custom-file-input"
                             id="csv-file-input"
                             onChange={
