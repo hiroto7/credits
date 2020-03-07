@@ -44,20 +44,11 @@ const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }
     }
 
     const clearCourseToRequirement = (requirement: Requirements, newCourseToRequirement: Map<Course, RequirementWithCourses>) => {
-        if (requirement instanceof RequirementWithChildren) {
-            for (const child of requirement.children) {
-                clearCourseToRequirement(child, newCourseToRequirement);
-            }
-        } else if (requirement instanceof RequirementWithCourses) {
-            for (const course of requirement.courses) {
-                if (newCourseToRequirement.get(course) === requirement) {
+        for (const requirementWithCourses of requirement.f(selectionNameToOptionName)) {
+            for (const course of requirementWithCourses.courses) {
+                if (newCourseToRequirement.get(course) === requirementWithCourses) {
                     newCourseToRequirement.delete(course);
                 }
-            }
-        } else {
-            const selectedRequirement = requirement.getSelectedRequirement(selectionNameToOptionName);
-            if (selectedRequirement !== undefined) {
-                clearCourseToRequirement(selectedRequirement, newCourseToRequirement);
             }
         }
     }
