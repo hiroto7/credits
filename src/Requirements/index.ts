@@ -10,6 +10,7 @@ export default Requirements;
 abstract class Requirement {
     abstract getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
     abstract getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
+    abstract f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[];
     constructor(readonly name: string) { }
     getStatus(plan: Plan): RegistrationStatus {
         const requiredCreditsCount = this.getRequiredCreditsCount(plan.selectionNameToOptionName);
@@ -19,7 +20,7 @@ abstract class Requirement {
             registeredCreditsCounts.registered >= requiredCreditsCount.min ?
                 RegistrationStatus.Registered :
                 RegistrationStatus.Unregistered;
-    };
+    }
 }
 
 export interface Range {
@@ -75,7 +76,10 @@ export class RequirementWithChildren extends Requirement implements RequirementW
             super.getStatus(plan),
             ...this.children.map(child => child.getStatus(plan))
         );
-    };
+    }
+    f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {
+        return this.children.flatMap(requirement => requirement.f(selectionNameToOptionName));
+    }
 }
 
 export interface RequirementWithCoursesInit {
@@ -126,6 +130,9 @@ export class RequirementWithCourses extends Requirement {
     getRequiredCreditsCount() {
         return this.creditsCount;
     }
+    f() {
+        return [this] as const;
+    }
 }
 
 interface Option {
@@ -141,7 +148,7 @@ export interface SelectionRequirementInit {
 
 export class SelectionRequirement extends Requirement implements SelectionRequirementInit {
     readonly selectionName: string;
-    readonly options: Option[];
+    readonly options: readonly Option[];
     readonly optionNameToRequirement: ReadonlyMap<string, Requirements>;
     constructor({ name, selectionName, options: options0 }: SelectionRequirementInit) {
         super(name);
@@ -173,6 +180,14 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
             return { min: 0, max: 0 };
         } else {
             return selectedRequirement.getRequiredCreditsCount(selectionNameToOptionName);
+        }
+    }
+    f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {
+        const selectedRequirement = this.getSelectedRequirement(selectionNameToOptionName);
+        if (selectedRequirement === undefined) {
+            return [];
+        } else {
+            return selectedRequirement.f(selectionNameToOptionName);
         }
     }
 }
