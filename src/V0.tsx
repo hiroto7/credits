@@ -4,17 +4,31 @@ import Course from './Course';
 import Plan, { RegistrationStatus } from './Plan';
 import Requirements, { Range, RequirementWithCourses } from './Requirements';
 
-function* f0(requiredCreditsCount: Range, unselectedCourses: readonly Course[], selectedCourses: readonly Course[], selectedCreditsCount: number): Generator<readonly Course[], void, undefined> {
-    if (selectedCreditsCount >= requiredCreditsCount.max) {
-        yield selectedCourses;
+function* f0(
+    requiredCreditsCount: Range,
+    unselectedCourses: readonly Course[],
+    selectedCourses: readonly Course[],
+    selectedCreditsCountSum: number,
+    selectedCreditsCountMin: number
+): Generator<readonly Course[], void, undefined> {
+    if (selectedCreditsCountSum >= requiredCreditsCount.max) {
+        if (selectedCreditsCountMin > selectedCreditsCountSum - requiredCreditsCount.max) {
+            yield selectedCourses;
+        }
     } else if (unselectedCourses.length === 0) {
-        if (selectedCreditsCount >= requiredCreditsCount.min) {
+        if (selectedCreditsCountSum >= requiredCreditsCount.min) {
             yield selectedCourses;
         }
     } else {
         for (const [index, course] of unselectedCourses.entries()) {
             const slicedCourseList = unselectedCourses.slice(index + 1);
-            yield* f0(requiredCreditsCount, slicedCourseList, [...selectedCourses, course], selectedCreditsCount + course.creditsCount);
+            yield* f0(
+                requiredCreditsCount,
+                slicedCourseList,
+                [...selectedCourses, course],
+                selectedCreditsCountSum + course.creditsCount,
+                Math.min(selectedCreditsCountMin, course.creditsCount),
+            );
         }
     }
 }
@@ -43,7 +57,7 @@ const f1 = (requirement: Requirements, requirements: readonly RequirementWithCou
     } | undefined>((previous, current) => {
         const courses0 = current.courses.filter(course => plan.courseToRequirement.get(course) === undefined && (plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered) !== RegistrationStatus.Unregistered);
         let courseLists: (readonly Course[])[] = [];
-        for (const courses of f0(current.creditsCount, courses0, [], 0)) {
+        for (const courses of f0(current.creditsCount, courses0, [], 0, Infinity)) {
             if (previous !== undefined && courseLists.length + 1 >= previous.courseLists.length) {
                 return previous;
             }
