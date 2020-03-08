@@ -14,6 +14,7 @@ import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
 import RequirementView from './RequirementView';
+import V0 from './V0';
 
 const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
@@ -39,6 +40,13 @@ const RequirementWithConfiguration: React.FC<{
                 <CollectivelyCourseSetView
                     codeToCourse={codeToCourse}
                     onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
+                />
+            </div>
+            <div className="mb-3">
+                <V0
+                    requirement={requirement}
+                    plan={plan}
+                    onSubmit={setPlan}
                 />
             </div>
             <Form.Group>

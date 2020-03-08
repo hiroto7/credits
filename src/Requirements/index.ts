@@ -8,13 +8,13 @@ type Requirements = RequirementWithChildren | RequirementWithCourses | Selection
 export default Requirements;
 
 abstract class Requirement {
-    abstract getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
+    abstract getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
     abstract getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
     abstract f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[];
     constructor(readonly name: string) { }
     getStatus(plan: Plan): RegistrationStatus {
         const requiredCreditsCount = this.getRequiredCreditsCount(plan.selectionNameToOptionName);
-        const registeredCreditsCounts = this.getRegisteredCreditsCount(plan, false);
+        const registeredCreditsCounts = this.getRegisteredCreditsCounts(plan, false);
         return registeredCreditsCounts.acquired >= requiredCreditsCount.min ?
             RegistrationStatus.Acquired :
             registeredCreditsCounts.registered >= requiredCreditsCount.min ?
@@ -46,10 +46,10 @@ export class RequirementWithChildren extends Requirement implements RequirementW
         this.children = [...children];
         this.creditsCount = creditsCount;
     }
-    getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+    getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
         const creditsCounts = this.children.reduce(
             (previous, child) => {
-                const childRegisteredCreditsCount = child.getRegisteredCreditsCount(plan, includesExcess);
+                const childRegisteredCreditsCount = child.getRegisteredCreditsCounts(plan, includesExcess);
                 return {
                     acquired: previous.acquired + childRegisteredCreditsCount.acquired,
                     registered: previous.registered + childRegisteredCreditsCount.registered,
@@ -102,7 +102,7 @@ export class RequirementWithCourses extends Requirement {
         this.creditsCount = creditsCount;
         this.allowsOthers = allowsOthers;
     }
-    getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+    getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
         const othersCount = plan.requirementToOthersCount.get(this) || { acquired: 0, registered: 0 };
         const creditsCounts = this.courses.reduce((previous, course): RegisteredCreditsCounts => {
             const courseStatus = plan.courseToStatus.get(course) || RegistrationStatus.Unregistered;
@@ -166,12 +166,12 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
         const selectedRequirement = this.optionNameToRequirement.get(selectedOptionName);
         return selectedRequirement;
     }
-    getRegisteredCreditsCount(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+    getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
         const selectedRequirement = this.getSelectedRequirement(plan.selectionNameToOptionName);
         if (selectedRequirement === undefined) {
             return { acquired: 0, registered: 0 };
         } else {
-            return selectedRequirement.getRegisteredCreditsCount(plan, includesExcess);
+            return selectedRequirement.getRegisteredCreditsCounts(plan, includesExcess);
         }
     }
     getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range {
