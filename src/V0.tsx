@@ -34,55 +34,71 @@ function* f0(
     }
 }
 
-function* f1(requirements: readonly RequirementWithCourses[], plan: Plan): Generator<Plan, void, undefined> {
+const f1 = (array: readonly {
+    requirement: RequirementWithCourses,
+    generator: Generator<readonly Course[], void, undefined>,
+}[]): {
+    requirement: RequirementWithCourses,
+    courseLists: readonly (readonly Course[])[],
+} => {
+    const array1: readonly {
+        requirement: RequirementWithCourses,
+        generator: Generator<readonly Course[], void, undefined>,
+        courseLists: (readonly Course[])[],
+    }[] = array.map(({ requirement, generator }) => ({
+        requirement, generator,
+        courseLists: [],
+    }));
+    while (true) {
+        for (const { requirement, generator, courseLists } of array1) {
+            const result = generator.next();
+            if (result.done) {
+                return { requirement, courseLists };
+            } else {
+                courseLists.push(result.value);
+            }
+        }
+    }
+}
+
+function* f2(requirements: readonly RequirementWithCourses[], plan: Plan): Generator<Plan, void, undefined> {
     if (requirements.length === 0) {
         yield plan;
         return;
     }
 
-    const t0 = requirements.reduce<{
+    const t0: readonly {
         requirement: RequirementWithCourses,
-        courseLists: readonly (readonly Course[])[],
-    } | undefined>((previous, current) => {
-        const courses0 = current.courses.filter(course => plan.courseToRequirement.get(course) === undefined && (plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered) !== RegistrationStatus.Unregistered);
-        const courseLists: (readonly Course[])[] = [];
-        for (const courses of f0(current.creditsCount, courses0, [], 0, Infinity)) {
-            if (previous !== undefined && courseLists.length + 1 >= previous.courseLists.length) {
-                return previous;
-            }
-            courseLists.push(courses);
-        }
-        return {
-            requirement: current,
-            courseLists,
-        }
-    }, undefined);
+        generator: Generator<readonly Course[], void, undefined>,
+    }[] = requirements.map(requirement => {
+        const courses0 = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && (plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered) !== RegistrationStatus.Unregistered);
+        const generator = f0(requirement.creditsCount, courses0, [], 0, Infinity);
+        return { requirement, generator };
+    });
 
-    if (t0 === undefined) {
-        throw new Error();
-    }
+    const t1 = f1(t0);
 
-    for (const courses of t0.courseLists) {
+    for (const courses of t1.courseLists) {
         const plan0: Plan = {
             ...plan,
             courseToRequirement: new Map([
                 ...plan.courseToRequirement,
-                ...courses.map(course => [course, t0.requirement] as const),
+                ...courses.map(course => [course, t1.requirement] as const),
             ])
         };
-        const plans = f1(requirements.filter(requirement => requirement !== t0.requirement), plan0)
+        const plans = f2(requirements.filter(requirement => requirement !== t1.requirement), plan0)
         yield* plans;
     }
 }
 
-function* f2(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+function* f3(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     const requirements = requirement.f(plan.selectionNameToOptionName);
     const plan0 = { ...plan, courseToRequirement: new Map() };
     let t0: readonly {
         plan: Plan,
         creditsCounts: RegisteredCreditsCounts,
     }[] | undefined = undefined;
-    for (const plan1 of f1(requirements, plan0)) {
+    for (const plan1 of f2(requirements, plan0)) {
         const creditsCounts = requirement.getRegisteredCreditsCounts(plan1, false);
         if (t0 === undefined) {
             t0 = [{
@@ -140,7 +156,7 @@ const V0: React.FC<{
                 onClick={
                     () => {
                         setShow(true);
-                        for (const p of f2(requirement, plan)) {
+                        for (const p of f3(requirement, plan)) {
                             setPlans(p);
                         }
                     }
