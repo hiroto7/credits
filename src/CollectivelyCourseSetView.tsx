@@ -23,7 +23,7 @@ const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
     return (
         <Modal show={show} onHide={() => { setShow(false); onReturn(false); }} onExited={onExited}>
             <Modal.Header closeButton>
-                <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                <Modal.Title>履修状態の一括登録</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 続けると、<strong>現在の履修 / 修得状態が失われます</strong>。
@@ -244,7 +244,7 @@ const Modal1: React.FC<{
             {modals}
             <Modal size="xl" show={show} onHide={onHide}>
                 <Modal.Header closeButton>
-                    <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                    <Modal.Title>履修状態の一括登録</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <p>
@@ -342,7 +342,7 @@ const Modal0: React.FC<{
     return (
         <Modal size="lg" show={show} onHide={onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                <Modal.Title>履修状態の一括登録</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <p>
@@ -421,7 +421,7 @@ const CollectivelyCourseSetView: React.FC<{
 
     return (
         <>
-            <Button variant="secondary" onClick={() => setPage(0)}>科目の履修 / 修得状態をまとめて設定</Button>
+            <Button variant="secondary" onClick={() => setPage(0)}>履修状態の一括登録</Button>
             <Modal0
                 codeToCourse={codeToCourse}
                 show={page === 0}
