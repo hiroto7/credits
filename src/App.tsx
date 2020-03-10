@@ -50,7 +50,7 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </div>
             <Form.Group>
-                <Form.Label>科目の履修状態のロック</Form.Label>
+                <Form.Label>履修状態のロック</Form.Label>
                 {
                     [
                         {
