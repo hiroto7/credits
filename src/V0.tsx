@@ -154,6 +154,7 @@ const V0: React.FC<{
                 onClick={
                     () => {
                         setShow(true);
+                        setPlans(undefined);
                         for (const p of f3(requirement, plan)) {
                             setPlans(p);
                         }
