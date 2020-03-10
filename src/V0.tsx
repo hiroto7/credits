@@ -11,15 +11,13 @@ function* f0(
     selectedCreditsCountSum: number,
     selectedCreditsCountMin: number
 ): Generator<readonly Course[], void, undefined> {
-    if (selectedCreditsCountSum >= requiredCreditsCount.max) {
-        if (selectedCreditsCountMin > selectedCreditsCountSum - requiredCreditsCount.max) {
-            yield selectedCourses;
-        }
-    } else if (unselectedCourses.length === 0) {
-        if (selectedCreditsCountSum >= requiredCreditsCount.min) {
-            yield selectedCourses;
-        }
-    } else {
+    if (
+        (selectedCreditsCountSum >= requiredCreditsCount.min) &&
+        (selectedCreditsCountMin > selectedCreditsCountSum - requiredCreditsCount.max)
+    ) {
+        yield selectedCourses;
+    }
+    if (selectedCreditsCountSum < requiredCreditsCount.max) {
         for (const [index, course] of unselectedCourses.entries()) {
             const slicedCourseList = unselectedCourses.slice(index + 1);
             const courseLists = f0(
