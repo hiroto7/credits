@@ -4,31 +4,108 @@ import Course from './Course';
 import Plan, { RegistrationStatus, RegisteredCreditsCounts } from './Plan';
 import Requirements, { Range, RequirementWithCourses } from './Requirements';
 
-function* f0(
+function* f01(
     requiredCreditsCount: Range,
-    unselectedCourses: readonly Course[],
+    acquiredCourses: readonly Course[],
+    registeredCreditsCountSum: number,
+    acquiredCreditsCountSum: number,
     selectedCourses: readonly Course[],
-    selectedCreditsCountSum: number,
-    selectedCreditsCountMin: number
+    selectedCreditsCountMin: number,
 ): Generator<readonly Course[], void, undefined> {
     if (
-        (selectedCreditsCountSum >= requiredCreditsCount.min) &&
-        (selectedCreditsCountMin > selectedCreditsCountSum - requiredCreditsCount.max)
+        acquiredCreditsCountSum >= requiredCreditsCount.min &&
+        selectedCreditsCountMin > acquiredCreditsCountSum - requiredCreditsCount.max
     ) {
         yield selectedCourses;
     }
-    if (selectedCreditsCountSum < requiredCreditsCount.max) {
-        for (const [index, course] of unselectedCourses.entries()) {
-            const slicedCourseList = unselectedCourses.slice(index + 1);
-            const courseLists = f0(
+    if (acquiredCreditsCountSum < requiredCreditsCount.max) {
+        for (const [index, course] of acquiredCourses.entries()) {
+            const slicedCourseList = acquiredCourses.slice(index + 1);
+            const courseLists = f01(
                 requiredCreditsCount,
                 slicedCourseList,
+                registeredCreditsCountSum + course.creditsCount,
+                acquiredCreditsCountSum + course.creditsCount,
                 [...selectedCourses, course],
-                selectedCreditsCountSum + course.creditsCount,
+                Math.min(selectedCreditsCountMin, course.creditsCount),
+            )
+            yield* courseLists;
+        }
+    }
+}
+
+function* f02(
+    requiredCreditsCount: Range,
+    registeredCourses: readonly Course[],
+    registeredCreditsCountSum: number,
+    acquiredCreditsCountSum: number,
+    selectedCourses: readonly Course[],
+    selectedCreditsCountMin: number,
+): Generator<readonly Course[], void, undefined> {
+    if (
+        registeredCreditsCountSum >= requiredCreditsCount.min &&
+        selectedCreditsCountMin > registeredCreditsCountSum - requiredCreditsCount.max
+    ) {
+        yield selectedCourses;
+    }
+    if (registeredCreditsCountSum < requiredCreditsCount.max) {
+        for (const [index, course] of registeredCourses.entries()) {
+            const slicedCourseList = registeredCourses.slice(index + 1);
+            const courseLists = f02(
+                requiredCreditsCount,
+                slicedCourseList,
+                registeredCreditsCountSum + course.creditsCount,
+                acquiredCreditsCountSum,
+                [...selectedCourses, course],
                 Math.min(selectedCreditsCountMin, course.creditsCount),
             );
             yield* courseLists;
         }
+    }
+}
+
+function* f0(
+    requiredCreditsCount: Range,
+    registeredCourses: readonly Course[],
+    acquiredCourses: readonly Course[],
+    registeredCreditsCountSum: number,
+    acquiredCreditsCountSum: number,
+    selectedCourses: readonly Course[],
+    selectedCreditsCountMin: number,
+): Generator<readonly Course[], void, undefined> {
+    if (registeredCreditsCountSum < requiredCreditsCount.max) {
+        yield* f02(
+            requiredCreditsCount,
+            registeredCourses,
+            registeredCreditsCountSum,
+            acquiredCreditsCountSum,
+            selectedCourses,
+            selectedCreditsCountMin,
+        );
+        if (acquiredCreditsCountSum < requiredCreditsCount.max) {
+            for (const [index, course] of acquiredCourses.entries()) {
+                const slicedCourseList = acquiredCourses.slice(index + 1);
+                const courseLists = f0(
+                    requiredCreditsCount,
+                    registeredCourses,
+                    slicedCourseList,
+                    registeredCreditsCountSum + course.creditsCount,
+                    acquiredCreditsCountSum + course.creditsCount,
+                    [...selectedCourses, course],
+                    Math.min(selectedCreditsCountMin, course.creditsCount),
+                )
+                yield* courseLists;
+            }
+        }
+    } else {
+        yield* f01(
+            requiredCreditsCount,
+            acquiredCourses,
+            registeredCreditsCountSum,
+            acquiredCreditsCountSum,
+            selectedCourses,
+            selectedCreditsCountMin,
+        );
     }
 }
 
@@ -69,8 +146,17 @@ function* f2(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
         requirement: RequirementWithCourses,
         generator: Generator<readonly Course[], void, undefined>,
     }[] = requirements.map(requirement => {
-        const courses0 = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && (plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered) !== RegistrationStatus.Unregistered);
-        const generator = f0(requirement.creditsCount, courses0, [], 0, Infinity);
+        const registeredCourses = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && plan.courseToStatus.get(course) === RegistrationStatus.Registered);
+        const acquiredCourses = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && plan.courseToStatus.get(course) === RegistrationStatus.Acquired);
+        const generator = f0(
+            requirement.creditsCount,
+            registeredCourses,
+            acquiredCourses,
+            plan.requirementToOthersCount.get(requirement)?.registered ?? 0,
+            plan.requirementToOthersCount.get(requirement)?.acquired ?? 0,
+            [],
+            Infinity,
+        );
         return { requirement, generator };
     });
 
