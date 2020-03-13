@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button, ListGroup, Modal, Badge } from "react-bootstrap";
+import { Badge, Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 import Course from './Course';
-import Plan, { RegistrationStatus, RegisteredCreditsCounts } from './Plan';
+import Plan, { RegisteredCreditsCounts, RegistrationStatus } from './Plan';
 import Requirements, { Range, RequirementWithCourses } from './Requirements';
 
 function* f01(
@@ -231,6 +231,7 @@ const V0: React.FC<{
     onSubmit: (plan: Plan) => void,
 }> = ({ requirement, plan, onSubmit }) => {
     const [show, setShow] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [plans, setPlans] = useState<readonly Plan[] | undefined>(undefined);
 
     return (
@@ -240,10 +241,12 @@ const V0: React.FC<{
                 onClick={
                     () => {
                         setShow(true);
+                        setIsLoading(true);
                         setPlans(undefined);
                         for (const p of f3(requirement, plan)) {
                             setPlans(p);
                         }
+                        setIsLoading(false);
                     }
                 }
             >
@@ -254,42 +257,61 @@ const V0: React.FC<{
                     <Modal.Title>要件を満たす割り当てを見つける</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <p>
+                        全体として修得単位数や履修単位数が最大となるような割り当てを見つけます。
+                        先に<b>履修状態の設定</b>、<b>主専攻の選択</b>、<b>単位数の入力</b>を行っておいてください。
+                    </p>
                     {
-                        plans === undefined ? '要件を満たす割り当ては見つかりませんでした。' : (
-                            <>
-                                <p>要件を満たす割り当てが {plans.length} 個見つかりました。適用したいものを選択してください。</p>
-                                <ListGroup>
-                                    {
-                                        plans.map(plan1 => {
-                                            const status = requirement.getStatus(plan1);
-                                            const creditsCounts = requirement.getRegisteredCreditsCounts(plan1, false);
-                                            return (
-                                                <ListGroup.Item
-                                                    key={`${creditsCounts.acquired}-${creditsCounts.registered}`}
-                                                    action
-                                                    onClick={() => { setShow(false); onSubmit(plan1); }}
-                                                >
-                                                    <div className="d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            修得
-                                                            <> </>
-                                                            <strong className="text-success">{creditsCounts.acquired}</strong>
-                                                            <> / </>
-                                                            履修
-                                                            <> </>
-                                                            <strong className="text-primary">{creditsCounts.registered}</strong>
+                        plans === undefined ?
+                            isLoading ? (<></>) : (<strong className="text-danger">要件を満たす割り当ては見つかりませんでした。</strong>) :
+                            (
+                                <>
+                                    <p>見つかった割り当てが以下に表示されています。適用するものを選択します。</p>
+                                    <ListGroup>
+                                        {
+                                            plans.map(plan1 => {
+                                                const status = requirement.getStatus(plan1);
+                                                const creditsCounts = requirement.getRegisteredCreditsCounts(plan1, false);
+                                                return (
+                                                    <ListGroup.Item
+                                                        key={`${creditsCounts.acquired}-${creditsCounts.registered}`}
+                                                        action
+                                                        onClick={() => { setShow(false); onSubmit(plan1); }}
+                                                    >
+                                                        <div className="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                修得
+                                                                <> </>
+                                                                <strong className="text-success">{creditsCounts.acquired}</strong>
+                                                                <> / </>
+                                                                履修
+                                                                <> </>
+                                                                <strong className="text-primary">{creditsCounts.registered}</strong>
+                                                            </div>
+                                                            <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
+                                                                {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
+                                                            </Badge>
                                                         </div>
-                                                        <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
-                                                            {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
-                                                        </Badge>
-                                                    </div>
-                                                </ListGroup.Item>
-                                            )
-                                        })
-                                    }
-                                </ListGroup>
+                                                    </ListGroup.Item>
+                                                )
+                                            })
+                                        }
+                                    </ListGroup>
+                                </>
+                            )
+                    }
+                    {
+                        isLoading ? (
+                            <>
+                                <p>
+                                    割り当てを探しています。
+                                    この処理は短時間で終了しない場合があります。
+                                </p>
+                                <div className="text-center">
+                                    <Spinner animation="border" variant="primary" />
+                                </div>
                             </>
-                        )
+                        ) : (<></>)
                     }
                 </Modal.Body>
                 <Modal.Footer>
