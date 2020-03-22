@@ -8,7 +8,6 @@ import { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
 
-
 const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     currentOthersCount: RegisteredCreditsCounts,
     onReturn: (newOthersCount: RegisteredCreditsCounts) => void,
