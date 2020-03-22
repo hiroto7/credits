@@ -42,7 +42,9 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                         <Form.Group as={Col} md="4">
                             <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
                             <Form.Control
-                                type="number" min={0}
+                                type="number"
+                                min={0}
+                                step={0.5}
                                 placeholder={`${computed.acquired}`}
                                 value={acquired === undefined ? '' : `${acquired}`}
                                 onChange={
@@ -56,7 +58,9 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                         <Form.Group as={Col} md="4">
                             <Form.Label>履修する単位数 <span className="text-muted">(b)</span></Form.Label>
                             <Form.Control
-                                type="number" min={0}
+                                type="number"
+                                min={0}
+                                step={0.5}
                                 placeholder={`${computed.registered - computed.acquired}`}
                                 value={registeredExcludingAcquired === undefined ? '' : `${registeredExcludingAcquired}`}
                                 onChange={
@@ -76,7 +80,9 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                         <Form.Group as={Col} md="4">
                             <Form.Label>計 <span className="text-muted">(a) + (b)</span></Form.Label>
                             <Form.Control
-                                type="number" min={0}
+                                type="number"
+                                min={0}
+                                step={0.5}
                                 placeholder={`${computed.registered}`}
                                 value={registeredIncludingAcquired === undefined ? '' : `${registeredIncludingAcquired}`}
                                 onChange={
