@@ -373,30 +373,27 @@ const Modal0: React.FC<{
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>CSVファイル</Form.Label>
-                    <div className="custom-file">
-                        <input
-                            type="file"
-                            accept=".csv,text/csv,text/plain"
-                            className="custom-file-input"
-                            id="csv-file-input"
-                            onChange={
-                                (event: React.ChangeEvent<HTMLInputElement>) => {
-                                    const file = event.target.files?.item(0);
-                                    if (file === null || file === undefined) {
-                                        return;
-                                    }
-                                    const reader = new FileReader();
-                                    reader.addEventListener('load', () => {
-                                        if (typeof reader.result === 'string') {
-                                            handleCSVChange(reader.result);
-                                        }
-                                    });
-                                    reader.readAsText(file);
+                    <Form.File
+                        custom
+                        accept=".csv,text/csv,text/plain"
+                        id="csv-file-input"
+                        label="Choose file"
+                        onChange={
+                            (event: React.ChangeEvent<HTMLInputElement>) => {
+                                const file = event.target.files?.item(0);
+                                if (file === null || file === undefined) {
+                                    return;
                                 }
+                                const reader = new FileReader();
+                                reader.addEventListener('load', () => {
+                                    if (typeof reader.result === 'string') {
+                                        handleCSVChange(reader.result);
+                                    }
+                                });
+                                reader.readAsText(file);
                             }
-                        />
-                        <label className="custom-file-label" htmlFor="csv-file-input">Choose file</label>
-                    </div>
+                        }
+                    />
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
