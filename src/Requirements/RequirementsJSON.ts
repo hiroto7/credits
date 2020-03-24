@@ -1,4 +1,4 @@
-import { Range } from ".";
+import { Range } from "./Requirements";
 
 type RequirementsJSON = RequirementWithChildrenJSON | RequirementWithCoursesJSON | SelectionRequirementJSON;
 export default RequirementsJSON;
