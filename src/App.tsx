@@ -4,6 +4,7 @@ import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-boots
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
+import AssignSearchView from './AssignSearchView';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
@@ -14,7 +15,6 @@ import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
 import RequirementView from './RequirementView';
-import V0 from './V0';
 
 const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
@@ -43,7 +43,7 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </div>
             <div className="mb-3">
-                <V0
+                <AssignSearchView
                     requirement={requirement}
                     nameToRequirement={nameToRequirement}
                     codeToCourse={codeToCourse}

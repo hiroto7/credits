@@ -1,6 +1,6 @@
-import Course from "./Course";
-import Plan, { fromJSON, PlanJSON, RegisteredCreditsCounts, RegistrationStatus, toJSON } from "./Plan";
-import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithCourses } from "./Requirements";
+import Course from "../Course";
+import Plan, { fromJSON, PlanJSON, RegisteredCreditsCounts, RegistrationStatus, toJSON } from "../Plan";
+import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithCourses } from "../Requirements";
 
 function* f01(
     requiredCreditsCount: Range,
@@ -173,7 +173,7 @@ function* f2(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
     }
 }
 
-function* f3(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+function* searchAssign(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     const requirements = requirement.getVisibleRequirements(plan.selectionNameToOptionName);
     const plan0 = { ...plan, courseToRequirement: new Map() };
     let t0: readonly {
@@ -233,7 +233,7 @@ globalThis.addEventListener('message', event => {
     const { requirement, nameToRequirement } = getRequirementAndDictionaryFromJSON(requirementJSON, codeToCourse);
     const plan = fromJSON(planJSON, { codeToCourse, nameToRequirement });
 
-    for (const plans of f3(requirement, plan)) {
+    for (const plans of searchAssign(requirement, plan)) {
         postMessage(plans.map(toJSON));
     }
     postMessage('done');
