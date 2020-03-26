@@ -45,6 +45,8 @@ const RequirementWithConfiguration: React.FC<{
             <div className="mb-3">
                 <V0
                     requirement={requirement}
+                    nameToRequirement={nameToRequirement}
+                    codeToCourse={codeToCourse}
                     plan={plan}
                     onSubmit={setPlan}
                 />

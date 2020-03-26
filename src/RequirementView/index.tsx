@@ -55,7 +55,7 @@ const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }
 
     const handleSelectionChange = (selectionName: string, newOptionName: string) => {
         const nextSelectionNameToOptionName = new Map([...selectionNameToOptionName, [selectionName, newOptionName]]);
-        const visibleRequirements = requirement.f(nextSelectionNameToOptionName);
+        const visibleRequirements = requirement.getVisibleRequirements(nextSelectionNameToOptionName);
         const nextCourseToRequirement = new Map([...courseToRequirement.entries()].filter(
             ([_, requirement]) => visibleRequirements.includes(requirement)
         ));

@@ -3,14 +3,14 @@ import { Range } from "./Requirements";
 type RequirementsJSON = RequirementWithChildrenJSON | RequirementWithCoursesJSON | SelectionRequirementJSON;
 export default RequirementsJSON;
 
-interface RequirementWithChildrenJSON {
+export interface RequirementWithChildrenJSON {
     readonly name: string;
     readonly description?: string;
     readonly children: readonly RequirementsJSON[];
     readonly creditsCount?: number | Range;
 }
 
-interface RequirementWithCoursesJSON {
+export interface RequirementWithCoursesJSON {
     readonly name: string;
     readonly description?: string;
     readonly courses: readonly string[];
@@ -23,7 +23,7 @@ type OptionJSON = {
     readonly requirement: RequirementsJSON;
 } | RequirementsJSON;
 
-interface SelectionRequirementJSON {
+export interface SelectionRequirementJSON {
     readonly name?: string;
     readonly selectionName: string;
     readonly options: readonly OptionJSON[];

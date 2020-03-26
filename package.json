@@ -20,7 +20,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
     "react-use": "^13.27.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "worker-loader": "^2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,5 +1,6 @@
 import Course from "../Course";
 import Plan, { RegisteredCreditsCounts, RegistrationStatus } from "../Plan";
+import { RequirementWithChildrenJSON, RequirementWithCoursesJSON, SelectionRequirementJSON } from './RequirementsJSON';
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;
@@ -7,7 +8,7 @@ export default Requirements;
 abstract class Requirement {
     abstract getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
     abstract getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
-    abstract f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[];
+    abstract getVisibleRequirements(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[];
     constructor(readonly name: string) { }
     getStatus(plan: Plan): RegistrationStatus {
         const requiredCreditsCount = this.getRequiredCreditsCount(plan.selectionNameToOptionName);
@@ -73,8 +74,16 @@ export class RequirementWithChildren extends Requirement implements RequirementW
             ...this.children.map(child => child.getStatus(plan))
         );
     }
-    f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {
-        return this.children.flatMap(requirement => requirement.f(selectionNameToOptionName));
+    getVisibleRequirements(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {
+        return this.children.flatMap(requirement => requirement.getVisibleRequirements(selectionNameToOptionName));
+    }
+    toJSON(): RequirementWithChildrenJSON {
+        return {
+            name: this.name,
+            description: this.description,
+            children: this.children.map(child => child.toJSON()),
+            creditsCount: this.creditsCount,
+        }
     }
 }
 
@@ -126,8 +135,17 @@ export class RequirementWithCourses extends Requirement {
     getRequiredCreditsCount() {
         return this.creditsCount;
     }
-    f() {
+    getVisibleRequirements() {
         return [this] as const;
+    }
+    toJSON(): RequirementWithCoursesJSON {
+        return {
+            name: this.name,
+            description: this.description,
+            courses: this.courses.map(course => course.code),
+            creditsCount: this.creditsCount,
+            allowsOthers: this.allowsOthers,
+        }
     }
 }
 
@@ -178,12 +196,22 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
             return selectedRequirement.getRequiredCreditsCount(selectionNameToOptionName);
         }
     }
-    f(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {
+    getVisibleRequirements(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {
         const selectedRequirement = this.getSelectedRequirement(selectionNameToOptionName);
         if (selectedRequirement === undefined) {
             return [];
         } else {
-            return selectedRequirement.f(selectionNameToOptionName);
+            return selectedRequirement.getVisibleRequirements(selectionNameToOptionName);
+        }
+    }
+    toJSON(): SelectionRequirementJSON {
+        return {
+            name: this.name,
+            selectionName: this.selectionName,
+            options: this.options.map(({ name, requirement }) =>({
+                name,
+                requirement: requirement.toJSON(),
+            }))
         }
     }
 }
