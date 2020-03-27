@@ -173,7 +173,7 @@ function* f2(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
     }
 }
 
-function* searchAssign(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+function* searchAssignment(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     const requirements = requirement.getVisibleRequirements(plan.selectionNameToOptionName);
     const plan0 = { ...plan, courseToRequirement: new Map() };
     let t0: readonly {
@@ -233,7 +233,7 @@ globalThis.addEventListener('message', event => {
     const { requirement, nameToRequirement } = getRequirementAndDictionaryFromJSON(requirementJSON, codeToCourse);
     const plan = fromJSON(planJSON, { codeToCourse, nameToRequirement });
 
-    for (const plans of searchAssign(requirement, plan)) {
+    for (const plans of searchAssignment(requirement, plan)) {
         postMessage(plans.map(toJSON));
     }
     postMessage('done');

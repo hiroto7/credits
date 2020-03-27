@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Badge, Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import AssignSearchWorker from 'worker-loader!./searchAssign.worker';
+import AssignmentSearchWorker from 'worker-loader!./searchAssignment.worker';
 import Course from '../Course';
 import Plan, { fromJSON, PlanJSON, RegistrationStatus, toJSON } from '../Plan';
 import Requirements, { RequirementWithCourses } from '../Requirements';
 
-const AssignSearchView: React.FC<{
+const AssignmentSearchView: React.FC<{
     requirement: Requirements,
     nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     codeToCourse: ReadonlyMap<string, Course>,
@@ -46,7 +46,7 @@ const AssignSearchView: React.FC<{
                         setShow(true);
                         setIsLoading(true);
                         setPlans(undefined);
-                        const worker = new AssignSearchWorker();
+                        const worker = new AssignmentSearchWorker();
                         setWorker(worker);
                         worker.addEventListener('message', onMessage);
                         worker.postMessage({
@@ -129,4 +129,4 @@ const AssignSearchView: React.FC<{
     );
 }
 
-export default AssignSearchView;
+export default AssignmentSearchView;
