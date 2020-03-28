@@ -5,7 +5,6 @@ import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJ
 function* f01(
     requiredCreditsCount: Range,
     acquiredCourses: readonly Course[],
-    registeredCreditsCountSum: number,
     acquiredCreditsCountSum: number,
     selectedCourses: readonly Course[],
     selectedCreditsCountMin: number,
@@ -22,7 +21,6 @@ function* f01(
             const courseLists = f01(
                 requiredCreditsCount,
                 slicedCourseList,
-                registeredCreditsCountSum + course.creditsCount,
                 acquiredCreditsCountSum + course.creditsCount,
                 [...selectedCourses, course],
                 Math.min(selectedCreditsCountMin, course.creditsCount),
@@ -36,7 +34,6 @@ function* f02(
     requiredCreditsCount: Range,
     registeredCourses: readonly Course[],
     registeredCreditsCountSum: number,
-    acquiredCreditsCountSum: number,
     selectedCourses: readonly Course[],
     selectedCreditsCountMin: number,
 ): Generator<readonly Course[], void, undefined> {
@@ -53,7 +50,6 @@ function* f02(
                 requiredCreditsCount,
                 slicedCourseList,
                 registeredCreditsCountSum + course.creditsCount,
-                acquiredCreditsCountSum,
                 [...selectedCourses, course],
                 Math.min(selectedCreditsCountMin, course.creditsCount),
             );
@@ -76,7 +72,6 @@ function* f0(
             requiredCreditsCount,
             registeredCourses,
             registeredCreditsCountSum,
-            acquiredCreditsCountSum,
             selectedCourses,
             selectedCreditsCountMin,
         );
@@ -99,7 +94,6 @@ function* f0(
         yield* f01(
             requiredCreditsCount,
             acquiredCourses,
-            registeredCreditsCountSum,
             acquiredCreditsCountSum,
             selectedCourses,
             selectedCreditsCountMin,
