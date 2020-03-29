@@ -26,7 +26,7 @@ const getInnerRequirementAndDictionaryFromJSON = (
             id,
             name: json.name,
             description: json.description,
-            creditsCount: numberOrRangeToRange(json.creditsCount),
+            creditCount: numberOrRangeToRange(json.creditCount),
             courses: json.courses.map(courseCode => {
                 const course = codeToCourse.get(courseCode);
                 if (course === undefined) { throw new Error(`科目番号 ${courseCode} は定義されていません。`); }
@@ -45,7 +45,7 @@ const getInnerRequirementAndDictionaryFromJSON = (
             name: json.name,
             description: json.description,
             children: requirementAndDictionaryPairs.map(({ requirement }) => requirement),
-            creditsCount: json.creditsCount === undefined ? undefined : numberOrRangeToRange(json.creditsCount),
+            creditCount: json.creditCount === undefined ? undefined : numberOrRangeToRange(json.creditCount),
         });
         return {
             requirement,

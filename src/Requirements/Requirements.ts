@@ -1,5 +1,5 @@
 import Course from "../Course";
-import Plan, { RegisteredCreditsCounts, RegistrationStatus } from "../Plan";
+import Plan, { RegisteredCreditCounts, RegistrationStatus } from "../Plan";
 import { RequirementWithChildrenJSON, RequirementWithCoursesJSON, SelectionRequirementJSON } from './RequirementsJSON';
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
@@ -8,19 +8,19 @@ export default Requirements;
 abstract class Requirement {
     readonly id: string
     readonly name: string;
-    abstract getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
-    abstract getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
+    abstract getRegisteredCreditCounts(plan: Plan, includesExcess: boolean): RegisteredCreditCounts;
+    abstract getRequiredCreditCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
     abstract getVisibleRequirements(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[];
     constructor({ id, name }: { id: string, name: string }) {
         this.id = id;
         this.name = name;
     }
     getStatus(plan: Plan): RegistrationStatus {
-        const requiredCreditsCount = this.getRequiredCreditsCount(plan.selectionNameToOptionName);
-        const registeredCreditsCounts = this.getRegisteredCreditsCounts(plan, false);
-        return registeredCreditsCounts.acquired >= requiredCreditsCount.min ?
+        const requiredCreditCount = this.getRequiredCreditCount(plan.selectionNameToOptionName);
+        const registeredCreditCounts = this.getRegisteredCreditCounts(plan, false);
+        return registeredCreditCounts.acquired >= requiredCreditCount.min ?
             RegistrationStatus.Acquired :
-            registeredCreditsCounts.registered >= requiredCreditsCount.min ?
+            registeredCreditCounts.registered >= requiredCreditCount.min ?
                 RegistrationStatus.Registered :
                 RegistrationStatus.Unregistered;
     }
@@ -36,43 +36,43 @@ export interface RequirementWithChildrenInit {
     readonly name: string;
     readonly description?: string;
     readonly children: Iterable<Requirements>;
-    readonly creditsCount?: Range;
+    readonly creditCount?: Range;
 }
 
 export class RequirementWithChildren extends Requirement implements RequirementWithChildrenInit {
     readonly description?: string;
     readonly children: readonly Requirements[];
-    readonly creditsCount?: Range;
-    constructor({ id, name, description, children, creditsCount }: RequirementWithChildrenInit) {
+    readonly creditCount?: Range;
+    constructor({ id, name, description, children, creditCount }: RequirementWithChildrenInit) {
         super({ id, name });
         this.description = description
         this.children = [...children];
-        this.creditsCount = creditsCount;
+        this.creditCount = creditCount;
     }
-    getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
-        const creditsCounts = this.children.reduce(
+    getRegisteredCreditCounts(plan: Plan, includesExcess: boolean): RegisteredCreditCounts {
+        const creditCounts = this.children.reduce(
             (previous, child) => {
-                const childRegisteredCreditsCount = child.getRegisteredCreditsCounts(plan, includesExcess);
+                const childRegisteredCreditCount = child.getRegisteredCreditCounts(plan, includesExcess);
                 return {
-                    acquired: previous.acquired + childRegisteredCreditsCount.acquired,
-                    registered: previous.registered + childRegisteredCreditsCount.registered,
+                    acquired: previous.acquired + childRegisteredCreditCount.acquired,
+                    registered: previous.registered + childRegisteredCreditCount.registered,
                 }
             },
             { acquired: 0, registered: 0 }
         );
-        return includesExcess || this.creditsCount === undefined ? creditsCounts : {
-            acquired: Math.min(this.creditsCount.max, creditsCounts.acquired),
-            registered: Math.min(this.creditsCount.max, creditsCounts.registered),
+        return includesExcess || this.creditCount === undefined ? creditCounts : {
+            acquired: Math.min(this.creditCount.max, creditCounts.acquired),
+            registered: Math.min(this.creditCount.max, creditCounts.registered),
         };
     }
-    getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range {
-        return this.creditsCount === undefined ? this.children.reduce((previous, child) => {
-            const childRequiredCreditsCount = child.getRequiredCreditsCount(selectionNameToOptionName);
+    getRequiredCreditCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range {
+        return this.creditCount === undefined ? this.children.reduce((previous, child) => {
+            const childRequiredCreditCount = child.getRequiredCreditCount(selectionNameToOptionName);
             return {
-                min: previous.min + childRequiredCreditsCount.min,
-                max: previous.max + childRequiredCreditsCount.max,
+                min: previous.min + childRequiredCreditCount.min,
+                max: previous.max + childRequiredCreditCount.max,
             }
-        }, { min: 0, max: 0 }) : this.creditsCount;
+        }, { min: 0, max: 0 }) : this.creditCount;
     }
     getStatus(plan: Plan): RegistrationStatus {
         return Math.min(
@@ -88,7 +88,7 @@ export class RequirementWithChildren extends Requirement implements RequirementW
             name: this.name,
             description: this.description,
             children: this.children.map(child => child.toJSON()),
-            creditsCount: this.creditsCount,
+            creditCount: this.creditCount,
         }
     }
 }
@@ -98,49 +98,49 @@ export interface RequirementWithCoursesInit {
     readonly name: string;
     readonly description?: string;
     readonly courses: Iterable<Course>;
-    readonly creditsCount: Range;
+    readonly creditCount: Range;
     readonly allowsOthers?: boolean;
 }
 
 export class RequirementWithCourses extends Requirement {
     readonly description?: string;
     readonly courses: readonly Course[];
-    readonly creditsCount: Range;
+    readonly creditCount: Range;
     readonly allowsOthers: boolean;
-    constructor({ id, name, description, courses, creditsCount, allowsOthers = false }: RequirementWithCoursesInit) {
+    constructor({ id, name, description, courses, creditCount, allowsOthers = false }: RequirementWithCoursesInit) {
         super({ id, name });
         this.description = description;
         this.courses = [...courses];
-        this.creditsCount = creditsCount;
+        this.creditCount = creditCount;
         this.allowsOthers = allowsOthers;
     }
-    getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+    getRegisteredCreditCounts(plan: Plan, includesExcess: boolean): RegisteredCreditCounts {
         const othersCount = plan.requirementToOthersCount.get(this) || { acquired: 0, registered: 0 };
-        const creditsCounts = this.courses.reduce((previous, course): RegisteredCreditsCounts => {
+        const creditCounts = this.courses.reduce((previous, course): RegisteredCreditCounts => {
             const courseStatus = plan.courseToStatus.get(course) || RegistrationStatus.Unregistered;
             if (plan.courseToRequirement.get(course) === this) {
                 return courseStatus === RegistrationStatus.Acquired ?
                     {
-                        acquired: previous.acquired + course.creditsCount,
-                        registered: previous.registered + course.creditsCount,
+                        acquired: previous.acquired + course.creditCount,
+                        registered: previous.registered + course.creditCount,
                     } :
                     courseStatus === RegistrationStatus.Registered ?
                         {
                             acquired: previous.acquired,
-                            registered: previous.registered + course.creditsCount,
+                            registered: previous.registered + course.creditCount,
                         } :
                         previous;
             } else {
                 return previous;
             }
         }, othersCount);
-        return includesExcess || this.creditsCount === undefined ? creditsCounts : {
-            acquired: Math.min(this.creditsCount.max, creditsCounts.acquired),
-            registered: Math.min(this.creditsCount.max, creditsCounts.registered),
+        return includesExcess || this.creditCount === undefined ? creditCounts : {
+            acquired: Math.min(this.creditCount.max, creditCounts.acquired),
+            registered: Math.min(this.creditCount.max, creditCounts.registered),
         };
     }
-    getRequiredCreditsCount() {
-        return this.creditsCount;
+    getRequiredCreditCount() {
+        return this.creditCount;
     }
     getVisibleRequirements() {
         return [this] as const;
@@ -150,7 +150,7 @@ export class RequirementWithCourses extends Requirement {
             name: this.name,
             description: this.description,
             courses: this.courses.map(course => course.code),
-            creditsCount: this.creditsCount,
+            creditCount: this.creditCount,
             allowsOthers: this.allowsOthers,
         }
     }
@@ -187,20 +187,20 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
         const selectedRequirement = this.optionNameToRequirement.get(selectedOptionName);
         return selectedRequirement;
     }
-    getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts {
+    getRegisteredCreditCounts(plan: Plan, includesExcess: boolean): RegisteredCreditCounts {
         const selectedRequirement = this.getSelectedRequirement(plan.selectionNameToOptionName);
         if (selectedRequirement === undefined) {
             return { acquired: 0, registered: 0 };
         } else {
-            return selectedRequirement.getRegisteredCreditsCounts(plan, includesExcess);
+            return selectedRequirement.getRegisteredCreditCounts(plan, includesExcess);
         }
     }
-    getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range {
+    getRequiredCreditCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range {
         const selectedRequirement = this.getSelectedRequirement(selectionNameToOptionName);
         if (selectedRequirement === undefined) {
             return { min: 0, max: 0 };
         } else {
-            return selectedRequirement.getRequiredCreditsCount(selectionNameToOptionName);
+            return selectedRequirement.getRequiredCreditCount(selectionNameToOptionName);
         }
     }
     getVisibleRequirements(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[] {

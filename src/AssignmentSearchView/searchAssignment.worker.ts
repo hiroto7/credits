@@ -1,5 +1,5 @@
 import Course from "../Course";
-import Plan, { fromJSON, PlanJSON, RegisteredCreditsCounts, RegistrationStatus, toJSON } from "../Plan";
+import Plan, { fromJSON, PlanJSON, RegisteredCreditCounts, RegistrationStatus, toJSON } from "../Plan";
 import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithCourses } from "../Requirements";
 
 function* f0(
@@ -21,9 +21,9 @@ function* f0(
             const courseLists = f0(
                 requiredCreditsCount,
                 slicedCourseList,
-                selectedCreditsCountSum + course.creditsCount,
+                selectedCreditsCountSum + course.creditCount,
                 [...selectedCourses, course],
-                Math.min(selectedCreditsCountMin, course.creditsCount),
+                Math.min(selectedCreditsCountMin, course.creditCount),
             )
             yield* courseLists;
         }
@@ -54,9 +54,9 @@ function* f1(
             const courseLists = f0(
                 requiredCreditsCount,
                 slicedCourseList,
-                registeredCreditsCountSum + course.creditsCount,
+                registeredCreditsCountSum + course.creditCount,
                 [...selectedCourses, course],
-                Math.min(selectedCreditsCountMin, course.creditsCount),
+                Math.min(selectedCreditsCountMin, course.creditCount),
             )
             yield* courseLists;
         }
@@ -67,10 +67,10 @@ function* f1(
                 requiredCreditsCount,
                 registeredCourses,
                 slicedCourseList,
-                registeredCreditsCountSum + course.creditsCount,
-                acquiredCreditsCountSum + course.creditsCount,
+                registeredCreditsCountSum + course.creditCount,
+                acquiredCreditsCountSum + course.creditCount,
                 [...selectedCourses, course],
-                Math.min(selectedCreditsCountMin, course.creditsCount),
+                Math.min(selectedCreditsCountMin, course.creditCount),
             )
             yield* courseLists;
         }
@@ -82,9 +82,9 @@ function* f1(
                 const courseLists = f0(
                     requiredCreditsCount,
                     slicedCourseList,
-                    acquiredCreditsCountSum + course.creditsCount,
+                    acquiredCreditsCountSum + course.creditCount,
                     [...selectedCourses, course],
-                    Math.min(selectedCreditsCountMin, course.creditsCount),
+                    Math.min(selectedCreditsCountMin, course.creditCount),
                 )
                 yield* courseLists;
             }
@@ -132,7 +132,7 @@ function* f3(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
         const registeredCourses = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && plan.courseToStatus.get(course) === RegistrationStatus.Registered);
         const acquiredCourses = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && plan.courseToStatus.get(course) === RegistrationStatus.Acquired);
         const generator = f1(
-            requirement.creditsCount,
+            requirement.creditCount,
             registeredCourses,
             acquiredCourses,
             plan.requirementToOthersCount.get(requirement)?.registered ?? 0,
@@ -161,48 +161,63 @@ function* f3(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
 function* searchAssignment(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     const requirements = requirement.getVisibleRequirements(plan.selectionNameToOptionName);
     const plan0 = { ...plan, courseToRequirement: new Map() };
-    let t0: readonly {
-        plan: Plan,
-        creditsCounts: RegisteredCreditsCounts,
-    }[] | undefined = undefined;
+    let planAndCreditCountsPairs: {
+        acquired: {
+            readonly plan: Plan,
+            readonly creditCounts: RegisteredCreditCounts,
+        },
+        registered: {
+            readonly plan: Plan,
+            readonly creditCounts: RegisteredCreditCounts,
+        }
+    } | undefined = undefined;
     for (const plan1 of f3(requirements, plan0)) {
-        const creditsCounts = requirement.getRegisteredCreditsCounts(plan1, false);
-        if (t0 === undefined) {
-            t0 = [{
-                plan: plan1,
-                creditsCounts,
-            }];
+        const creditCounts = requirement.getRegisteredCreditCounts(plan1, false);
+        if (creditCounts.acquired === 125.5 && creditCounts.registered === 67) {
+            console.log(creditCounts)
+        }
+        if (planAndCreditCountsPairs === undefined) {
+            planAndCreditCountsPairs = {
+                acquired: {
+                    plan: plan1,
+                    creditCounts,
+                },
+                registered: {
+                    plan: plan1,
+                    creditCounts,
+                },
+            }
             yield [plan1];
         } else {
-            let t1 = false;
-            const t2: {
-                plan: Plan,
-                creditsCounts: RegisteredCreditsCounts,
-            }[] = [];
-            for (const t3 of t0) {
-                if (!t1 && (
-                    creditsCounts.acquired > t3.creditsCounts.acquired ||
-                    creditsCounts.registered > t3.creditsCounts.registered
-                )) {
-                    t2.push({
+            const acquired: {
+                readonly plan: Plan;
+                readonly creditCounts: RegisteredCreditCounts;
+            } = creditCounts.acquired > planAndCreditCountsPairs.acquired.creditCounts.acquired || (
+                creditCounts.acquired === planAndCreditCountsPairs.acquired.creditCounts.acquired &&
+                creditCounts.registered > planAndCreditCountsPairs.acquired.creditCounts.registered
+            ) ? {
                         plan: plan1,
-                        creditsCounts,
-                    });
-                    t1 = true;
+                        creditCounts,
+                    } : planAndCreditCountsPairs.acquired;
+
+            const registered: {
+                readonly plan: Plan;
+                readonly creditCounts: RegisteredCreditCounts;
+            } = creditCounts.registered > planAndCreditCountsPairs.registered.creditCounts.registered || (
+                creditCounts.registered === planAndCreditCountsPairs.registered.creditCounts.registered &&
+                creditCounts.acquired > planAndCreditCountsPairs.registered.creditCounts.acquired
+            ) ? {
+                        plan: plan1,
+                        creditCounts,
+                    } : planAndCreditCountsPairs.registered;
+
+            if (acquired !== planAndCreditCountsPairs.acquired || registered !== planAndCreditCountsPairs.registered) {
+                planAndCreditCountsPairs = { acquired, registered };
+                if (acquired.plan === registered.plan) {
+                    yield [plan1];
+                } else {
+                    yield [acquired.plan, registered.plan];
                 }
-                if ((
-                    t3.creditsCounts.acquired > creditsCounts.acquired ||
-                    t3.creditsCounts.registered > creditsCounts.registered
-                ) && (
-                        t3.creditsCounts.acquired === creditsCounts.acquired &&
-                        t3.creditsCounts.registered === creditsCounts.registered
-                    )) {
-                    t2.push(t3);
-                }
-            }
-            if (t1) {
-                t0 = t2;
-                yield t0.map(({ plan }) => plan);
             }
         }
     }

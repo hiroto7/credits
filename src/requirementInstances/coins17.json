@@ -5,7 +5,7 @@
         {
             "name": "専門科目 - 必修科目",
             "description": "主専攻実験と卒業研究を除く",
-            "creditsCount": 22,
+            "creditCount": 22,
             "courses": [
                 "GB10615", "GB10625", "GB10664", "GB10684",
                 "GB10754", "GB10804", "GB10981", "GB10991",
@@ -20,7 +20,7 @@
                     "name": "ソフトウェアサイエンス主専攻",
                     "requirement": {
                         "name": "ソフトウェアサイエンス実験",
-                        "creditsCount": 6,
+                        "creditCount": 6,
                         "courses": [
                             "GB26403", "GB26503"
                         ]
@@ -30,7 +30,7 @@
                     "name": "情報システム主専攻",
                     "requirement": {
                         "name": "情報システム実験",
-                        "creditsCount": 6,
+                        "creditCount": 6,
                         "courses": [
                             "GB36403", "GB36503"
                         ]
@@ -40,7 +40,7 @@
                     "name": "知能情報メディア主専攻",
                     "requirement": {
                         "name": "知能情報メディア実験",
-                        "creditsCount": 6,
+                        "creditCount": 6,
                         "courses": [
                             "GB46403", "GB46503"
                         ]
@@ -53,14 +53,14 @@
             "options": [
                 {
                     "name": "卒業研究",
-                    "creditsCount": 6,
+                    "creditCount": 6,
                     "courses": [
                         "GB19948", "GB19958"
                     ]
                 },
                 {
                     "name": "特別卒業研究",
-                    "creditsCount": 6,
+                    "creditCount": 6,
                     "courses": [
                         "GB19848", "GB19858"
                     ]
@@ -69,7 +69,7 @@
         },
         {
             "name": "専門基礎科目 - 必修科目",
-            "creditsCount": 16,
+            "creditCount": 16,
             "courses": [
                 "GB10114", "GB10124", "GB10214", "GB10224",
                 "GB10314", "GB10324", "GB10414", "GB10424",
@@ -79,7 +79,7 @@
         },
         {
             "name": "専門基礎科目 - 選択科目",
-            "creditsCount": 8,
+            "creditCount": 8,
             "courses": [
                 "GB10504", "GB11701", "GB11814", "GB11601",
                 "GB11214", "GB13312", "GB13322", "GB13604"
@@ -88,7 +88,7 @@
         {
             "name": "主専攻共通科目",
             "description": "GB20、GB30若しくはGB40で始まる授業科目又は情報セキュリティ",
-            "creditsCount": 12,
+            "creditCount": 12,
             "courses": [
                 "GB20111", "GB20201", "GB20301", "GB30101",
                 "GB30201", "GB30301", "GB30401", "GB40101",
@@ -98,7 +98,7 @@
         {
             "name": "GB1で始まる授業科目 / 情報学群で開設する学群共通の授業科目",
             "description": "専門基礎科目の選択科目で掲げられている科目を含む / GA1で始まる科目",
-            "creditsCount": 12,
+            "creditCount": 12,
             "courses": [
                 "GA10101", "GA10201", "GA11102", "GA40103",
                 "GA40203", "GA40303", "GA40403",
@@ -129,7 +129,7 @@
                     "name": "ソフトウェアサイエンス主専攻",
                     "requirement": {
                         "name": "GB2で始まる授業科目",
-                        "creditsCount": 10,
+                        "creditCount": 10,
                         "courses": [
                             "GB20111", "GB20201", "GB20301", "GB21111",
                             "GB21504", "GB21601", "GB21802", "GB21911",
@@ -144,7 +144,7 @@
                     "name": "情報システム主専攻",
                     "requirement": {
                         "name": "GB3で始まる授業科目",
-                        "creditsCount": 10,
+                        "creditCount": 10,
                         "courses": [
                             "GB30101", "GB30201", "GB30301", "GB30401",
                             "GB31111", "GB31121", "GB31201", "GB31301",
@@ -159,7 +159,7 @@
                     "name": "知能情報メディア主専攻",
                     "requirement": {
                         "name": "GB4で始まる授業科目",
-                        "creditsCount": 10,
+                        "creditCount": 10,
                         "courses": [
                             "GB40101", "GB40201", "GB40301", "GB41101",
                             "GB41204", "GB41301", "GB41401", "GB41501",
@@ -174,7 +174,7 @@
         },
         {
             "name": "GB2、GB3又はGB4で始まる授業科目",
-            "creditsCount": 8,
+            "creditCount": 8,
             "courses": [
                 "GB20111", "GB20201", "GB20301", "GB21111",
                 "GB21504", "GB21601", "GB21802", "GB21911",
@@ -197,7 +197,7 @@
         {
             "name": "GBで始まる授業科目 / 情報学群で開設する学群共通の授業科目",
             "description": "専門基礎科目の選択科目で掲げられている科目を含み、GB0で始まる科目を除く / GA1で始まる科目",
-            "creditsCount": 4,
+            "creditCount": 4,
             "courses": [
                 "GA10101", "GA10201", "GA11102", "GA40103",
                 "GA40203", "GA40303", "GA40403",

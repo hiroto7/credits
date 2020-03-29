@@ -7,14 +7,14 @@ export interface RequirementWithChildrenJSON {
     readonly name: string;
     readonly description?: string;
     readonly children: readonly RequirementsJSON[];
-    readonly creditsCount?: number | Range;
+    readonly creditCount?: number | Range;
 }
 
 export interface RequirementWithCoursesJSON {
     readonly name: string;
     readonly description?: string;
     readonly courses: readonly string[];
-    readonly creditsCount: number | Range;
+    readonly creditCount: number | Range;
     readonly allowsOthers?: boolean;
 }
 

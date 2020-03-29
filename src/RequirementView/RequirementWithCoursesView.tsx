@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Accordion, Button, ButtonToolbar, Card, Col, Form } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
-import Plan, { RegisteredCreditsCounts, RegistrationStatus } from '../Plan';
+import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
 
 const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
-    currentOthersCount: RegisteredCreditsCounts,
-    onReturn: (newOthersCount: RegisteredCreditsCounts) => void,
+    currentOthersCount: RegisteredCreditCounts,
+    onReturn: (newOthersCount: RegisteredCreditCounts) => void,
     onHide: () => void,
 }) => {
     const [acquired, setAcquired] = useState<number | undefined>();
@@ -119,7 +119,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersCountsChange: (newOthersCount: RegisteredCreditsCounts) => void,
+    onOthersCountsChange: (newOthersCount: RegisteredCreditCounts) => void,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [showsInput, setShowsInput] = useState(false);

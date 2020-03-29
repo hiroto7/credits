@@ -78,7 +78,7 @@ const AssignmentSearchView: React.FC<{
                                         {
                                             plans.map(plan1 => {
                                                 const status = requirement.getStatus(plan1);
-                                                const creditsCounts = requirement.getRegisteredCreditsCounts(plan1, false);
+                                                const creditsCounts = requirement.getRegisteredCreditCounts(plan1, false);
                                                 return (
                                                     <ListGroup.Item
                                                         key={`${creditsCounts.acquired}-${creditsCounts.registered}`}

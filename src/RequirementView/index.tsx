@@ -2,7 +2,7 @@ import React from 'react';
 import Course from '../Course';
 import FilterType from '../FilterType';
 import getValueFromModal, { useModals } from '../getValueFromModal';
-import Plan, { RegisteredCreditsCounts, RegistrationStatus } from '../Plan';
+import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from '../Requirements';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
@@ -43,7 +43,7 @@ const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }
         });
     }
 
-    const handleOthersCountsChange = (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => {
+    const handleOthersCountsChange = (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => {
         onChange({
             ...plan,
             requirementToOthersCount: new Map([

@@ -99,7 +99,7 @@ const Table1: React.FC<{
                                     <td><code>{record[codeColumnIndex]}</code></td>
                                     <td>{getTdContent(titleColumnIndex, course => course.title, recordTitle => recordTitle.trim())}</td>
                                     <td style={{ textAlign: 'center' }}>
-                                        {getTdContent(creditsCountColumnIndex, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)}
+                                        {getTdContent(creditsCountColumnIndex, course => course.creditCount, recordCreditsCount => +recordCreditsCount)}
                                     </td>
                                 </>
                             );
@@ -216,7 +216,7 @@ const Modal1: React.FC<{
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
 
     const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
-    const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)
+    const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditCount, recordCreditsCount => +recordCreditsCount)
 
     const handleOKClick = async () => {
         if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {

@@ -1,7 +1,7 @@
 import Course from "./Course";
 import { RequirementWithCourses } from "./Requirements";
 
-export interface RegisteredCreditsCounts {
+export interface RegisteredCreditCounts {
     acquired: number;
     registered: number;
 }
@@ -9,7 +9,7 @@ export interface RegisteredCreditsCounts {
 export default interface Plan {
     readonly courseToStatus: ReadonlyMap<Course, RegistrationStatus>;
     readonly courseToRequirement: ReadonlyMap<Course, RequirementWithCourses>;
-    readonly requirementToOthersCount: ReadonlyMap<RequirementWithCourses, RegisteredCreditsCounts>;
+    readonly requirementToOthersCount: ReadonlyMap<RequirementWithCourses, RegisteredCreditCounts>;
     readonly selectionNameToOptionName: ReadonlyMap<string, string>;
 }
 
@@ -25,7 +25,7 @@ export enum RegistrationStatus {
 export interface PlanJSON {
     readonly courseToStatus: readonly [CourseCode, RegistrationStatus][];
     readonly courseToRequirement: readonly [CourseCode, RequirementId][];
-    readonly requirementToOthersCount: readonly [RequirementId, RegisteredCreditsCounts][];
+    readonly requirementToOthersCount: readonly [RequirementId, RegisteredCreditCounts][];
     readonly selectionNameToOptionName: readonly [string, string][];
 }
 
