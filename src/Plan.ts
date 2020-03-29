@@ -23,47 +23,59 @@ export enum RegistrationStatus {
 }
 
 export interface PlanJSON {
-    readonly courseToStatus: readonly [CourseCode, RegistrationStatus][];
-    readonly courseToRequirement: readonly [CourseCode, RequirementId][];
-    readonly requirementToOthersCount: readonly [RequirementId, RegisteredCreditCounts][];
-    readonly selectionNameToOptionName: readonly [string, string][];
+    readonly courseToStatus: { [courseCode: string]: RegistrationStatus };
+    readonly courseToRequirement: { [courseCode: string]: RequirementId };
+    readonly requirementToOthersCount: { [requirementName: string]: RegisteredCreditCounts };
+    readonly selectionNameToOptionName: { [selectionName: string]: string };
 }
 
 export const toJSON =
     ({ courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName }: Plan): PlanJSON => ({
-        courseToStatus: [...courseToStatus].map(([course, status]) => [course.code, status]),
-        courseToRequirement: [...courseToRequirement].map(([course, requirement]) => [course.code, requirement.id]),
-        requirementToOthersCount: [...requirementToOthersCount].map(([requirement, creditsCounts]) => [requirement.id, creditsCounts]),
-        selectionNameToOptionName: [...selectionNameToOptionName],
+        courseToStatus: Object.fromEntries(
+            [...courseToStatus].map(([course, status]) => [course.code, status])
+        ),
+        courseToRequirement: Object.fromEntries(
+            [...courseToRequirement].map(([course, requirement]) => [course.code, requirement.id])
+        ),
+        requirementToOthersCount: Object.fromEntries(
+            [...requirementToOthersCount].map(([requirement, creditsCounts]) => [requirement.id, creditsCounts])
+        ),
+        selectionNameToOptionName: Object.fromEntries(selectionNameToOptionName),
     });
 
 export const fromJSON = (json: PlanJSON, { codeToCourse, idToRequirement }: {
     codeToCourse: ReadonlyMap<CourseCode, Course>,
     idToRequirement: ReadonlyMap<RequirementId, RequirementWithCourses>,
 }): Plan => {
-    const courseToStatus = new Map([...json.courseToStatus].map(([code, status]) => {
-        const course = codeToCourse.get(code);
-        if (course === undefined) { throw new Error(); }
-        return [course, status];
-    }));
+    const courseToStatus = new Map(
+        Object.entries(json.courseToStatus).map(([code, status]) => {
+            const course = codeToCourse.get(code);
+            if (course === undefined) { throw new Error(); }
+            return [course, status];
+        })
+    );
 
-    const courseToRequirement = new Map([...json.courseToRequirement].map(([courseCode, requirementId]) => {
-        const course = codeToCourse.get(courseCode);
-        const requirement = idToRequirement.get(requirementId);
+    const courseToRequirement = new Map(
+        Object.entries(json.courseToRequirement).map(([courseCode, requirementId]) => {
+            const course = codeToCourse.get(courseCode);
+            const requirement = idToRequirement.get(requirementId);
 
-        if (course === undefined) { throw new Error(); }
-        if (requirement === undefined) { throw new Error(); }
+            if (course === undefined) { throw new Error(); }
+            if (requirement === undefined) { throw new Error(); }
 
-        return [course, requirement];
-    }));
+            return [course, requirement];
+        })
+    );
 
-    const requirementToOthersCount = new Map([...json.requirementToOthersCount].map(([requirementId, creditsCounts]) => {
-        const requirement = idToRequirement.get(requirementId);
-        if (requirement === undefined) { throw new Error(); }
-        return [requirement, creditsCounts];
-    }));
+    const requirementToOthersCount = new Map(
+        Object.entries(json.requirementToOthersCount).map(([requirementId, creditsCounts]) => {
+            const requirement = idToRequirement.get(requirementId);
+            if (requirement === undefined) { throw new Error(); }
+            return [requirement, creditsCounts];
+        })
+    );
 
-    const selectionNameToOptionName = new Map(json.selectionNameToOptionName);
+    const selectionNameToOptionName = new Map(Object.entries(json.selectionNameToOptionName));
 
     return { courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName }
 }
