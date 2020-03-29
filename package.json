@@ -119,7 +119,8 @@
     "modulePaths": [],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
-      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
+      "^.+\\.worker(\\.(js|jsx|ts|tsx))?$":"<rootDir>/__mocks__/workerMock.js"
     },
     "moduleFileExtensions": [
       "web.js",
