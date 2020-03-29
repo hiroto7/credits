@@ -2,9 +2,9 @@ import React from 'react';
 import Course from '../Course';
 import FilterType from '../FilterType';
 import getValueFromModal, { useModals } from '../getValueFromModal';
-import Plan, { RegisteredCreditsCounts, RegistrationStatus } from '../Plan';
+import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import Requirements, { RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from '../Requirements';
+import Requirements, { RequirementWithCourses } from '../Requirements';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import getNextStatus from './getNextStatus';
 import InnerRequirementView from './InnerRequirementView';
@@ -43,36 +43,7 @@ const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }
         });
     }
 
-    const clearCourseToRequirement = (requirement: Requirements, newCourseToRequirement: Map<Course, RequirementWithCourses>) => {
-        if (requirement instanceof RequirementWithChildren) {
-            for (const child of requirement.children) {
-                clearCourseToRequirement(child, newCourseToRequirement);
-            }
-        } else if (requirement instanceof RequirementWithCourses) {
-            for (const course of requirement.courses) {
-                if (newCourseToRequirement.get(course) === requirement) {
-                    newCourseToRequirement.delete(course);
-                }
-            }
-        } else {
-            const selectedRequirement = requirement.getSelectedRequirement(selectionNameToOptionName);
-            if (selectedRequirement !== undefined) {
-                clearCourseToRequirement(selectedRequirement, newCourseToRequirement);
-            }
-        }
-    }
-
-    const clearCourseToRequirementInSelection = (selectionName: string, requirement: Requirements, newCourseToRequirement: Map<Course, RequirementWithCourses>) => {
-        if (requirement instanceof RequirementWithChildren) {
-            for (const child of requirement.children) {
-                clearCourseToRequirementInSelection(selectionName, child, newCourseToRequirement);
-            }
-        } else if (requirement instanceof SelectionRequirement && requirement.selectionName === selectionName) {
-            clearCourseToRequirement(requirement, newCourseToRequirement);
-        }
-    }
-
-    const handleOthersCountsChange = (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => {
+    const handleOthersCountsChange = (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => {
         onChange({
             ...plan,
             requirementToOthersCount: new Map([
@@ -83,12 +54,15 @@ const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }
     }
 
     const handleSelectionChange = (selectionName: string, newOptionName: string) => {
-        const newCourseToRequirement = new Map(courseToRequirement);
-        clearCourseToRequirementInSelection(selectionName, requirement, newCourseToRequirement);
+        const nextSelectionNameToOptionName = new Map([...selectionNameToOptionName, [selectionName, newOptionName]]);
+        const visibleRequirements = requirement.getVisibleRequirements(nextSelectionNameToOptionName);
+        const nextCourseToRequirement = new Map([...courseToRequirement.entries()].filter(
+            ([_, requirement]) => visibleRequirements.includes(requirement)
+        ));
         onChange({
             ...plan,
-            courseToRequirement: newCourseToRequirement,
-            selectionNameToOptionName: new Map([...selectionNameToOptionName, [selectionName, newOptionName]]),
+            courseToRequirement: nextCourseToRequirement,
+            selectionNameToOptionName: nextSelectionNameToOptionName,
         });
     }
 

@@ -28,10 +28,10 @@ const ImportConfirmationModal = ({ onReturn, onExited }: {
     );
 }
 
-const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
+const ImportView = ({ eventKey, codeToCourse, idToRequirement, onSubmit }: {
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     onSubmit: (nextPlan: Plan) => void,
 }) => {
     const [jsonText, setJSONText] = useState("");
@@ -40,7 +40,7 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     const { modals, setModalsAndCount } = useModals();
 
     const json = safely(JSON.parse, jsonText);
-    const nextPlan = json && safely(fromJSON, json, { codeToCourse, nameToRequirement });
+    const nextPlan = json && safely(fromJSON, json, { codeToCourse, idToRequirement });
     const isInvalid = nextPlan === undefined;
 
     const handleJSONChange = (nextJSON: string) => {
@@ -90,30 +90,27 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>JSONファイル</Form.Label>
-                                <div className="custom-file">
-                                    <input
-                                        type="file"
-                                        accept=".json,application/json"
-                                        className="custom-file-input"
-                                        id="json-file-input"
-                                        onChange={
-                                            (event: React.ChangeEvent<HTMLInputElement>) => {
-                                                const file = event.target.files?.item(0);
-                                                if (file === null || file === undefined) {
-                                                    return;
-                                                }
-                                                const reader = new FileReader();
-                                                reader.addEventListener('load', () => {
-                                                    if (typeof reader.result === 'string') {
-                                                        handleJSONChange(reader.result);
-                                                    }
-                                                });
-                                                reader.readAsText(file);
+                                <Form.File
+                                    custom
+                                    label="Choose file"
+                                    accept=".json,application/json"
+                                    id="json-file-input"
+                                    onChange={
+                                        (event: React.ChangeEvent<HTMLInputElement>) => {
+                                            const file = event.target.files?.item(0);
+                                            if (file === null || file === undefined) {
+                                                return;
                                             }
+                                            const reader = new FileReader();
+                                            reader.addEventListener('load', () => {
+                                                if (typeof reader.result === 'string') {
+                                                    handleJSONChange(reader.result);
+                                                }
+                                            });
+                                            reader.readAsText(file);
                                         }
-                                    />
-                                    <label className="custom-file-label" htmlFor="json-file-input">Choose file</label>
-                                </div>
+                                    }
+                                />
                             </Form.Group>
                             <Button type="submit" disabled={isInvalid}>インポート</Button>
                         </Form>
