@@ -28,10 +28,10 @@ const ImportConfirmationModal = ({ onReturn, onExited }: {
     );
 }
 
-const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
+const ImportView = ({ eventKey, codeToCourse, idToRequirement, onSubmit }: {
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     onSubmit: (nextPlan: Plan) => void,
 }) => {
     const [jsonText, setJSONText] = useState("");
@@ -40,7 +40,7 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
     const { modals, setModalsAndCount } = useModals();
 
     const json = safely(JSON.parse, jsonText);
-    const nextPlan = json && safely(fromJSON, json, { codeToCourse, nameToRequirement });
+    const nextPlan = json && safely(fromJSON, json, { codeToCourse, idToRequirement });
     const isInvalid = nextPlan === undefined;
 
     const handleJSONChange = (nextJSON: string) => {
