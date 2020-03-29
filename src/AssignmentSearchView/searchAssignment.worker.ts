@@ -215,8 +215,8 @@ globalThis.addEventListener('message', event => {
         codeToCourse: ReadonlyMap<string, Course>,
     } = event.data;
 
-    const { requirement, nameToRequirement } = getRequirementAndDictionaryFromJSON(requirementJSON, codeToCourse);
-    const plan = fromJSON(planJSON, { codeToCourse, nameToRequirement });
+    const { requirement, idToRequirement } = getRequirementAndDictionaryFromJSON(requirementJSON, codeToCourse);
+    const plan = fromJSON(planJSON, { codeToCourse, idToRequirement });
 
     for (const plans of searchAssignment(requirement, plan)) {
         postMessage(plans.map(toJSON));

@@ -9,7 +9,7 @@
             ]
         },
         {
-            "selectionName": "主専攻",
+            "name": "主専攻",
             "options": [
                 {
                     "name": "知識科学主専攻",
@@ -79,7 +79,7 @@
                     },
                     "children": [
                         {
-                            "selectionName": "主専攻",
+                            "name": "主専攻",
                             "options": [
                                 {
                                     "name": "知識科学主専攻",
@@ -137,7 +137,7 @@
                             ]
                         },
                         {
-                            "selectionName": "主専攻",
+                            "name": "主専攻",
                             "options": [
                                 {
                                     "name": "知識科学主専攻",

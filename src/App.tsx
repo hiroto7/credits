@@ -33,7 +33,7 @@ const RequirementWithConfiguration: React.FC<{
                     eventKey="1"
                     onSubmit={setPlan}
                     codeToCourse={codeToCourse}
-                    nameToRequirement={nameToRequirement}
+                    idToRequirement={nameToRequirement}
                 />
             </Accordion>
             <div className="mb-3">
@@ -45,7 +45,7 @@ const RequirementWithConfiguration: React.FC<{
             <div className="mb-3">
                 <AssignmentSearchView
                     requirement={requirement}
-                    nameToRequirement={nameToRequirement}
+                    idToRequirement={nameToRequirement}
                     codeToCourse={codeToCourse}
                     plan={plan}
                     onSubmit={setPlan}
@@ -134,7 +134,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
 
     const {
         requirement,
-        nameToRequirement,
+        idToRequirement: nameToRequirement,
         name: selectedName,
     } = requirementAndDictionaryPairs.get(selectedId) ?? {};
     if (requirement === undefined || nameToRequirement === undefined || selectedName === undefined) {
@@ -231,12 +231,12 @@ const usePlanMap = () => {
     const [planMap0, setPlanMap0] = useState(() => {
         try {
             const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.nameToRequirement;
+                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
                 if (nameToRequirement === undefined) {
                     return undefined;
                 } else {
                     try {
-                        return [requirementName, fromJSON(planJSON, { codeToCourse, nameToRequirement })] as const;
+                        return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
                     } catch {
                         return undefined;
                     }

@@ -21,7 +21,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
 
     const handleOptionClick = (newOptionName: string) => {
         if (selectedOptionName !== newOptionName) {
-            onSelectionChange(requirement.selectionName, newOptionName);
+            onSelectionChange(requirement.name, newOptionName);
         }
     };
 
@@ -35,7 +35,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
                             textOverflow: 'ellipsis',
                         }}
                     >
-                        {requirement.selectionName}
+                        {requirement.name}
                         <> : </>
                         <strong>{selectedOptionName}</strong>
                     </span>

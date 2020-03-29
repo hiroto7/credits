@@ -8,11 +8,11 @@ import Requirements, { RequirementWithCourses } from '../Requirements';
 
 const AssignmentSearchView: React.FC<{
     requirement: Requirements,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     codeToCourse: ReadonlyMap<string, Course>,
     plan: Plan,
     onSubmit: (plan: Plan) => void,
-}> = ({ requirement, nameToRequirement, codeToCourse, plan, onSubmit }) => {
+}> = ({ requirement, idToRequirement, codeToCourse, plan, onSubmit }) => {
     const [worker, setWorker] = useState<Worker | undefined>(undefined);
     const [show, setShow] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ const AssignmentSearchView: React.FC<{
             setIsLoading(false);
         } else {
             const planJSONList: readonly PlanJSON[] = event.data;
-            const plans: readonly Plan[] = planJSONList.map(planJSON => fromJSON(planJSON, { codeToCourse, nameToRequirement }));
+            const plans: readonly Plan[] = planJSONList.map(planJSON => fromJSON(planJSON, { codeToCourse, idToRequirement }));
             setPlans(plans);
         }
     }

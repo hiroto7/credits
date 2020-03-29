@@ -14,7 +14,7 @@
             ]
         },
         {
-            "selectionName": "主専攻",
+            "name": "主専攻",
             "options": [
                 {
                     "name": "ソフトウェアサイエンス主専攻",
@@ -49,7 +49,7 @@
             ]
         },
         {
-            "selectionName": "卒業研究",
+            "name": "卒業研究",
             "options": [
                 {
                     "name": "卒業研究",
@@ -123,7 +123,7 @@
             ]
         },
         {
-            "selectionName": "主専攻",
+            "name": "主専攻",
             "options": [
                 {
                     "name": "ソフトウェアサイエンス主専攻",

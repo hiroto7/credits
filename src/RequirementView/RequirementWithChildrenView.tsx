@@ -22,7 +22,7 @@ const RequirementWithChildrenView = ({ requirement, filterType, lockTarget, plan
             <ListGroup className="mt-3">
                 {
                     requirement.children.map(child => (
-                        <ListGroup.Item key={child.name}>
+                        <ListGroup.Item key={child.id}>
                             <InnerRequirementView
                                 requirement={child} plan={plan}
                                 filterType={filterType} lockTarget={lockTarget}

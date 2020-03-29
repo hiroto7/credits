@@ -14,7 +14,7 @@ export default interface Plan {
 }
 
 export type CourseCode = string;
-export type RequirementName = string;
+export type RequirementId = string;
 
 export enum RegistrationStatus {
     Unregistered = 0,
@@ -24,22 +24,22 @@ export enum RegistrationStatus {
 
 export interface PlanJSON {
     readonly courseToStatus: readonly [CourseCode, RegistrationStatus][];
-    readonly courseToRequirement: readonly [CourseCode, RequirementName][];
-    readonly requirementToOthersCount: readonly [RequirementName, RegisteredCreditsCounts][];
+    readonly courseToRequirement: readonly [CourseCode, RequirementId][];
+    readonly requirementToOthersCount: readonly [RequirementId, RegisteredCreditsCounts][];
     readonly selectionNameToOptionName: readonly [string, string][];
 }
 
 export const toJSON =
     ({ courseToStatus, courseToRequirement, requirementToOthersCount, selectionNameToOptionName }: Plan): PlanJSON => ({
         courseToStatus: [...courseToStatus].map(([course, status]) => [course.code, status]),
-        courseToRequirement: [...courseToRequirement].map(([course, requirement]) => [course.code, requirement.name]),
-        requirementToOthersCount: [...requirementToOthersCount].map(([requirement, creditsCounts]) => [requirement.name, creditsCounts]),
+        courseToRequirement: [...courseToRequirement].map(([course, requirement]) => [course.code, requirement.id]),
+        requirementToOthersCount: [...requirementToOthersCount].map(([requirement, creditsCounts]) => [requirement.id, creditsCounts]),
         selectionNameToOptionName: [...selectionNameToOptionName],
     });
 
-export const fromJSON = (json: PlanJSON, { codeToCourse, nameToRequirement }: {
+export const fromJSON = (json: PlanJSON, { codeToCourse, idToRequirement }: {
     codeToCourse: ReadonlyMap<CourseCode, Course>,
-    nameToRequirement: ReadonlyMap<RequirementName, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<RequirementId, RequirementWithCourses>,
 }): Plan => {
     const courseToStatus = new Map([...json.courseToStatus].map(([code, status]) => {
         const course = codeToCourse.get(code);
@@ -47,9 +47,9 @@ export const fromJSON = (json: PlanJSON, { codeToCourse, nameToRequirement }: {
         return [course, status];
     }));
 
-    const courseToRequirement = new Map([...json.courseToRequirement].map(([courseCode, requirementName]) => {
+    const courseToRequirement = new Map([...json.courseToRequirement].map(([courseCode, requirementId]) => {
         const course = codeToCourse.get(courseCode);
-        const requirement = nameToRequirement.get(requirementName);
+        const requirement = idToRequirement.get(requirementId);
 
         if (course === undefined) { throw new Error(); }
         if (requirement === undefined) { throw new Error(); }
@@ -57,8 +57,8 @@ export const fromJSON = (json: PlanJSON, { codeToCourse, nameToRequirement }: {
         return [course, requirement];
     }));
 
-    const requirementToOthersCount = new Map([...json.requirementToOthersCount].map(([requirementName, creditsCounts]) => {
-        const requirement = nameToRequirement.get(requirementName);
+    const requirementToOthersCount = new Map([...json.requirementToOthersCount].map(([requirementId, creditsCounts]) => {
+        const requirement = idToRequirement.get(requirementId);
         if (requirement === undefined) { throw new Error(); }
         return [requirement, creditsCounts];
     }));

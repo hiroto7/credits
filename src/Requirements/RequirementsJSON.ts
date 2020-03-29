@@ -24,7 +24,6 @@ type OptionJSON = {
 } | RequirementsJSON;
 
 export interface SelectionRequirementJSON {
-    readonly name?: string;
-    readonly selectionName: string;
+    readonly name: string;
     readonly options: readonly OptionJSON[];
 }

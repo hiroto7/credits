@@ -6,10 +6,15 @@ type Requirements = RequirementWithChildren | RequirementWithCourses | Selection
 export default Requirements;
 
 abstract class Requirement {
+    readonly id: string
+    readonly name: string;
     abstract getRegisteredCreditsCounts(plan: Plan, includesExcess: boolean): RegisteredCreditsCounts;
     abstract getRequiredCreditsCount(selectionNameToOptionName: ReadonlyMap<string, string>): Range;
     abstract getVisibleRequirements(selectionNameToOptionName: ReadonlyMap<string, string>): readonly RequirementWithCourses[];
-    constructor(readonly name: string) { }
+    constructor({ id, name }: { id: string, name: string }) {
+        this.id = id;
+        this.name = name;
+    }
     getStatus(plan: Plan): RegistrationStatus {
         const requiredCreditsCount = this.getRequiredCreditsCount(plan.selectionNameToOptionName);
         const registeredCreditsCounts = this.getRegisteredCreditsCounts(plan, false);
@@ -27,6 +32,7 @@ export interface Range {
 }
 
 export interface RequirementWithChildrenInit {
+    readonly id: string;
     readonly name: string;
     readonly description?: string;
     readonly children: Iterable<Requirements>;
@@ -37,8 +43,8 @@ export class RequirementWithChildren extends Requirement implements RequirementW
     readonly description?: string;
     readonly children: readonly Requirements[];
     readonly creditsCount?: Range;
-    constructor({ name, description, children, creditsCount }: RequirementWithChildrenInit) {
-        super(name);
+    constructor({ id, name, description, children, creditsCount }: RequirementWithChildrenInit) {
+        super({ id, name });
         this.description = description
         this.children = [...children];
         this.creditsCount = creditsCount;
@@ -88,6 +94,7 @@ export class RequirementWithChildren extends Requirement implements RequirementW
 }
 
 export interface RequirementWithCoursesInit {
+    readonly id: string;
     readonly name: string;
     readonly description?: string;
     readonly courses: Iterable<Course>;
@@ -100,8 +107,8 @@ export class RequirementWithCourses extends Requirement {
     readonly courses: readonly Course[];
     readonly creditsCount: Range;
     readonly allowsOthers: boolean;
-    constructor({ name, description, courses, creditsCount, allowsOthers = false }: RequirementWithCoursesInit) {
-        super(name);
+    constructor({ id, name, description, courses, creditsCount, allowsOthers = false }: RequirementWithCoursesInit) {
+        super({ id, name });
         this.description = description;
         this.courses = [...courses];
         this.creditsCount = creditsCount;
@@ -155,24 +162,24 @@ interface Option {
 }
 
 export interface SelectionRequirementInit {
+    readonly id: string;
     readonly name: string;
-    readonly selectionName: string;
     readonly options: Iterable<Option>;
 }
 
 export class SelectionRequirement extends Requirement implements SelectionRequirementInit {
-    readonly selectionName: string;
+    readonly name: string;
     readonly options: readonly Option[];
     readonly optionNameToRequirement: ReadonlyMap<string, Requirements>;
-    constructor({ name, selectionName, options: options0 }: SelectionRequirementInit) {
-        super(name);
-        this.selectionName = selectionName;
+    constructor({ id, name, options: options0 }: SelectionRequirementInit) {
+        super({ id, name });
+        this.name = name;
         const options = [...options0]
         this.options = options;
         this.optionNameToRequirement = new Map(options.map(({ name, requirement }) => [name, requirement]));
     }
     getSelectedOptionName(selectionNameToOptionName: ReadonlyMap<string, string>) {
-        const selectedOptionName = selectionNameToOptionName.get(this.selectionName) || this.options[0].name;
+        const selectedOptionName = selectionNameToOptionName.get(this.name) || this.options[0].name;
         return selectedOptionName;
     }
     getSelectedRequirement(selectionNameToOptionName: ReadonlyMap<string, string>) {
@@ -207,8 +214,7 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
     toJSON(): SelectionRequirementJSON {
         return {
             name: this.name,
-            selectionName: this.selectionName,
-            options: this.options.map(({ name, requirement }) =>({
+            options: this.options.map(({ name, requirement }) => ({
                 name,
                 requirement: requirement.toJSON(),
             }))
