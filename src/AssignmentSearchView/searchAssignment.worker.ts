@@ -173,9 +173,6 @@ function* searchAssignment(requirement: Requirements, plan: Plan): Generator<rea
     } | undefined = undefined;
     for (const plan1 of f3(requirements, plan0)) {
         const creditCounts = requirement.getRegisteredCreditCounts(plan1, false);
-        if (creditCounts.acquired === 125.5 && creditCounts.registered === 67) {
-            console.log(creditCounts)
-        }
         if (planAndCreditCountsPairs === undefined) {
             planAndCreditCountsPairs = {
                 acquired: {
