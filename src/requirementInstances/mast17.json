@@ -3,14 +3,14 @@
     "children": [
         {
             "name": "専門科目 - 必修科目",
-            "creditsCount": 12,
+            "creditCount": 12,
             "courses": [
                 "GC41103", "GC41203", "GC48808", "GC48908"
             ]
         },
         {
             "name": "専門基礎科目 - 必修科目",
-            "creditsCount": 36,
+            "creditCount": 36,
             "courses": [
                 "GC10112", "GC10122", "GC12101", "GC12103",
                 "GC11101", "GC11201", "GC11301", "GC11401",
@@ -24,14 +24,14 @@
         {
             "name": "共通科目 - 必修科目",
             "description": "総合科目I（フレッシュマン・セミナーを含む） / 総合科目II / 総合科目III / 体育 / 第1外国語（英語）",
-            "creditsCount": 15.5,
+            "creditCount": 15.5,
             "courses": [],
             "allowsOthers": true
         },
         {
             "name": "専門科目 - 選択科目",
             "description": "GC5",
-            "creditsCount": 30,
+            "creditCount": 30,
             "courses": [
                 "GC50201", "GC50301", "GC50501", "GC50601",
                 "GC50701", "GC50801", "GC51001", "GC51101",
@@ -48,7 +48,7 @@
         {
             "name": "専門基礎科目 - 選択科目",
             "description": "GC2 / GA1",
-            "creditsCount": 22,
+            "creditCount": 22,
             "courses": [
                 "GC20101", "GC20201", "GC21201", "GC21301",
                 "GC21401", "GC22101", "GC22201", "GC23101",
@@ -61,12 +61,12 @@
         },
         {
             "name": "自由科目",
-            "creditsCount": 9,
+            "creditCount": 9,
             "children": [
                 {
                     "name": "専門科目 - 自由科目",
                     "description": "GC5 / GC6 / ビジネスシステムデザインA / ビジネスシステムデザインB",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 0,
                         "max": 9
                     },
@@ -88,7 +88,7 @@
                 {
                     "name": "専門基礎科目 - 自由科目",
                     "description": "GC2 / GC3 / GA1",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 0,
                         "max": 9
                     },
@@ -107,7 +107,7 @@
                 {
                     "name": "共通科目 - 自由科目",
                     "description": "総合科目II / 総合科目III / 体育 / 外国語 / 国語 / 芸術",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 0,
                         "max": 9
                     },
@@ -117,7 +117,7 @@
                 {
                     "name": "基礎科目 - 自由科目",
                     "description": "他学群又は他学類の授業科目 / 情報（上級） / 博物館に関する科目 / 自由科目（特設）",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 0,
                         "max": 9
                     },

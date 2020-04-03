@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
-import Plan, { RegisteredCreditsCounts } from '../Plan';
+import Plan, { RegisteredCreditCounts } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import { RequirementWithCourses, SelectionRequirement } from '../Requirements';
 import InnerRequirementView from './InnerRequirementView';
@@ -13,7 +13,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
     lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
+    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
 }) => {
     const selectedOptionName = requirement.getSelectedOptionName(plan.selectionNameToOptionName);
@@ -21,7 +21,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
 
     const handleOptionClick = (newOptionName: string) => {
         if (selectedOptionName !== newOptionName) {
-            onSelectionChange(requirement.selectionName, newOptionName);
+            onSelectionChange(requirement.name, newOptionName);
         }
     };
 
@@ -35,7 +35,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
                             textOverflow: 'ellipsis',
                         }}
                     >
-                        {requirement.selectionName}
+                        {requirement.name}
                         <> : </>
                         <strong>{selectedOptionName}</strong>
                     </span>
