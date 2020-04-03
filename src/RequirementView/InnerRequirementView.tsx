@@ -1,7 +1,7 @@
 import React from 'react';
 import Course from "../Course";
 import FilterType from '../FilterType';
-import Plan, { RegisteredCreditsCounts } from '../Plan';
+import Plan, { RegisteredCreditCounts } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import Requirements, { RequirementWithChildren, RequirementWithCourses } from "../Requirements";
 import RequirementWithChildrenView from './RequirementWithChildrenView';
@@ -14,7 +14,7 @@ const InnerRequirementView = ({ requirement, filterType, lockTarget, plan, onCou
     lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
+    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
 }) => {
     if (requirement instanceof RequirementWithChildren) {

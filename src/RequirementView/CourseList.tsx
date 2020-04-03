@@ -74,7 +74,7 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
                     <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
                         {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}
                     </Badge>
-                    <div><span className="text-muted">単位数</span> <strong>{course.creditsCount}</strong></div>
+                    <div><span className="text-muted">単位数</span> <strong>{course.creditCount}</strong></div>
                 </div>
             </div>
         </ListGroup.Item>

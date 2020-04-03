@@ -17,9 +17,9 @@ const CreditsCountLabels = ({ requirement, plan }: {
     requirement: Requirements,
     plan: Plan,
 }) => {
-    const creditsCount = requirement.getRegisteredCreditsCount(plan, false);
-    const exceededCreditsCount = requirement.getRegisteredCreditsCount(plan, true);
-    const requiredCreditsCount = requirement.getRequiredCreditsCount(plan.selectionNameToOptionName);
+    const creditsCount = requirement.getRegisteredCreditCounts(plan, false);
+    const exceededCreditsCount = requirement.getRegisteredCreditCounts(plan, true);
+    const requiredCreditsCount = requirement.getRequiredCreditCount(plan.selectionNameToOptionName);
 
     return (
         <div>

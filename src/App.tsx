@@ -4,6 +4,7 @@ import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-boots
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
+import AssignmentSearchView from './AssignmentSearchView';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
@@ -32,7 +33,7 @@ const RequirementWithConfiguration: React.FC<{
                     eventKey="1"
                     onSubmit={setPlan}
                     codeToCourse={codeToCourse}
-                    nameToRequirement={nameToRequirement}
+                    idToRequirement={nameToRequirement}
                 />
             </Accordion>
             <div className="mb-3">
@@ -41,8 +42,17 @@ const RequirementWithConfiguration: React.FC<{
                     onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
                 />
             </div>
+            <div className="mb-3">
+                <AssignmentSearchView
+                    requirement={requirement}
+                    idToRequirement={nameToRequirement}
+                    codeToCourse={codeToCourse}
+                    plan={plan}
+                    onSubmit={setPlan}
+                />
+            </div>
             <Form.Group>
-                <Form.Label>科目の履修状態のロック</Form.Label>
+                <Form.Label>履修状態のロック</Form.Label>
                 {
                     [
                         {
@@ -124,7 +134,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
 
     const {
         requirement,
-        nameToRequirement,
+        idToRequirement: nameToRequirement,
         name: selectedName,
     } = requirementAndDictionaryPairs.get(selectedId) ?? {};
     if (requirement === undefined || nameToRequirement === undefined || selectedName === undefined) {
@@ -221,12 +231,12 @@ const usePlanMap = () => {
     const [planMap0, setPlanMap0] = useState(() => {
         try {
             const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.nameToRequirement;
+                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
                 if (nameToRequirement === undefined) {
                     return undefined;
                 } else {
                     try {
-                        return [requirementName, fromJSON(planJSON, { codeToCourse, nameToRequirement })] as const;
+                        return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
                     } catch {
                         return undefined;
                     }

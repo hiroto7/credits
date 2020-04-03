@@ -23,7 +23,7 @@ const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
     return (
         <Modal show={show} onHide={() => { setShow(false); onReturn(false); }} onExited={onExited}>
             <Modal.Header closeButton>
-                <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                <Modal.Title>履修状態の一括登録</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 続けると、<strong>現在の履修 / 修得状態が失われます</strong>。
@@ -99,7 +99,7 @@ const Table1: React.FC<{
                                     <td><code>{record[codeColumnIndex]}</code></td>
                                     <td>{getTdContent(titleColumnIndex, course => course.title, recordTitle => recordTitle.trim())}</td>
                                     <td style={{ textAlign: 'center' }}>
-                                        {getTdContent(creditsCountColumnIndex, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)}
+                                        {getTdContent(creditsCountColumnIndex, course => course.creditCount, recordCreditsCount => +recordCreditsCount)}
                                     </td>
                                 </>
                             );
@@ -216,7 +216,7 @@ const Modal1: React.FC<{
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
 
     const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
-    const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditsCount, recordCreditsCount => +recordCreditsCount)
+    const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditCount, recordCreditsCount => +recordCreditsCount)
 
     const handleOKClick = async () => {
         if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
@@ -244,7 +244,7 @@ const Modal1: React.FC<{
             {modals}
             <Modal size="xl" show={show} onHide={onHide}>
                 <Modal.Header closeButton>
-                    <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                    <Modal.Title>履修状態の一括登録</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <p>
@@ -342,7 +342,7 @@ const Modal0: React.FC<{
     return (
         <Modal size="lg" show={show} onHide={onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>科目の履修 / 修得状態をまとめて設定</Modal.Title>
+                <Modal.Title>履修状態の一括登録</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <p>
@@ -373,30 +373,27 @@ const Modal0: React.FC<{
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>CSVファイル</Form.Label>
-                    <div className="custom-file">
-                        <input
-                            type="file"
-                            accept="text/plain"
-                            className="custom-file-input"
-                            id="csv-file-input"
-                            onChange={
-                                (event: React.ChangeEvent<HTMLInputElement>) => {
-                                    const file = event.target.files?.item(0);
-                                    if (file === null || file === undefined) {
-                                        return;
-                                    }
-                                    const reader = new FileReader();
-                                    reader.addEventListener('load', () => {
-                                        if (typeof reader.result === 'string') {
-                                            handleCSVChange(reader.result);
-                                        }
-                                    });
-                                    reader.readAsText(file);
+                    <Form.File
+                        custom
+                        accept=".csv,text/csv,text/plain"
+                        id="csv-file-input"
+                        label="Choose file"
+                        onChange={
+                            (event: React.ChangeEvent<HTMLInputElement>) => {
+                                const file = event.target.files?.item(0);
+                                if (file === null || file === undefined) {
+                                    return;
                                 }
+                                const reader = new FileReader();
+                                reader.addEventListener('load', () => {
+                                    if (typeof reader.result === 'string') {
+                                        handleCSVChange(reader.result);
+                                    }
+                                });
+                                reader.readAsText(file);
                             }
-                        />
-                        <label className="custom-file-label" htmlFor="csv-file-input">Choose file</label>
-                    </div>
+                        }
+                    />
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
@@ -421,7 +418,7 @@ const CollectivelyCourseSetView: React.FC<{
 
     return (
         <>
-            <Button variant="secondary" onClick={() => setPage(0)}>科目の履修 / 修得状態をまとめて設定</Button>
+            <Button variant="secondary" onClick={() => setPage(0)}>履修状態の一括登録</Button>
             <Modal0
                 codeToCourse={codeToCourse}
                 show={page === 0}
