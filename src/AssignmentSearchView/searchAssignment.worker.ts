@@ -1,6 +1,6 @@
 import Course from "../Course";
 import Plan, { fromJSON, PlanJSON, RegisteredCreditCounts, RegistrationStatus, toJSON } from "../Plan";
-import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithCourses } from "../Requirements";
+import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "../Requirements";
 
 function* f0(
     requiredCreditsCount: Range,
@@ -158,7 +158,7 @@ function* f3(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
     }
 }
 
-function* searchAssignment(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+function* searchAssignment0(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     const requirements = requirement.getVisibleRequirements(plan.selectionNameToOptionName);
     const plan0 = { ...plan, courseToRequirement: new Map() };
     let planAndCreditCountsPairs: {
@@ -173,9 +173,6 @@ function* searchAssignment(requirement: Requirements, plan: Plan): Generator<rea
     } | undefined = undefined;
     for (const plan1 of f3(requirements, plan0)) {
         const creditCounts = requirement.getRegisteredCreditCounts(plan1, false);
-        if (creditCounts.acquired === 125.5 && creditCounts.registered === 67) {
-            console.log(creditCounts)
-        }
         if (planAndCreditCountsPairs === undefined) {
             planAndCreditCountsPairs = {
                 acquired: {
@@ -220,6 +217,55 @@ function* searchAssignment(requirement: Requirements, plan: Plan): Generator<rea
                 }
             }
         }
+    }
+}
+
+function* enumerateOptionsSelections0(requirements: readonly Requirements[], selectionNameToOptionName: ReadonlyMap<string, string>): Generator<ReadonlyMap<string, string>, void, unknown> {
+    if (requirements.length === 0) {
+        yield selectionNameToOptionName;
+    } else {
+        const firstRequirement = requirements[0];
+        const remainingRequirements = requirements.slice(1);
+        for (const selectionNameToOptionName1 of enumerateOptionsSelections(firstRequirement, selectionNameToOptionName)) {
+            yield* enumerateOptionsSelections0(remainingRequirements, selectionNameToOptionName1);
+        }
+    }
+}
+
+function* enumerateOptionsSelections(requirement: Requirements, selectionNameToOptionName: ReadonlyMap<string, string>) {
+    if (requirement instanceof SelectionRequirement) {
+        const optionName = selectionNameToOptionName.get(requirement.name);
+        if (optionName === undefined) {
+            for (const option of requirement.options) {
+                yield* enumerateOptionsSelections0([option.requirement], new Map([
+                    ...selectionNameToOptionName,
+                    [requirement.name, option.name],
+                ]));
+            }
+        } else {
+            const child = requirement.optionNameToRequirement.get(optionName);
+            if (child === undefined) {
+                yield selectionNameToOptionName;
+            } else {
+                yield* enumerateOptionsSelections0([child], selectionNameToOptionName);
+            }
+        }
+    } else if (requirement instanceof RequirementWithChildren) {
+        yield* enumerateOptionsSelections0(requirement.children, selectionNameToOptionName);
+    } else {
+        yield selectionNameToOptionName;
+    }
+}
+
+function* searchAssignment(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+    let plans0: readonly Plan[] = [];
+    for (const selectionNameToOptionName of enumerateOptionsSelections(requirement, new Map())) {
+        let plans1: readonly Plan[] = [];
+        for (const plans2 of searchAssignment0(requirement, { ...plan, selectionNameToOptionName })) {
+            plans1 = [...plans0, ...plans2];
+            yield plans1;
+        }
+        plans0 = plans1;
     }
 }
 

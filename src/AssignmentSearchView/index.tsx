@@ -66,7 +66,7 @@ const AssignmentSearchView: React.FC<{
                 <Modal.Body>
                     <p>
                         全体として修得単位数や履修単位数が最大となるような割り当てを見つけます。
-                        先に<b>履修状態の設定</b>、<b>主専攻の選択</b>、<b>単位数の入力</b>を行っておいてください。
+                        先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
                     </p>
                     {
                         plans === undefined ?
@@ -99,6 +99,15 @@ const AssignmentSearchView: React.FC<{
                                                                 {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
                                                             </Badge>
                                                         </div>
+                                                        {
+                                                            [...plan1.selectionNameToOptionName].map(([selectionName, optionName]) => (
+                                                                <div key={selectionName}>
+                                                                    {selectionName}
+                                                                    <> : </>
+                                                                    <strong>{optionName}</strong>
+                                                                </div>
+                                                            ))
+                                                        }
                                                     </ListGroup.Item>
                                                 )
                                             })
@@ -111,7 +120,7 @@ const AssignmentSearchView: React.FC<{
                         isLoading ? (
                             <>
                                 <p>
-                                    {plans === undefined ? '' : '単位数がより大きくなるような'}割り当てを探しています。
+                                    {plans === undefined ? '' : 'そのほかの'}割り当てを探しています。
                                     この処理は短時間で終了しない場合があります。
                                 </p>
                                 <div className="text-center">
