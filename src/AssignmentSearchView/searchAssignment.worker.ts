@@ -244,9 +244,7 @@ function* enumerateOptionsSelections(requirement: Requirements, selectionNameToO
             }
         } else {
             const child = requirement.optionNameToRequirement.get(optionName);
-            if (child === undefined) {
-                yield selectionNameToOptionName;
-            } else {
+            if (child !== undefined) {
                 yield* enumerateOptionsSelections(child, selectionNameToOptionName);
             }
         }
