@@ -232,12 +232,12 @@ function* enumerateOptionsSelections0(requirements: readonly Requirements[], sel
     }
 }
 
-function* enumerateOptionsSelections(requirement: Requirements, selectionNameToOptionName: ReadonlyMap<string, string>) {
+function* enumerateOptionsSelections(requirement: Requirements, selectionNameToOptionName: ReadonlyMap<string, string>): Generator<ReadonlyMap<string, string>, void, undefined> {
     if (requirement instanceof SelectionRequirement) {
         const optionName = selectionNameToOptionName.get(requirement.name);
         if (optionName === undefined) {
             for (const option of requirement.options) {
-                yield* enumerateOptionsSelections0([option.requirement], new Map([
+                yield* enumerateOptionsSelections(option.requirement, new Map([
                     ...selectionNameToOptionName,
                     [requirement.name, option.name],
                 ]));
@@ -247,7 +247,7 @@ function* enumerateOptionsSelections(requirement: Requirements, selectionNameToO
             if (child === undefined) {
                 yield selectionNameToOptionName;
             } else {
-                yield* enumerateOptionsSelections0([child], selectionNameToOptionName);
+                yield* enumerateOptionsSelections(child, selectionNameToOptionName);
             }
         }
     } else if (requirement instanceof RequirementWithChildren) {
