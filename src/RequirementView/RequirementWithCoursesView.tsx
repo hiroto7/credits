@@ -40,7 +40,7 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                 }}>
                     <Form.Row>
                         <Form.Group as={Col} md="4">
-                            <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
+                            <Form.Label>修得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
                             <Form.Control
                                 type="number"
                                 min={0}
