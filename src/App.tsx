@@ -4,7 +4,7 @@ import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-boots
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
-import AssignmentSearchView from './AssignmentSearchView';
+import AssignmentsFindView from './AssignmentsFindView';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
@@ -43,7 +43,7 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </div>
             <div className="mb-3">
-                <AssignmentSearchView
+                <AssignmentsFindView
                     requirement={requirement}
                     idToRequirement={nameToRequirement}
                     codeToCourse={codeToCourse}
