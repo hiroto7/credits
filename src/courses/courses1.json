@@ -475,6 +475,11 @@
     "creditCount": 2.0
   },
   {
+    "code": "GB30111",
+    "title": "コンピュータネットワーク",
+    "creditCount": 2.0
+  },
+  {
     "code": "GB30201",
     "title": "計算機アーキテクチャ",
     "creditCount": 2.0
@@ -487,6 +492,11 @@
   {
     "code": "GB30401",
     "title": "オペレーティングシステムI",
+    "creditCount": 2.0
+  },
+  {
+    "code": "GB30411",
+    "title": "オペレーティングシステム",
     "creditCount": 2.0
   },
   {
@@ -550,6 +560,11 @@
     "creditCount": 2.0
   },
   {
+    "code": "GB32301",
+    "title": "人工生命概論",
+    "creditCount": 1.0
+  },
+  {
     "code": "GB36403",
     "title": "情報システム実験A",
     "creditCount": 3.0
@@ -585,6 +600,11 @@
     "creditCount": 1.0
   },
   {
+    "code": "GB40111",
+    "title": "情報セキュリティ",
+    "creditCount": 2.0
+  },
+  {
     "code": "GB40201",
     "title": "パターン認識",
     "creditCount": 2.0
@@ -592,6 +612,11 @@
   {
     "code": "GB40301",
     "title": "ヒューマンインタフェース",
+    "creditCount": 2.0
+  },
+  {
+    "code": "GB40401",
+    "title": "ディジタル信号処理",
     "creditCount": 2.0
   },
   {
@@ -618,6 +643,11 @@
     "code": "GB41501",
     "title": "音声聴覚情報処理",
     "creditCount": 2.0
+  },
+  {
+    "code": "GB41511",
+    "title": "音声聴覚情報処理",
+    "creditCount": 1.0
   },
   {
     "code": "GB41611",
