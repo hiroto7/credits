@@ -229,24 +229,29 @@ const COURSES_STATE = "courses-state"
 const usePlanMap = () => {
     const [storedJSON, setStoredJSON] = useLocalStorage<readonly (readonly [string, PlanJSON])[]>(COURSES_STATE);
     const [planMap0, setPlanMap0] = useState(() => {
-        try {
-            const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
-                if (nameToRequirement === undefined) {
-                    return undefined;
-                } else {
-                    try {
-                        return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
-                    } catch {
-                        return undefined;
-                    }
-                }
-            }).filter((value): value is NonNullable<typeof value> => value !== undefined);
-            const storedPlanMap: ReadonlyMap<string, Plan> = new Map(storedPlanEntries);
-            return storedPlanMap;
-        } catch {
+        if (storedJSON === undefined) {
             const storedPlanMap: ReadonlyMap<string, Plan> = new Map();
             return storedPlanMap;
+        } else {
+            try {
+                const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
+                    const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
+                    if (nameToRequirement === undefined) {
+                        return undefined;
+                    } else {
+                        try {
+                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
+                        } catch {
+                            return undefined;
+                        }
+                    }
+                }).filter((value): value is NonNullable<typeof value> => value !== undefined);
+                const storedPlanMap: ReadonlyMap<string, Plan> = new Map(storedPlanEntries);
+                return storedPlanMap;
+            } catch {
+                const storedPlanMap: ReadonlyMap<string, Plan> = new Map();
+                return storedPlanMap;
+            }
         }
     });
     const setPlanMap = (newPlanMap: ReadonlyMap<string, Plan>) => {
