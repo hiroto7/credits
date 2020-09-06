@@ -178,7 +178,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
 }
 
 const Main: React.FC = () => {
-    const { requirementId } = useParams();
+    const { requirementId }: { requirementId: string } = useParams();
     if (requirementId === undefined) {
         return (<Redirect to="/" />);
     } else {
