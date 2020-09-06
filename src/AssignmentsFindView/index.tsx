@@ -57,11 +57,11 @@ const AssignmentsFindView: React.FC<{
                     }
                 }
             >
-                要件を満たす割り当てを見つける
+                最適な割り当ての自動探索
             </Button>
             <Modal show={show} onHide={handleHide}>
                 <Modal.Header closeButton>
-                    <Modal.Title>要件を満たす割り当てを見つける</Modal.Title>
+                    <Modal.Title>最適な割り当ての自動探索</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <p>
