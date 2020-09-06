@@ -2,11 +2,10 @@ import React from 'react';
 import Course from '../Course';
 import FilterType from '../FilterType';
 import getValueFromModal, { useModals } from '../getValueFromModal';
-import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
+import Plan, { getNextStatus, RegisteredCreditCounts, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from '../Requirements';
 import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
-import getNextStatus from './getNextStatus';
 import InnerRequirementView from './InnerRequirementView';
 
 const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }: {

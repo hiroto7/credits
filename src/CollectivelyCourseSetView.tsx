@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import Course from './Course';
 import getValueFromModal, { useModals } from './getValueFromModal';
-import { RegistrationStatus } from './Plan';
+import { getNextStatus, RegistrationStatus } from './Plan';
+import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import safely from './safely';
 
 const placeholder = `
@@ -42,8 +43,8 @@ const Table1: React.FC<{
     titleColumnIndex: number | undefined,
     creditsCountColumnIndex: number | undefined,
     courseAndRecordPairs: readonly CourseAndRecordPair[],
-    courseToStatus: ReadonlyMap<Course, RegistrationStatus12>,
-    setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+    courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
+    setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
 }> = ({ codeColumnIndex, titleColumnIndex, creditsCountColumnIndex, courseAndRecordPairs, courseToStatus, setCourseToStatus }) => {
     const {
         course: firstCourse,
@@ -125,7 +126,7 @@ const Table1: React.FC<{
 
                             if (course === undefined) {
                                 return (
-                                    <tr key={recordIndex}>
+                                    <tr key={recordIndex} className="table-secondary">
                                         <td style={{ textAlign: 'center' }}>
                                             <OverlayTrigger
                                                 overlay={
@@ -139,9 +140,8 @@ const Table1: React.FC<{
                                     </tr>
                                 )
                             } else {
-                                const status = courseToStatus.get(course);
-                                const nextStatus = status === RegistrationStatus.Acquired ? RegistrationStatus.Registered : RegistrationStatus.Acquired;
-                                const variant = status === RegistrationStatus.Acquired ? 'success' : 'primary';
+                                const status = courseToStatus.get(course) ?? RegistrationStatus.Registered;
+                                const nextStatus = getNextStatus({ currentStatus: status, lockTarget: RegistrationStatusLockTarget.None });
 
                                 return (
                                     <tr
@@ -153,11 +153,11 @@ const Table1: React.FC<{
                                             ]))
                                         }
                                         style={{ cursor: 'pointer' }}
-                                        className={`table-${variant}`}
+                                        className={status === RegistrationStatus.Unregistered ? undefined : `table-${status === RegistrationStatus.Acquired ? 'success' : 'primary'}`}
                                     >
                                         <td style={{ textAlign: 'center' }}>
-                                            <Badge variant={variant}>
-                                                {status === RegistrationStatus.Acquired ? '修得済み' : '履修する'}
+                                            <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
+                                                {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}
                                             </Badge>
                                         </td>
                                         {tds}
@@ -210,10 +210,10 @@ const Modal1: React.FC<{
     show: boolean,
     onHide: () => void,
     onBack: () => void,
-    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
 }> = ({ codeColumnIndex, courseAndRecordPairs, show, onHide, onBack, onSubmit }) => {
     const { modals, setModalsAndCount } = useModals();
-    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus12>>(new Map());
+    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>(new Map());
 
     const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
     const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditCount, recordCreditsCount => +recordCreditsCount)
@@ -247,9 +247,13 @@ const Modal1: React.FC<{
                     <Modal.Title>履修状態の一括登録</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <p>CSVデータから見つかった科目が以下に表示されています。</p>
                     <p>
-                        CSVデータから見つかった科目が以下に表示されています。
-                        それぞれの科目を [履修する] / [修得済み] のどちらかに設定し、 [OK] ボタンを押します。
+                        それぞれの科目を [履修する] / [修得済み] のどちらかに設定してください。
+                        CSVデータに不要な科目が含まれている場合は、 [履修しない] に設定してください。
+                    </p>
+                    <p>
+                        設定が終わったら [OK] ボタンを押します。
                         <strong>現在の履修 / 修得状態は失われます。</strong>
                     </p>
                     <ButtonGroup className="mb-3">
@@ -410,7 +414,7 @@ const Modal0: React.FC<{
 
 const CollectivelyCourseSetView: React.FC<{
     codeToCourse: ReadonlyMap<string, Course>,
-    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => void,
+    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
 }> = ({ codeToCourse, onSubmit }) => {
     const [page, setPage] = useState<number | undefined>();
     const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly CourseAndRecordPair[] | undefined>();
@@ -440,7 +444,7 @@ const CollectivelyCourseSetView: React.FC<{
                         onHide={() => setPage(undefined)}
                         onBack={() => setPage(0)}
                         onSubmit={
-                            (courseToStatus: ReadonlyMap<Course, RegistrationStatus12>) => {
+                            (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => {
                                 onSubmit(courseToStatus);
                                 setPage(undefined);
                             }
