@@ -258,7 +258,7 @@ function* enumerateOptionsSelections(requirement: Requirements, selectionNameToO
 function* findAssignments(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     let plans0: readonly Plan[] = [];
     for (const selectionNameToOptionName of enumerateOptionsSelections(requirement, new Map())) {
-        let plans1: readonly Plan[] = [];
+        let plans1: readonly Plan[] = plans0;
         for (const plans2 of findAssignments0(requirement, { ...plan, selectionNameToOptionName })) {
             plans1 = [...plans0, ...plans2];
             yield plans1;
