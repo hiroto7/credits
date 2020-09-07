@@ -211,7 +211,7 @@ const Modal1: React.FC<{
     }
 
     return (
-        <Modal size="xl" show={show}>
+        <Modal size="xl" show={show} onHide={onCancel}>
             <Modal.Header closeButton>
                 <Modal.Title>CSVから履修状態を一括登録</Modal.Title>
             </Modal.Header>
