@@ -431,6 +431,10 @@ const CollectivelyCourseSetView: React.FC<{
                         codeToCourse={codeToCourse}
                         plan={{ ...plan, courseToStatus }}
                         selectsAutomatically={true}
+                        cancelButtonLabel="スキップ"
+                        additionalInformation={
+                            <p>スキップすると科目群への割り当てを行わず、履修状態の設定だけを行います。</p>
+                        }
                         onCancel={
                             () => {
                                 onSubmit({ ...plan, courseToStatus })

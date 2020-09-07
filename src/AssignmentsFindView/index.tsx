@@ -13,9 +13,11 @@ const AssignmentsFindView: React.FC<{
     codeToCourse: ReadonlyMap<string, Course>,
     plan: Plan,
     selectsAutomatically: boolean,
+    additionalInformation: React.ReactNode,
+    cancelButtonLabel: string,
     onCancel: () => void,
     onSubmit: (plan: Plan) => void,
-}> = ({ show, requirement, idToRequirement, codeToCourse, plan, selectsAutomatically, onCancel, onSubmit }) => {
+}> = ({ show, requirement, idToRequirement, codeToCourse, plan, selectsAutomatically, additionalInformation, cancelButtonLabel, onCancel, onSubmit }) => {
     const [worker, setWorker] = useState<Worker | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [plans, setPlans] = useState<readonly Plan[] | undefined>(undefined);
@@ -27,6 +29,8 @@ const AssignmentsFindView: React.FC<{
                     onCancel();
                 } else if (plans.length === 1) {
                     onSubmit(plans[0]);
+                } else {
+                    setIsLoading(false);
                 }
             } else {
                 setIsLoading(false);
@@ -68,74 +72,90 @@ const AssignmentsFindView: React.FC<{
                 <Modal.Title>最適な割り当ての自動探索</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p>
-                    全体として修得単位数や履修単位数が最大となるような割り当てを見つけます。
-                    先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
-                </p>
-                {
-                    plans === undefined ?
-                        isLoading ? (<></>) : (<strong className="text-danger">要件を満たす割り当ては見つかりませんでした。</strong>) :
-                        (
-                            <>
-                                <p>見つかった割り当てが以下に表示されています。適用するものを選択します。</p>
-                                <ListGroup className={isLoading ? 'mb-3' : undefined}>
-                                    {
-                                        plans.map(plan1 => {
-                                            const status = requirement.getStatus(plan1);
-                                            const creditsCounts = requirement.getRegisteredCreditCounts(plan1, false);
-                                            return (
-                                                <ListGroup.Item
-                                                    key={`${creditsCounts.acquired}-${creditsCounts.registered}`}
-                                                    action
-                                                    onClick={() => onSubmit(plan1)}
-                                                >
-                                                    <div className="d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            修得
-                                                                <> </>
-                                                            <strong className="text-success">{creditsCounts.acquired}</strong>
-                                                            <> / </>
-                                                                履修
-                                                                <> </>
-                                                            <strong className="text-primary">{creditsCounts.registered}</strong>
-                                                        </div>
-                                                        <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
-                                                            {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
-                                                        </Badge>
-                                                    </div>
-                                                    {
-                                                        [...plan1.selectionNameToOptionName].map(([selectionName, optionName]) => (
-                                                            <div key={selectionName}>
-                                                                {selectionName}
-                                                                <> : </>
-                                                                <strong>{optionName}</strong>
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </ListGroup.Item>
-                                            )
-                                        })
-                                    }
-                                </ListGroup>
-                            </>
-                        )
-                }
                 {
                     isLoading ? (
                         <>
                             <p>
-                                {plans === undefined ? '' : 'そのほかの'}割り当てを探しています。
-                                    この処理は短時間で終了しない場合があります。
-                                </p>
-                            <div className="text-center">
-                                <Spinner animation="border" variant="primary" />
-                            </div>
+                                全体として修得単位数や履修単位数が最大となるような割り当てを探しています。
+                                この処理は短時間で終わらない場合があります。
+                            </p>
+                            {
+                                plans === undefined ? (<></>) : (
+                                    <p>
+                                        これまでに見つかった割り当てが以下に表示されています。
+                                        まだ最適な割り当てがほかにないか探していますが、選択してすぐに適用することもできます。
+                                    </p>
+                                )
+                            }
                         </>
+                    ) : plans === undefined ? (
+                        <p>
+                            割り当てを探しましたが、要件を満たす割り当ては見つかりませんでした。
+                        </p>
+                    ) : (
+                                <p>
+                                    全体として修得単位数や履修単位数が最大となるような割り当てとして、以下のものが見つかりました。
+                                    適用するものを選択してください。
+                                </p>
+                            )
+                }
+
+                {additionalInformation}
+
+                {
+                    plans === undefined ? (<></>) :
+                        (
+                            <ListGroup className={isLoading ? 'mb-3' : undefined}>
+                                {
+                                    plans.map(plan1 => {
+                                        const status = requirement.getStatus(plan1);
+                                        const creditsCounts = requirement.getRegisteredCreditCounts(plan1, false);
+                                        return (
+                                            <ListGroup.Item
+                                                key={`${creditsCounts.acquired}-${creditsCounts.registered}`}
+                                                action
+                                                onClick={() => onSubmit(plan1)}
+                                            >
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        修得
+                                                        <> </>
+                                                        <strong className="text-success">{creditsCounts.acquired}</strong>
+                                                        <> / </>
+                                                        履修
+                                                        <> </>
+                                                        <strong className="text-primary">{creditsCounts.registered}</strong>
+                                                    </div>
+                                                    <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
+                                                        {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
+                                                    </Badge>
+                                                </div>
+                                                {
+                                                    [...plan1.selectionNameToOptionName].map(([selectionName, optionName]) => (
+                                                        <div key={selectionName}>
+                                                            {selectionName}
+                                                            <> : </>
+                                                            <strong>{optionName}</strong>
+                                                        </div>
+                                                    ))
+                                                }
+                                            </ListGroup.Item>
+                                        )
+                                    })
+                                }
+                            </ListGroup>
+                        )
+                }
+                {
+                    isLoading ? (
+                        <div className="text-center">
+                            <Spinner animation="border" variant="primary" />
+                        </div>
                     ) : (<></>)
                 }
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onCancel}>キャンセル</Button>
+                <Button variant="secondary" onClick={onCancel}>{cancelButtonLabel}</Button>
             </Modal.Footer>
         </Modal>
     );
@@ -171,6 +191,12 @@ export const AssignmentsFindButton: React.FC<{
                 codeToCourse={codeToCourse}
                 plan={plan}
                 selectsAutomatically={false}
+                additionalInformation={
+                    <p>
+                        先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
+                    </p>
+                }
+                cancelButtonLabel="キャンセル"
                 onSubmit={handleSubmit}
             />
         </>
