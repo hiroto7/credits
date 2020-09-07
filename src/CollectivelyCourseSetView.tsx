@@ -438,14 +438,14 @@ const CollectivelyCourseSetView: React.FC<{
                         }
                         onCancel={
                             () => {
-                                onSubmit({ ...plan, courseToStatus })
                                 setPage(undefined);
+                                onSubmit({ ...plan, courseToStatus });
                             }
                         }
                         onSubmit={
                             plan => {
-                                onSubmit(plan);
                                 setPage(undefined);
+                                onSubmit(plan);
                             }
                         }
                     />
