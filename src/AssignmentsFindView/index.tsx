@@ -12,22 +12,31 @@ const AssignmentsFindView: React.FC<{
     idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     codeToCourse: ReadonlyMap<string, Course>,
     plan: Plan,
-    onHide: () => void,
+    selectsAutomatically: boolean,
+    onCancel: () => void,
     onSubmit: (plan: Plan) => void,
-}> = ({ show, requirement, idToRequirement, codeToCourse, plan, onHide, onSubmit }) => {
+}> = ({ show, requirement, idToRequirement, codeToCourse, plan, selectsAutomatically, onCancel, onSubmit }) => {
     const [worker, setWorker] = useState<Worker | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [plans, setPlans] = useState<readonly Plan[] | undefined>(undefined);
 
     const onMessage = useCallback((event: MessageEvent) => {
         if (event.data === 'done') {
-            setIsLoading(false);
+            if (selectsAutomatically) {
+                if (plans === undefined) {
+                    onCancel();
+                } else if (plans.length === 1) {
+                    onSubmit(plans[0]);
+                }
+            } else {
+                setIsLoading(false);
+            }
         } else {
             const planJSONList: readonly PlanJSON[] = event.data;
-            const plans: readonly Plan[] = planJSONList.map(planJSON => fromJSON(planJSON, { codeToCourse, idToRequirement }));
-            setPlans(plans);
+            const nextPlans: readonly Plan[] = planJSONList.map(planJSON => fromJSON(planJSON, { codeToCourse, idToRequirement }));
+            setPlans(nextPlans);
         }
-    }, [codeToCourse, idToRequirement])
+    }, [codeToCourse, idToRequirement, onCancel, onSubmit, plans, selectsAutomatically]);
 
     useEffect(() => {
         if (show) {
@@ -35,34 +44,34 @@ const AssignmentsFindView: React.FC<{
             setPlans(undefined);
             const worker = new AssignmentsFindWorker();
             setWorker(worker);
-            worker.addEventListener('message', onMessage);
             worker.postMessage({
                 codeToCourse,
                 planJSON: toJSON(plan),
                 requirementJSON: requirement.toJSON(),
             });
 
-            return () => setWorker(undefined);
+            return () => {
+                worker.terminate();
+                setWorker(undefined);
+            }
         }
-    }, [codeToCourse, onMessage, plan, requirement, show]);
+    }, [codeToCourse, plan, requirement, show]);
 
-    useEffect(() => () => {
-        if (worker !== undefined) {
-            worker.terminate();
-            worker.removeEventListener('message', onMessage);
-        }
+    useEffect(() => {
+        worker?.addEventListener('message', onMessage);
+        return () => worker?.removeEventListener('message', onMessage);
     }, [onMessage, worker]);
 
     return (
-        <Modal show={show} onHide={onHide}>
+        <Modal show={show} onHide={onCancel}>
             <Modal.Header closeButton>
                 <Modal.Title>最適な割り当ての自動探索</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <p>
                     全体として修得単位数や履修単位数が最大となるような割り当てを見つけます。
-                        先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
-                    </p>
+                    先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
+                </p>
                 {
                     plans === undefined ?
                         isLoading ? (<></>) : (<strong className="text-danger">要件を満たす割り当ては見つかりませんでした。</strong>) :
@@ -78,7 +87,7 @@ const AssignmentsFindView: React.FC<{
                                                 <ListGroup.Item
                                                     key={`${creditsCounts.acquired}-${creditsCounts.registered}`}
                                                     action
-                                                    onClick={() => { onHide(); onSubmit(plan1); }}
+                                                    onClick={() => onSubmit(plan1)}
                                                 >
                                                     <div className="d-flex justify-content-between align-items-center">
                                                         <div>
@@ -126,7 +135,7 @@ const AssignmentsFindView: React.FC<{
                 }
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onHide}>キャンセル</Button>
+                <Button variant="secondary" onClick={onCancel}>キャンセル</Button>
             </Modal.Footer>
         </Modal>
     );
@@ -143,6 +152,12 @@ export const AssignmentsFindButton: React.FC<{
 }> = ({ requirement, idToRequirement, codeToCourse, plan, onSubmit }) => {
     const [show, setShow] = useState(false);
 
+    const onCancel = useCallback(() => setShow(false), []);
+    const handleSubmit = useCallback(nextPlan => {
+        setShow(false);
+        onSubmit(nextPlan);
+    }, [onSubmit]);
+
     return (
         <>
             <Button variant="secondary" onClick={() => setShow(true)}>
@@ -150,12 +165,13 @@ export const AssignmentsFindButton: React.FC<{
             </Button>
             <AssignmentsFindView
                 show={show}
-                onHide={() => setShow(false)}
+                onCancel={onCancel}
                 requirement={requirement}
                 idToRequirement={idToRequirement}
                 codeToCourse={codeToCourse}
                 plan={plan}
-                onSubmit={onSubmit}
+                selectsAutomatically={false}
+                onSubmit={handleSubmit}
             />
         </>
     )

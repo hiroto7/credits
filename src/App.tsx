@@ -38,8 +38,11 @@ const RequirementWithConfiguration: React.FC<{
             </Accordion>
             <div className="mb-3">
                 <CollectivelyCourseSetView
+                    requirement={requirement}
                     codeToCourse={codeToCourse}
-                    onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
+                    idToRequirement={nameToRequirement}
+                    plan={plan}
+                    onSubmit={setPlan}
                 />
             </div>
             <div className="mb-3">

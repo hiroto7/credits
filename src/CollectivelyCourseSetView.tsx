@@ -2,10 +2,11 @@ import parse from 'csv-parse/lib/sync';
 import React, { useState } from 'react';
 import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import Course from './Course';
-import getValueFromModal, { useModals } from './getValueFromModal';
-import { getNextStatus, RegistrationStatus } from './Plan';
+import Plan, { getNextStatus, RegistrationStatus } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import safely from './safely';
+import AssignmentsFindView from './AssignmentsFindView';
+import Requirements, { RequirementWithCourses } from './Requirements';
 
 const placeholder = `
 "学籍番号","学生氏名","科目番号","科目名 ","単位数","春学期","秋学期","総合評価","科目区分","開講年度","開講区分"
@@ -14,29 +15,6 @@ const placeholder = `
 `.trim();
 
 type RegistrationStatus12 = RegistrationStatus.Registered | RegistrationStatus.Acquired
-
-const CollectivelyCourseSetConfirmationModal = ({ onReturn, onExited }: {
-    onReturn: (value: boolean) => void,
-    onExited: () => void
-}) => {
-    const [show, setShow] = useState(true);
-
-    return (
-        <Modal show={show} onHide={() => { setShow(false); onReturn(false); }} onExited={onExited}>
-            <Modal.Header closeButton>
-                <Modal.Title>CSVから履修状態を一括登録</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                続けると、<strong>現在の履修 / 修得状態が失われます</strong>。
-                よろしいですか？
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={() => { setShow(false); onReturn(false); }}>いいえ</Button>
-                <Button variant="danger" onClick={() => { setShow(false); onReturn(true); }}>はい</Button>
-            </Modal.Footer>
-        </Modal>
-    );
-}
 
 const Table1: React.FC<{
     codeColumnIndex: number,
@@ -208,27 +186,20 @@ const Modal1: React.FC<{
     codeColumnIndex: number,
     courseAndRecordPairs: readonly CourseAndRecordPair[],
     show: boolean,
-    onHide: () => void,
-    onBack: () => void,
+    onCancel: () => void,
     onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
-}> = ({ codeColumnIndex, courseAndRecordPairs, show, onHide, onBack, onSubmit }) => {
-    const { modals, setModalsAndCount } = useModals();
+}> = ({ codeColumnIndex, courseAndRecordPairs, show, onCancel, onSubmit }) => {
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>(new Map());
 
     const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
     const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditCount, recordCreditsCount => +recordCreditsCount)
 
-    const handleOKClick = async () => {
-        if (!await getValueFromModal(CollectivelyCourseSetConfirmationModal, {}, setModalsAndCount)) {
-            return;
-        }
-        onSubmit(new Map(
-            courseAndRecordPairs
-                .map(({ course }) => course)
-                .filter((course): course is NonNullable<typeof course> => course !== undefined)
-                .map(course => [course, courseToStatus.get(course) ?? RegistrationStatus.Registered])
-        ));
-    };
+    const handleOKClick = () => onSubmit(new Map(
+        courseAndRecordPairs
+            .map(({ course }) => course)
+            .filter((course): course is NonNullable<typeof course> => course !== undefined)
+            .map(course => [course, courseToStatus.get(course) ?? RegistrationStatus.Registered])
+    ));
 
     const setAllCourseStatus = (status: RegistrationStatus12) => {
         setCourseToStatus(new Map(
@@ -240,64 +211,60 @@ const Modal1: React.FC<{
     }
 
     return (
-        <>
-            {modals}
-            <Modal size="xl" show={show} onHide={onHide}>
-                <Modal.Header closeButton>
-                    <Modal.Title>CSVから履修状態を一括登録</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>CSVデータから見つかった科目が以下に表示されています。</p>
-                    <p>
-                        それぞれの科目を [履修する] / [修得済み] のどちらかに設定してください。
-                        CSVデータに不要な科目が含まれている場合は、 [履修しない] に設定してください。
-                    </p>
-                    <p>
-                        設定が終わったら [OK] ボタンを押します。
-                        <strong>現在の履修 / 修得状態は失われます。</strong>
-                    </p>
-                    <ButtonGroup className="mb-3">
-                        <Button
-                            variant="outline-primary"
-                            onClick={() => setAllCourseStatus(RegistrationStatus.Registered)}
-                        >
-                            すべて履修する
-                        </Button>
-                        <Button
-                            variant="outline-success"
-                            onClick={() => setAllCourseStatus(RegistrationStatus.Acquired)}
-                        >
-                            すべて修得済み
-                        </Button>
-                    </ButtonGroup>
-                    <Table1
-                        codeColumnIndex={codeColumnIndex}
-                        titleColumnIndex={titleColumnIndex}
-                        creditsCountColumnIndex={creditsCountColumnIndex}
-                        courseAndRecordPairs={courseAndRecordPairs}
-                        courseToStatus={courseToStatus}
-                        setCourseToStatus={setCourseToStatus}
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={onHide}>キャンセル</Button>
-                    <Button variant="secondary" onClick={onBack}>戻る</Button>
-                    <Button onClick={handleOKClick}>OK</Button>
-                </Modal.Footer>
-            </Modal>
-        </>
+        <Modal size="xl" show={show}>
+            <Modal.Header closeButton>
+                <Modal.Title>CSVから履修状態を一括登録</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>CSVデータから見つかった科目が以下に表示されています。</p>
+                <p>
+                    それぞれの科目を [履修する] / [修得済み] のどちらかに設定してください。
+                    CSVデータに不要な科目が含まれている場合は、 [履修しない] に設定してください。
+                </p>
+                <p>
+                    設定が終わったら [OK] ボタンを押します。
+                    <strong>現在の履修 / 修得状態は失われます。</strong>
+                </p>
+                <ButtonGroup className="mb-3">
+                    <Button
+                        variant="outline-primary"
+                        onClick={() => setAllCourseStatus(RegistrationStatus.Registered)}
+                    >
+                        すべて履修する
+                    </Button>
+                    <Button
+                        variant="outline-success"
+                        onClick={() => setAllCourseStatus(RegistrationStatus.Acquired)}
+                    >
+                        すべて修得済み
+                    </Button>
+                </ButtonGroup>
+                <Table1
+                    codeColumnIndex={codeColumnIndex}
+                    titleColumnIndex={titleColumnIndex}
+                    creditsCountColumnIndex={creditsCountColumnIndex}
+                    courseAndRecordPairs={courseAndRecordPairs}
+                    courseToStatus={courseToStatus}
+                    setCourseToStatus={setCourseToStatus}
+                />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onCancel}>戻る</Button>
+                <Button onClick={handleOKClick}>OK</Button>
+            </Modal.Footer>
+        </Modal>
     );
 }
 
 const Modal0: React.FC<{
     codeToCourse: ReadonlyMap<string, Course>,
     show: boolean,
-    onHide: () => void,
+    onCancel: () => void,
     onSubmit: ({ courseAndRecordPairs, codeColumnIndex }: {
         courseAndRecordPairs: readonly CourseAndRecordPair[],
         codeColumnIndex: number,
     }) => void,
-}> = ({ codeToCourse, show, onHide, onSubmit }) => {
+}> = ({ codeToCourse, show, onCancel: onHide, onSubmit }) => {
     const [csv, setCSV] = useState("");
     const [validated, setValidated] = useState(false);
 
@@ -414,11 +381,15 @@ const Modal0: React.FC<{
 
 const CollectivelyCourseSetView: React.FC<{
     codeToCourse: ReadonlyMap<string, Course>,
-    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
-}> = ({ codeToCourse, onSubmit }) => {
-    const [page, setPage] = useState<number | undefined>();
-    const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly CourseAndRecordPair[] | undefined>();
-    const [codeColumnIndex, setCodeColumnIndex] = useState<number | undefined>();
+    requirement: Requirements,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    plan: Plan,
+    onSubmit: (plan: Plan) => void,
+}> = ({ codeToCourse, requirement, idToRequirement, plan, onSubmit }) => {
+    const [page, setPage] = useState<0 | 1 | 2 | undefined>();
+    const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly CourseAndRecordPair[]>();
+    const [codeColumnIndex, setCodeColumnIndex] = useState<number>();
+    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>()
 
     return (
         <>
@@ -426,7 +397,7 @@ const CollectivelyCourseSetView: React.FC<{
             <Modal0
                 codeToCourse={codeToCourse}
                 show={page === 0}
-                onHide={() => setPage(undefined)}
+                onCancel={() => setPage(undefined)}
                 onSubmit={
                     ({ courseAndRecordPairs, codeColumnIndex }) => {
                         setCourseAndRecordPairs(courseAndRecordPairs);
@@ -441,11 +412,34 @@ const CollectivelyCourseSetView: React.FC<{
                         courseAndRecordPairs={courseAndRecordPairs}
                         codeColumnIndex={codeColumnIndex}
                         show={page === 1}
-                        onHide={() => setPage(undefined)}
-                        onBack={() => setPage(0)}
+                        onCancel={() => setPage(0)}
                         onSubmit={
                             (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => {
-                                onSubmit(courseToStatus);
+                                setCourseToStatus(courseToStatus);
+                                setPage(2);
+                            }
+                        }
+                    />
+                )
+            }
+            {
+                courseToStatus === undefined ? (<></>) : (
+                    <AssignmentsFindView
+                        show={page === 2}
+                        requirement={requirement}
+                        idToRequirement={idToRequirement}
+                        codeToCourse={codeToCourse}
+                        plan={{ ...plan, courseToStatus }}
+                        selectsAutomatically={true}
+                        onCancel={
+                            () => {
+                                onSubmit({ ...plan, courseToStatus })
+                                setPage(undefined);
+                            }
+                        }
+                        onSubmit={
+                            plan => {
+                                onSubmit(plan);
                                 setPage(undefined);
                             }
                         }
