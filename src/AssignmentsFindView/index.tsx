@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Badge, Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import AssignmentsFindWorker from 'worker-loader!./findAssignments.worker';
@@ -19,7 +19,7 @@ const AssignmentsFindView: React.FC<{
     const [isLoading, setIsLoading] = useState(false);
     const [plans, setPlans] = useState<readonly Plan[] | undefined>(undefined);
 
-    const onMessage = (event: MessageEvent) => {
+    const onMessage = useCallback((event: MessageEvent) => {
         if (event.data === 'done') {
             setIsLoading(false);
         } else {
@@ -27,7 +27,7 @@ const AssignmentsFindView: React.FC<{
             const plans: readonly Plan[] = planJSONList.map(planJSON => fromJSON(planJSON, { codeToCourse, idToRequirement }));
             setPlans(plans);
         }
-    }
+    }, [codeToCourse, idToRequirement])
 
     useEffect(() => {
         if (show) {
@@ -44,14 +44,14 @@ const AssignmentsFindView: React.FC<{
 
             return () => setWorker(undefined);
         }
-    }, [show]);
+    }, [codeToCourse, onMessage, plan, requirement, show]);
 
     useEffect(() => () => {
         if (worker !== undefined) {
             worker.terminate();
             worker.removeEventListener('message', onMessage);
         }
-    }, [worker]);
+    }, [onMessage, worker]);
 
     return (
         <Modal show={show} onHide={onHide}>
