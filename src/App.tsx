@@ -194,6 +194,7 @@ const InnerMain: React.FC<{
                     }
                 </Dropdown.Menu>
             </Dropdown>
+            <hr />
             <RequirementWithConfiguration requirement={requirement} idToRequirement={idToRequirement} plan={plan} setPlan={setPlan} />
         </>
     );
