@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
+import { Accordion, Alert, Badge, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
@@ -10,18 +10,40 @@ import codeToCourse from './courses';
 import ExportView from './ExportView';
 import FilterType from './FilterType';
 import ImportView from './ImportView';
-import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
+import Plan, { emptyPlan, fromJSON, PlanJSON, RegistrationStatus, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
 import RequirementView from './RequirementView';
 
+const StatusAlert: React.FC<{
+    requirement: Requirements,
+    plan: Plan,
+}> = ({ requirement, plan }) => {
+    const status = requirement.getStatus(plan);
+    const variant = status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary';
+
+    return (
+        <Alert variant={variant} className="d-flex align-items-center">
+            <Badge variant={variant} className="mr-2">
+                {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
+            </Badge>
+            現在の
+            {
+                status === RegistrationStatus.Acquired ? '修得状況は要件を満たしています。' :
+                    status === RegistrationStatus.Registered ? '履修状況は要件を満たしていますが、修得状況は要件を満たしていません。' :
+                        '履修状況は要件を満たしていません。'
+            }
+        </Alert>
+    );
+}
+
 const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     plan: Plan,
     setPlan: (nextPlan: Plan) => void,
-}> = ({ requirement, nameToRequirement, plan, setPlan }) => {
+}> = ({ requirement, idToRequirement, plan, setPlan }) => {
     const [filterType, setFilterType] = useState(FilterType.None);
     const { lockTarget, setLockTarget } = useLockTarget(filterType);
 
@@ -33,14 +55,14 @@ const RequirementWithConfiguration: React.FC<{
                     eventKey="1"
                     onSubmit={setPlan}
                     codeToCourse={codeToCourse}
-                    idToRequirement={nameToRequirement}
+                    idToRequirement={idToRequirement}
                 />
             </Accordion>
             <div className="mb-3">
                 <CollectivelyCourseSetView
                     requirement={requirement}
                     codeToCourse={codeToCourse}
-                    idToRequirement={nameToRequirement}
+                    idToRequirement={idToRequirement}
                     plan={plan}
                     onSubmit={setPlan}
                 />
@@ -48,14 +70,14 @@ const RequirementWithConfiguration: React.FC<{
             <div className="mb-3">
                 <AssignmentsFindButton
                     requirement={requirement}
-                    idToRequirement={nameToRequirement}
+                    idToRequirement={idToRequirement}
                     codeToCourse={codeToCourse}
                     plan={plan}
                     onSubmit={setPlan}
                 />
             </div>
             <Form.Group>
-                <Form.Label>履修状態のロック</Form.Label>
+                <Form.Label>履修状況のロック</Form.Label>
                 {
                     [
                         {
@@ -121,6 +143,7 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </Form.Group>
             <hr />
+            <StatusAlert requirement={requirement} plan={plan} />
             <div className="mb-3">
                 <RequirementView
                     requirement={requirement}
@@ -132,17 +155,13 @@ const RequirementWithConfiguration: React.FC<{
     );
 }
 
-const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
-    const { plan, setPlan } = usePlan(selectedId);
-
-    const {
-        requirement,
-        idToRequirement: nameToRequirement,
-        name: selectedName,
-    } = requirementAndDictionaryPairs.get(selectedId) ?? {};
-    if (requirement === undefined || nameToRequirement === undefined || selectedName === undefined) {
-        return (<Redirect to="/" />);
-    }
+const InnerMain: React.FC<{
+    requirement: Requirements;
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>;
+    requirementId: string;
+    requirementName: string;
+}> = ({ requirement, idToRequirement, requirementId, requirementName }) => {
+    const { plan, setPlan } = usePlan(requirementId);
 
     return (
         <>
@@ -160,14 +179,14 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     >
                         学類
                     <> : </>
-                        <strong>{selectedName}</strong>
+                        <strong>{requirementName}</strong>
                     </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {
                         [...requirementAndDictionaryPairs.values()].map(
                             ({ id, name }) => (
-                                <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId} key={id}>
+                                <Dropdown.Item as={Link} to={`/${id}`} active={id === requirementId} key={id}>
                                     {name}
                                 </Dropdown.Item>
                             )
@@ -175,7 +194,8 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     }
                 </Dropdown.Menu>
             </Dropdown>
-            <RequirementWithConfiguration requirement={requirement} nameToRequirement={nameToRequirement} plan={plan} setPlan={setPlan} />
+            <hr />
+            <RequirementWithConfiguration requirement={requirement} idToRequirement={idToRequirement} plan={plan} setPlan={setPlan} />
         </>
     );
 }
@@ -184,9 +204,23 @@ const Main: React.FC = () => {
     const { requirementId }: { requirementId: string } = useParams();
     if (requirementId === undefined) {
         return (<Redirect to="/" />);
-    } else {
-        return (<InnerMain selectedId={requirementId} />);
     }
+
+    const {
+        requirement,
+        idToRequirement,
+        name: requirementName,
+    } = requirementAndDictionaryPairs.get(requirementId) ?? {};
+    if (requirement === undefined || idToRequirement === undefined || requirementName === undefined) {
+        return (<Redirect to="/" />);
+    }
+
+    return (<InnerMain
+        requirement={requirement}
+        idToRequirement={idToRequirement}
+        requirementId={requirementId}
+        requirementName={requirementName}
+    />);
 }
 
 const App: React.FC = () => (
@@ -238,12 +272,12 @@ const usePlanMap = () => {
         } else {
             try {
                 const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                    const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
-                    if (nameToRequirement === undefined) {
+                    const idToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
+                    if (idToRequirement === undefined) {
                         return undefined;
                     } else {
                         try {
-                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
+                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement })] as const;
                         } catch {
                             return undefined;
                         }
