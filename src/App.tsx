@@ -18,10 +18,10 @@ import RequirementView from './RequirementView';
 
 const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     plan: Plan,
     setPlan: (nextPlan: Plan) => void,
-}> = ({ requirement, nameToRequirement, plan, setPlan }) => {
+}> = ({ requirement, idToRequirement, plan, setPlan }) => {
     const [filterType, setFilterType] = useState(FilterType.None);
     const { lockTarget, setLockTarget } = useLockTarget(filterType);
 
@@ -33,14 +33,14 @@ const RequirementWithConfiguration: React.FC<{
                     eventKey="1"
                     onSubmit={setPlan}
                     codeToCourse={codeToCourse}
-                    idToRequirement={nameToRequirement}
+                    idToRequirement={idToRequirement}
                 />
             </Accordion>
             <div className="mb-3">
                 <CollectivelyCourseSetView
                     requirement={requirement}
                     codeToCourse={codeToCourse}
-                    idToRequirement={nameToRequirement}
+                    idToRequirement={idToRequirement}
                     plan={plan}
                     onSubmit={setPlan}
                 />
@@ -48,7 +48,7 @@ const RequirementWithConfiguration: React.FC<{
             <div className="mb-3">
                 <AssignmentsFindButton
                     requirement={requirement}
-                    idToRequirement={nameToRequirement}
+                    idToRequirement={idToRequirement}
                     codeToCourse={codeToCourse}
                     plan={plan}
                     onSubmit={setPlan}
@@ -155,17 +155,13 @@ const StatusAlert: React.FC<{
     );
 }
 
-const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
-    const { plan, setPlan } = usePlan(selectedId);
-
-    const {
-        requirement,
-        idToRequirement: nameToRequirement,
-        name: selectedName,
-    } = requirementAndDictionaryPairs.get(selectedId) ?? {};
-    if (requirement === undefined || nameToRequirement === undefined || selectedName === undefined) {
-        return (<Redirect to="/" />);
-    }
+const InnerMain: React.FC<{
+    requirement: Requirements;
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>;
+    requirementId: string;
+    requirementName: string;
+}> = ({ requirement, idToRequirement, requirementId, requirementName }) => {
+    const { plan, setPlan } = usePlan(requirementId);
 
     return (
         <>
@@ -183,14 +179,14 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     >
                         学類
                     <> : </>
-                        <strong>{selectedName}</strong>
+                        <strong>{requirementName}</strong>
                     </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {
                         [...requirementAndDictionaryPairs.values()].map(
                             ({ id, name }) => (
-                                <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId} key={id}>
+                                <Dropdown.Item as={Link} to={`/${id}`} active={id === requirementId} key={id}>
                                     {name}
                                 </Dropdown.Item>
                             )
@@ -198,7 +194,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     }
                 </Dropdown.Menu>
             </Dropdown>
-            <RequirementWithConfiguration requirement={requirement} nameToRequirement={nameToRequirement} plan={plan} setPlan={setPlan} />
+            <RequirementWithConfiguration requirement={requirement} idToRequirement={idToRequirement} plan={plan} setPlan={setPlan} />
         </>
     );
 }
@@ -207,9 +203,23 @@ const Main: React.FC = () => {
     const { requirementId }: { requirementId: string } = useParams();
     if (requirementId === undefined) {
         return (<Redirect to="/" />);
-    } else {
-        return (<InnerMain selectedId={requirementId} />);
     }
+
+    const {
+        requirement,
+        idToRequirement,
+        name: requirementName,
+    } = requirementAndDictionaryPairs.get(requirementId) ?? {};
+    if (requirement === undefined || idToRequirement === undefined || requirementName === undefined) {
+        return (<Redirect to="/" />);
+    }
+
+    return (<InnerMain
+        requirement={requirement}
+        idToRequirement={idToRequirement}
+        requirementId={requirementId}
+        requirementName={requirementName}
+    />);
 }
 
 const App: React.FC = () => (
@@ -261,12 +271,12 @@ const usePlanMap = () => {
         } else {
             try {
                 const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                    const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
-                    if (nameToRequirement === undefined) {
+                    const idToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
+                    if (idToRequirement === undefined) {
                         return undefined;
                     } else {
                         try {
-                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
+                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement })] as const;
                         } catch {
                             return undefined;
                         }
