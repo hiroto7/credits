@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
+import { Accordion, Alert, Badge, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
@@ -10,7 +10,7 @@ import codeToCourse from './courses';
 import ExportView from './ExportView';
 import FilterType from './FilterType';
 import ImportView from './ImportView';
-import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
+import Plan, { emptyPlan, fromJSON, PlanJSON, RegistrationStatus, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
@@ -55,7 +55,7 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </div>
             <Form.Group>
-                <Form.Label>履修状態のロック</Form.Label>
+                <Form.Label>履修状況のロック</Form.Label>
                 {
                     [
                         {
@@ -121,6 +121,7 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </Form.Group>
             <hr />
+            <StatusAlert requirement={requirement} plan={plan} />
             <div className="mb-3">
                 <RequirementView
                     requirement={requirement}
@@ -129,6 +130,28 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </div>
         </>
+    );
+}
+
+const StatusAlert: React.FC<{
+    requirement: Requirements,
+    plan: Plan,
+}> = ({ requirement, plan }) => {
+    const status = requirement.getStatus(plan);
+    const variant = status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary';
+
+    return (
+        <Alert variant={variant} className="d-flex align-items-center">
+            <Badge variant={variant} className="mr-2">
+                {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
+            </Badge>
+            現在の
+            {
+                status === RegistrationStatus.Acquired ? '修得状況は要件を満たしています。' :
+                    status === RegistrationStatus.Registered ? '履修状況は要件を満たしていますが、修得状況は要件を満たしていません。' :
+                        '履修状況は要件を満たしていません。'
+            }
+        </Alert>
     );
 }
 

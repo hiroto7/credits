@@ -193,7 +193,7 @@ export const AssignmentsFindButton: React.FC<{
                 selectsAutomatically={false}
                 additionalInformation={
                     <p>
-                        先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
+                        先に<b>履修状況の設定</b>と<b>単位数の入力</b>を行っておいてください。
                     </p>
                 }
                 cancelButtonLabel="キャンセル"

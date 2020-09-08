@@ -213,7 +213,7 @@ const Modal1: React.FC<{
     return (
         <Modal size="xl" show={show} onHide={onCancel}>
             <Modal.Header closeButton>
-                <Modal.Title>CSVから履修状態を一括登録</Modal.Title>
+                <Modal.Title>CSVから履修状況を一括登録</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <p>CSVデータから見つかった科目が以下に表示されています。</p>
@@ -222,9 +222,9 @@ const Modal1: React.FC<{
                     CSVデータに不要な科目が含まれている場合は、 [履修しない] に設定してください。
                 </p>
                 <p>
-                    [OK] を押すと、設定された履修状態のもとで、最適な科目群への割り当てがないか探します。
-                    割り当てが見つかればそれが適用され、見つからない場合は履修状態の設定だけが行われます。
-                    <strong>現在の履修 / 修得状態は失われます。</strong>
+                    [OK] を押すと、設定された履修状況のもとで、最適な科目群への割り当てがないか探します。
+                    割り当てが見つかればそれが適用され、見つからない場合は履修状況の設定だけが行われます。
+                    <strong>現在の履修 / 修得状況は失われます。</strong>
                 </p>
                 <ButtonGroup className="mb-3">
                     <Button
@@ -314,7 +314,7 @@ const Modal0: React.FC<{
     return (
         <Modal size="lg" show={show} onHide={onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>CSVから履修状態を一括登録</Modal.Title>
+                <Modal.Title>CSVから履修状況を一括登録</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <p>
@@ -394,7 +394,7 @@ const CollectivelyCourseSetView: React.FC<{
 
     return (
         <>
-            <Button variant="secondary" onClick={() => setPage(0)}>CSVから履修状態を一括登録</Button>
+            <Button variant="secondary" onClick={() => setPage(0)}>CSVから履修状況を一括登録</Button>
             <Modal0
                 codeToCourse={codeToCourse}
                 show={page === 0}
@@ -434,7 +434,7 @@ const CollectivelyCourseSetView: React.FC<{
                         selectsAutomatically={true}
                         cancelButtonLabel="スキップ"
                         additionalInformation={
-                            <p>スキップすると科目群への割り当てを行わず、履修状態の設定だけを行います。</p>
+                            <p>スキップすると科目群への割り当てを行わず、履修状況の設定だけを行います。</p>
                         }
                         onCancel={
                             () => {
