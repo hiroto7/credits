@@ -4,6 +4,7 @@ import Course from "./Course";
 import getValueFromModal, { useModals } from './getValueFromModal';
 import Plan, { emptyPlan, fromJSON, toJSON } from "./Plan";
 import { RequirementWithCourses } from "./Requirements";
+import safely from './safely';
 
 const ImportConfirmationModal = ({ onReturn, onExited }: {
     onReturn: (value: boolean) => void,
@@ -27,27 +28,25 @@ const ImportConfirmationModal = ({ onReturn, onExited }: {
     );
 }
 
-const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
+const ImportView = ({ eventKey, codeToCourse, idToRequirement, onSubmit }: {
     eventKey: string,
     codeToCourse: ReadonlyMap<string, Course>,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     onSubmit: (nextPlan: Plan) => void,
 }) => {
-    const [jsonString, setJSONString] = useState("");
+    const [jsonText, setJSONText] = useState("");
+    const [validated, setValidated] = useState(false);
     const toggle = useAccordionToggle(eventKey, () => { });
     const { modals, setModalsAndCount } = useModals();
 
-    const nextPlan = (() => {
-        try {
-            return fromJSON(
-                JSON.parse(jsonString),
-                { codeToCourse, nameToRequirement }
-            );
-        } catch {
-            return undefined;
-        }
-    })();
+    const json = safely(JSON.parse, jsonText);
+    const nextPlan = json && safely(fromJSON, json, { codeToCourse, idToRequirement });
     const isInvalid = nextPlan === undefined;
+
+    const handleJSONChange = (nextJSON: string) => {
+        setJSONText(nextJSON);
+        setValidated(true);
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -58,7 +57,7 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
             return;
         }
         onSubmit(nextPlan);
-        toggle();
+        toggle(e);
     };
 
     return (
@@ -73,18 +72,45 @@ const ImportView = ({ eventKey, codeToCourse, nameToRequirement, onSubmit }: {
                 <Accordion.Collapse eventKey={eventKey}>
                     <Card.Body>
                         <p>
-                            テキストボックスに保存したテキストを貼り付けてから、 [インポート] ボタンを押します。
-                            <strong>インポートすると現在の設定状態は失われます。</strong>
+                            保存したJSONデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
+                            次に [インポート] ボタンを押します。
+                            <strong>現在の設定状態は失われます。</strong>
                         </p>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
                                 <Form.Label>JSON</Form.Label>
                                 <Form.Control
-                                    className="input-monospace" isInvalid={isInvalid}
-                                    value={jsonString} placeholder={JSON.stringify(toJSON(emptyPlan))}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJSONString(e.target.value)}
+                                    className="input-monospace"
+                                    isInvalid={validated && isInvalid}
+                                    value={jsonText}
+                                    placeholder={JSON.stringify(toJSON(emptyPlan))}
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJSONChange(event.target.value)}
                                 />
-                                <Form.Control.Feedback type="invalid">JSONが不正です</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">JSONの形式が不正です</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>JSONファイル</Form.Label>
+                                <Form.File
+                                    custom
+                                    label="Choose file"
+                                    accept=".json,application/json"
+                                    id="json-file-input"
+                                    onChange={
+                                        (event: React.ChangeEvent<HTMLInputElement>) => {
+                                            const file = event.target.files?.item(0);
+                                            if (file === null || file === undefined) {
+                                                return;
+                                            }
+                                            const reader = new FileReader();
+                                            reader.addEventListener('load', () => {
+                                                if (typeof reader.result === 'string') {
+                                                    handleJSONChange(reader.result);
+                                                }
+                                            });
+                                            reader.readAsText(file);
+                                        }
+                                    }
+                                />
                             </Form.Group>
                             <Button type="submit" disabled={isInvalid}>インポート</Button>
                         </Form>

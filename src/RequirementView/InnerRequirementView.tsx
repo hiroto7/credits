@@ -1,20 +1,20 @@
 import React from 'react';
-import Course from "./Course";
-import FilterType from './FilterType';
-import Plan from './Plan';
-import Requirements, { RegisteredCreditsCounts, RequirementWithChildren, RequirementWithCourses } from "./Requirements";
+import Course from "../Course";
+import FilterType from '../FilterType';
+import Plan, { RegisteredCreditCounts } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import Requirements, { RequirementWithChildren, RequirementWithCourses } from "../Requirements";
 import RequirementWithChildrenView from './RequirementWithChildrenView';
 import RequirementWithCoursesView from './RequirementWithCoursesView';
 import SelectionRequirementView from './SelectionRequirementView';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 
-const RequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const InnerRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
     requirement: Requirements,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditsCounts) => void,
+    onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
 }) => {
     if (requirement instanceof RequirementWithChildren) {
@@ -45,4 +45,4 @@ const RequirementView = ({ requirement, filterType, lockTarget, plan, onCourseCl
     }
 }
 
-export default RequirementView;
+export default InnerRequirementView;

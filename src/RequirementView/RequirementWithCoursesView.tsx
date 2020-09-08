@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Accordion, Button, ButtonToolbar, Card, Col, Form } from 'react-bootstrap';
-import Course from './Course';
+import Course from '../Course';
+import FilterType from '../FilterType';
+import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
+import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
-import FilterType from './FilterType';
-import Plan from './Plan';
-import RegistrationStatus from './RegistrationStatus';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import { RegisteredCreditsCounts, RequirementWithCourses } from './Requirements';
 import { RequirementSummaryView } from './RequirementSummaryView';
 
 const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
-    currentOthersCount: RegisteredCreditsCounts,
-    onReturn: (newOthersCount: RegisteredCreditsCounts) => void,
+    currentOthersCount: RegisteredCreditCounts,
+    onReturn: (newOthersCount: RegisteredCreditCounts) => void,
     onHide: () => void,
 }) => {
     const [acquired, setAcquired] = useState<number | undefined>();
@@ -41,9 +40,11 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                 }}>
                     <Form.Row>
                         <Form.Group as={Col} md="4">
-                            <Form.Label>習得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
+                            <Form.Label>修得済みの単位数 <span className="text-muted">(a)</span></Form.Label>
                             <Form.Control
-                                type="number" min={0}
+                                type="number"
+                                min={0}
+                                step={0.5}
                                 placeholder={`${computed.acquired}`}
                                 value={acquired === undefined ? '' : `${acquired}`}
                                 onChange={
@@ -57,7 +58,9 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                         <Form.Group as={Col} md="4">
                             <Form.Label>履修する単位数 <span className="text-muted">(b)</span></Form.Label>
                             <Form.Control
-                                type="number" min={0}
+                                type="number"
+                                min={0}
+                                step={0.5}
                                 placeholder={`${computed.registered - computed.acquired}`}
                                 value={registeredExcludingAcquired === undefined ? '' : `${registeredExcludingAcquired}`}
                                 onChange={
@@ -77,7 +80,9 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
                         <Form.Group as={Col} md="4">
                             <Form.Label>計 <span className="text-muted">(a) + (b)</span></Form.Label>
                             <Form.Control
-                                type="number" min={0}
+                                type="number"
+                                min={0}
+                                step={0.5}
                                 placeholder={`${computed.registered}`}
                                 value={registeredIncludingAcquired === undefined ? '' : `${registeredIncludingAcquired}`}
                                 onChange={
@@ -114,7 +119,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
-    onOthersCountsChange: (newOthersCount: RegisteredCreditsCounts) => void,
+    onOthersCountsChange: (newOthersCount: RegisteredCreditCounts) => void,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [showsInput, setShowsInput] = useState(false);

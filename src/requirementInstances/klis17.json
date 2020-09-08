@@ -3,20 +3,20 @@
     "children": [
         {
             "name": "卒業研究",
-            "creditsCount": 6,
+            "creditCount": 6,
             "courses": [
                 "GE51018", "GE51028", "GE51038", "GE51048"
             ]
         },
         {
-            "selectionName": "主専攻",
+            "name": "主専攻",
             "options": [
                 {
                     "name": "知識科学主専攻",
                     "requirement": {
                         "name": "専門科目 - 必修科目",
                         "description": "卒業研究を除く",
-                        "creditsCount": 4,
+                        "creditCount": 4,
                         "courses": [
                             "GE50712", "GE50812", "GE60103"
                         ]
@@ -27,7 +27,7 @@
                     "requirement": {
                         "name": "専門科目 - 必修科目",
                         "description": "卒業研究を除く",
-                        "creditsCount": 4,
+                        "creditCount": 4,
                         "courses": [
                             "GE50722", "GE50822", "GE70103"
                         ]
@@ -38,7 +38,7 @@
                     "requirement": {
                         "name": "専門科目 - 必修科目",
                         "description": "卒業研究を除く",
-                        "creditsCount": 4,
+                        "creditCount": 4,
                         "courses": [
                             "GE50732", "GE50832", "GE80103"
                         ]
@@ -48,7 +48,7 @@
         },
         {
             "name": "専門基礎科目 - 必修科目",
-            "creditsCount": 22.5,
+            "creditCount": 22.5,
             "courses": [
                 "GE10301", "GE10413", "GE10423",
                 "GE10612", "GE10622", 
@@ -63,29 +63,29 @@
         {
             "name": "共通科目 - 必修科目",
             "description": "総合科目I（フレッシュマン・セミナーを含む） / 総合科目II / 総合科目III / 体育 / 第1外国語（英語） / 第2外国語（初修外国語）",
-            "creditsCount": 19,
+            "creditCount": 19,
             "courses": [],
             "allowsOthers": true
         },
         {
             "name": "選択科目",
-            "creditsCount": 74,
+            "creditCount": 74,
             "children": [
                 {
                     "name": "専門科目 - 選択科目",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 30,
                         "max": 38
                     },
                     "children": [
                         {
-                            "selectionName": "主専攻",
+                            "name": "主専攻",
                             "options": [
                                 {
                                     "name": "知識科学主専攻",
                                     "requirement": {
                                         "name": "GE6",
-                                        "creditsCount": {
+                                        "creditCount": {
                                             "min": 20,
                                             "max": 28
                                         },
@@ -102,7 +102,7 @@
                                     "name": "知能情報システム主専攻",
                                     "requirement": {
                                         "name": "GE7",
-                                        "creditsCount": {
+                                        "creditCount": {
                                             "min": 20,
                                             "max": 28
                                         },
@@ -120,7 +120,7 @@
                                     "name": "情報資源経営主専攻",
                                     "requirement": {
                                         "name": "GE8",
-                                        "creditsCount": {
+                                        "creditCount": {
                                             "min": 20,
                                             "max": 28
                                         },
@@ -137,13 +137,13 @@
                             ]
                         },
                         {
-                            "selectionName": "主専攻",
+                            "name": "主専攻",
                             "options": [
                                 {
                                     "name": "知識科学主専攻",
                                     "requirement": {
                                         "name": "GA4 / GE4 / GE7 / GE8",
-                                        "creditsCount": {
+                                        "creditCount": {
                                             "min": 8,
                                             "max": 16
                                         },
@@ -173,7 +173,7 @@
                                     "name": "知能情報システム主専攻",
                                     "requirement": {
                                         "name": "GA4 / GE4 / GE6 / GE8",
-                                        "creditsCount": {
+                                        "creditCount": {
                                             "min": 8,
                                             "max": 16
                                         },
@@ -202,7 +202,7 @@
                                     "name": "情報資源経営主専攻",
                                     "requirement": {
                                         "name":"GA4 / GE4 / GE6 / GE7",
-                                        "creditsCount": {
+                                        "creditCount": {
                                             "min": 8,
                                             "max": 16
                                         },
@@ -231,7 +231,7 @@
                         },
                         {
                             "name": "知識情報特論",
-                            "creditsCount": 2,
+                            "creditCount": 2,
                             "courses": [
                                 "GE50301", "GE50401", "GE50501", "GE50601"
                             ]
@@ -240,14 +240,14 @@
                 },
                 {
                     "name": "専門基礎科目 - 選択科目",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 32,
                         "max": 40
                     },
                     "children": [
                         {
                             "name": "GA1 / GE2",
-                            "creditsCount": {
+                            "creditCount": {
                                 "min": 32,
                                 "max": 40
                             },
@@ -264,7 +264,7 @@
                         },
                         {
                             "name": "GE3",
-                            "creditsCount": {
+                            "creditCount": {
                                 "min": 0,
                                 "max": 8
                             },
@@ -277,7 +277,7 @@
                 {
                     "name": "共通科目 - 選択科目",
                     "description": "総合科目I / 総合科目II / 総合科目III / 体育 / 外国語 / 国語 / 芸術",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 0,
                         "max": 12
                     },
@@ -287,7 +287,7 @@
                 {
                     "name": "関連科目 - 選択科目",
                     "description": "GA、GE、共通科目、及び教職に関する科目以外",
-                    "creditsCount": {
+                    "creditCount": {
                         "min": 0,
                         "max": 12
                     },

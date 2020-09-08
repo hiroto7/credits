@@ -1,8 +1,7 @@
 import React from 'react';
 import { Badge } from 'react-bootstrap';
-import Plan from './Plan';
-import RegistrationStatus from './RegistrationStatus';
-import Requirements, { RequirementWithChildren, RequirementWithCourses } from './Requirements';
+import Plan, { RegistrationStatus } from '../Plan';
+import Requirements, { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
@@ -18,14 +17,14 @@ const CreditsCountLabels = ({ requirement, plan }: {
     requirement: Requirements,
     plan: Plan,
 }) => {
-    const creditsCount = requirement.getRegisteredCreditsCount(plan, false);
-    const exceededCreditsCount = requirement.getRegisteredCreditsCount(plan, true);
-    const requiredCreditsCount = requirement.getRequiredCreditsCount(plan.selectionNameToOptionName);
+    const creditsCount = requirement.getRegisteredCreditCounts(plan, false);
+    const exceededCreditsCount = requirement.getRegisteredCreditCounts(plan, true);
+    const requiredCreditsCount = requirement.getRequiredCreditCount(plan.selectionNameToOptionName);
 
     return (
         <div>
             <span>
-                <span className="text-muted">習得</span>
+                <span className="text-muted">修得</span>
                 <> </>
                 <strong className="text-success">{creditsCount.acquired}</strong>
                 {exceededCreditsCount.acquired > creditsCount.acquired ? (<ExceededCreditsCountLabel creditsCount={exceededCreditsCount.acquired - creditsCount.acquired} />) : (<></>)}
