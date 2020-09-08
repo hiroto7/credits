@@ -165,10 +165,6 @@ const InnerMain: React.FC<{
 
     return (
         <>
-            <Alert variant="danger" className="my-3">
-                このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
-                <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
-            </Alert>
             <Dropdown className="mb-3">
                 <Dropdown.Toggle id="department-dropdown" variant="secondary">
                     <span
@@ -215,12 +211,14 @@ const Main: React.FC = () => {
         return (<Redirect to="/" />);
     }
 
-    return (<InnerMain
-        requirement={requirement}
-        idToRequirement={idToRequirement}
-        requirementId={requirementId}
-        requirementName={requirementName}
-    />);
+    return (
+        <InnerMain
+            requirement={requirement}
+            idToRequirement={idToRequirement}
+            requirementId={requirementId}
+            requirementName={requirementName}
+        />
+    );
 }
 
 const App: React.FC = () => (
@@ -229,6 +227,10 @@ const App: React.FC = () => (
             <Navbar.Brand>卒業要件を満たしたい</Navbar.Brand>
         </Navbar>
         <Container>
+            <Alert variant="danger" className="my-3">
+                このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
+                <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
+            </Alert>
             <Switch>
                 <Route path="/:requirementId">
                     <Main />
