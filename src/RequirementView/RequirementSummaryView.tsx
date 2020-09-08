@@ -24,7 +24,7 @@ const CreditsCountLabels = ({ requirement, plan }: {
     return (
         <div>
             <span>
-                <span className="text-muted">習得</span>
+                <span className="text-muted">修得</span>
                 <> </>
                 <strong className="text-success">{creditsCount.acquired}</strong>
                 {exceededCreditsCount.acquired > creditsCount.acquired ? (<ExceededCreditsCountLabel creditsCount={exceededCreditsCount.acquired - creditsCount.acquired} />) : (<></>)}

@@ -4,7 +4,7 @@ import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-boots
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
-import AssignmentSearchView from './AssignmentSearchView';
+import { AssignmentsFindButton } from './AssignmentsFindView';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
@@ -38,12 +38,15 @@ const RequirementWithConfiguration: React.FC<{
             </Accordion>
             <div className="mb-3">
                 <CollectivelyCourseSetView
+                    requirement={requirement}
                     codeToCourse={codeToCourse}
-                    onSubmit={courseToStatus => setPlan({ ...plan, courseToStatus })}
+                    idToRequirement={nameToRequirement}
+                    plan={plan}
+                    onSubmit={setPlan}
                 />
             </div>
             <div className="mb-3">
-                <AssignmentSearchView
+                <AssignmentsFindButton
                     requirement={requirement}
                     idToRequirement={nameToRequirement}
                     codeToCourse={codeToCourse}
@@ -178,7 +181,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
 }
 
 const Main: React.FC = () => {
-    const { requirementId } = useParams();
+    const { requirementId }: { requirementId: string } = useParams();
     if (requirementId === undefined) {
         return (<Redirect to="/" />);
     } else {
@@ -229,24 +232,29 @@ const COURSES_STATE = "courses-state"
 const usePlanMap = () => {
     const [storedJSON, setStoredJSON] = useLocalStorage<readonly (readonly [string, PlanJSON])[]>(COURSES_STATE);
     const [planMap0, setPlanMap0] = useState(() => {
-        try {
-            const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
-                if (nameToRequirement === undefined) {
-                    return undefined;
-                } else {
-                    try {
-                        return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
-                    } catch {
-                        return undefined;
-                    }
-                }
-            }).filter((value): value is NonNullable<typeof value> => value !== undefined);
-            const storedPlanMap: ReadonlyMap<string, Plan> = new Map(storedPlanEntries);
-            return storedPlanMap;
-        } catch {
+        if (storedJSON === undefined) {
             const storedPlanMap: ReadonlyMap<string, Plan> = new Map();
             return storedPlanMap;
+        } else {
+            try {
+                const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
+                    const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
+                    if (nameToRequirement === undefined) {
+                        return undefined;
+                    } else {
+                        try {
+                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
+                        } catch {
+                            return undefined;
+                        }
+                    }
+                }).filter((value): value is NonNullable<typeof value> => value !== undefined);
+                const storedPlanMap: ReadonlyMap<string, Plan> = new Map(storedPlanEntries);
+                return storedPlanMap;
+            } catch {
+                const storedPlanMap: ReadonlyMap<string, Plan> = new Map();
+                return storedPlanMap;
+            }
         }
     });
     const setPlanMap = (newPlanMap: ReadonlyMap<string, Plan>) => {

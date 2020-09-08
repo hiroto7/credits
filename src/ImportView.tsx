@@ -57,7 +57,7 @@ const ImportView = ({ eventKey, codeToCourse, idToRequirement, onSubmit }: {
             return;
         }
         onSubmit(nextPlan);
-        toggle();
+        toggle(e);
     };
 
     return (

@@ -1,6 +1,6 @@
 import Course from "../Course";
 import Plan, { fromJSON, PlanJSON, RegisteredCreditCounts, RegistrationStatus, toJSON } from "../Plan";
-import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithCourses } from "../Requirements";
+import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "../Requirements";
 
 function* f0(
     requiredCreditsCount: Range,
@@ -92,7 +92,7 @@ function* f1(
     }
 }
 
-const f2 = (array: readonly {
+const pickRequirementWithFewestCombinations = (array: readonly {
     requirement: RequirementWithCourses,
     generator: Generator<readonly Course[], void, undefined>,
 }[]): {
@@ -119,7 +119,7 @@ const f2 = (array: readonly {
     }
 }
 
-function* f3(requirements: readonly RequirementWithCourses[], plan: Plan): Generator<Plan, void, undefined> {
+function* constructAssignments(requirements: readonly RequirementWithCourses[], plan: Plan): Generator<Plan, void, undefined> {
     if (requirements.length === 0) {
         yield plan;
         return;
@@ -143,7 +143,7 @@ function* f3(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
         return { requirement, generator };
     });
 
-    const t1 = f2(t0);
+    const t1 = pickRequirementWithFewestCombinations(t0);
 
     for (const courses of t1.courseLists) {
         const plan0: Plan = {
@@ -153,12 +153,12 @@ function* f3(requirements: readonly RequirementWithCourses[], plan: Plan): Gener
                 ...courses.map(course => [course, t1.requirement] as const),
             ])
         };
-        const plans = f3(requirements.filter(requirement => requirement !== t1.requirement), plan0)
+        const plans = constructAssignments(requirements.filter(requirement => requirement !== t1.requirement), plan0)
         yield* plans;
     }
 }
 
-function* searchAssignment(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+function* findAssignments0(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
     const requirements = requirement.getVisibleRequirements(plan.selectionNameToOptionName);
     const plan0 = { ...plan, courseToRequirement: new Map() };
     let planAndCreditCountsPairs: {
@@ -171,11 +171,8 @@ function* searchAssignment(requirement: Requirements, plan: Plan): Generator<rea
             readonly creditCounts: RegisteredCreditCounts,
         }
     } | undefined = undefined;
-    for (const plan1 of f3(requirements, plan0)) {
+    for (const plan1 of constructAssignments(requirements, plan0)) {
         const creditCounts = requirement.getRegisteredCreditCounts(plan1, false);
-        if (creditCounts.acquired === 125.5 && creditCounts.registered === 67) {
-            console.log(creditCounts)
-        }
         if (planAndCreditCountsPairs === undefined) {
             planAndCreditCountsPairs = {
                 acquired: {
@@ -223,6 +220,53 @@ function* searchAssignment(requirement: Requirements, plan: Plan): Generator<rea
     }
 }
 
+function* enumerateOptionsSelections0(requirements: readonly Requirements[], selectionNameToOptionName: ReadonlyMap<string, string>): Generator<ReadonlyMap<string, string>, void, unknown> {
+    if (requirements.length === 0) {
+        yield selectionNameToOptionName;
+    } else {
+        const firstRequirement = requirements[0];
+        const remainingRequirements = requirements.slice(1);
+        for (const selectionNameToOptionName1 of enumerateOptionsSelections(firstRequirement, selectionNameToOptionName)) {
+            yield* enumerateOptionsSelections0(remainingRequirements, selectionNameToOptionName1);
+        }
+    }
+}
+
+function* enumerateOptionsSelections(requirement: Requirements, selectionNameToOptionName: ReadonlyMap<string, string>): Generator<ReadonlyMap<string, string>, void, undefined> {
+    if (requirement instanceof SelectionRequirement) {
+        const optionName = selectionNameToOptionName.get(requirement.name);
+        if (optionName === undefined) {
+            for (const option of requirement.options) {
+                yield* enumerateOptionsSelections(option.requirement, new Map([
+                    ...selectionNameToOptionName,
+                    [requirement.name, option.name],
+                ]));
+            }
+        } else {
+            const child = requirement.optionNameToRequirement.get(optionName);
+            if (child !== undefined) {
+                yield* enumerateOptionsSelections(child, selectionNameToOptionName);
+            }
+        }
+    } else if (requirement instanceof RequirementWithChildren) {
+        yield* enumerateOptionsSelections0(requirement.children, selectionNameToOptionName);
+    } else {
+        yield selectionNameToOptionName;
+    }
+}
+
+function* findAssignments(requirement: Requirements, plan: Plan): Generator<readonly Plan[], void, undefined> {
+    let plans0: readonly Plan[] = [];
+    for (const selectionNameToOptionName of enumerateOptionsSelections(requirement, new Map())) {
+        let plans1: readonly Plan[] = plans0;
+        for (const plans2 of findAssignments0(requirement, { ...plan, selectionNameToOptionName })) {
+            plans1 = [...plans0, ...plans2];
+            yield plans1;
+        }
+        plans0 = plans1;
+    }
+}
+
 globalThis.addEventListener('message', event => {
     const { requirementJSON, planJSON, codeToCourse }: {
         requirementJSON: RequirementsJSON,
@@ -233,7 +277,7 @@ globalThis.addEventListener('message', event => {
     const { requirement, idToRequirement } = getRequirementAndDictionaryFromJSON(requirementJSON, codeToCourse);
     const plan = fromJSON(planJSON, { codeToCourse, idToRequirement });
 
-    for (const plans of searchAssignment(requirement, plan)) {
+    for (const plans of findAssignments(requirement, plan)) {
         postMessage(plans.map(toJSON));
     }
     postMessage('done');
