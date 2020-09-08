@@ -16,6 +16,28 @@ import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
 import RequirementView from './RequirementView';
 
+const StatusAlert: React.FC<{
+    requirement: Requirements,
+    plan: Plan,
+}> = ({ requirement, plan }) => {
+    const status = requirement.getStatus(plan);
+    const variant = status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary';
+
+    return (
+        <Alert variant={variant} className="d-flex align-items-center">
+            <Badge variant={variant} className="mr-2">
+                {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
+            </Badge>
+            現在の
+            {
+                status === RegistrationStatus.Acquired ? '修得状況は要件を満たしています。' :
+                    status === RegistrationStatus.Registered ? '履修状況は要件を満たしていますが、修得状況は要件を満たしていません。' :
+                        '履修状況は要件を満たしていません。'
+            }
+        </Alert>
+    );
+}
+
 const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
     idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
@@ -130,28 +152,6 @@ const RequirementWithConfiguration: React.FC<{
                 />
             </div>
         </>
-    );
-}
-
-const StatusAlert: React.FC<{
-    requirement: Requirements,
-    plan: Plan,
-}> = ({ requirement, plan }) => {
-    const status = requirement.getStatus(plan);
-    const variant = status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary';
-
-    return (
-        <Alert variant={variant} className="d-flex align-items-center">
-            <Badge variant={variant} className="mr-2">
-                {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
-            </Badge>
-            現在の
-            {
-                status === RegistrationStatus.Acquired ? '修得状況は要件を満たしています。' :
-                    status === RegistrationStatus.Registered ? '履修状況は要件を満たしていますが、修得状況は要件を満たしていません。' :
-                        '履修状況は要件を満たしていません。'
-            }
-        </Alert>
     );
 }
 
