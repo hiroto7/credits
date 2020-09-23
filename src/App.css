@@ -23,3 +23,9 @@
 .input-monospace {
     font-family: var(--font-family-monospace);
 }
+
+@media print {
+    .expand-collapse-button {
+        display: none;
+    }
+}

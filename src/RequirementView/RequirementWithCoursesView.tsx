@@ -148,7 +148,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                                     </Button>
                                 ) : (
                                 <Button
-                                    block className="mt-3"
+                                    block className="mt-3 expand-collapse-button"
                                     onClick={() => setIsOpen(!isOpen)}
                                     variant={isOpen ? 'primary' : 'outline-secondary'}
                                 >
