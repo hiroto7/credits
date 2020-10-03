@@ -1,12 +1,13 @@
 import parse from 'csv-parse/lib/sync';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
-import Course from './Course';
-import Plan, { getNextStatus, RegistrationStatus } from './Plan';
-import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import safely from './safely';
 import AssignmentsFindView from './AssignmentsFindView';
+import { CourseRegistrationStatusBadge, DisabledCourseBadge } from './badges';
+import Course from './Course';
+import Plan, { getNextStatus, isRegistrable, RegistrationStatus } from './Plan';
+import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from './Requirements';
+import safely from './safely';
 
 const placeholder = `
 "学籍番号","学生氏名","科目番号","科目名 ","単位数","春学期","秋学期","総合評価","科目区分","開講年度","開講区分"
@@ -117,8 +118,8 @@ const Table1: React.FC<{
                                         {tds}
                                     </tr>
                                 )
-                            } else {
-                                const status = courseToStatus.get(course) ?? RegistrationStatus.Registered;
+                            } else if (isRegistrable({ course, courseToStatus })) {
+                                const status = courseToStatus.get(course) ?? RegistrationStatus.Unregistered;
                                 const nextStatus = getNextStatus({ currentStatus: status, lockTarget: RegistrationStatusLockTarget.None });
 
                                 return (
@@ -134,14 +135,22 @@ const Table1: React.FC<{
                                         className={status === RegistrationStatus.Unregistered ? undefined : `table-${status === RegistrationStatus.Acquired ? 'success' : 'primary'}`}
                                     >
                                         <td style={{ textAlign: 'center' }}>
-                                            <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
-                                                {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}
-                                            </Badge>
+                                            <CourseRegistrationStatusBadge status={status} />
+                                        </td>
+                                        {tds}
+                                    </tr>
+                                );
+                            } else {
+                                return (
+                                    <tr key={recordIndex}>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <DisabledCourseBadge id={`record${recordIndex}-tooltip`} />
                                         </td>
                                         {tds}
                                     </tr>
                                 )
                             }
+
                         }
                     )
                 }
@@ -186,29 +195,25 @@ const Modal1: React.FC<{
     codeColumnIndex: number,
     courseAndRecordPairs: readonly CourseAndRecordPair[],
     show: boolean,
+    courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
+    setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
     onCancel: () => void,
-    onSubmit: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
-}> = ({ codeColumnIndex, courseAndRecordPairs, show, onCancel, onSubmit }) => {
-    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>(new Map());
-
+    onSubmit: () => void,
+}> = ({ codeColumnIndex, courseAndRecordPairs, show, courseToStatus, setCourseToStatus, onCancel, onSubmit }) => {
     const titleColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.title, recordTitle => recordTitle.trim());
     const creditsCountColumnIndex = getColumnIndex(courseAndRecordPairs, course => course.creditCount, recordCreditsCount => +recordCreditsCount)
 
-    const handleOKClick = () => onSubmit(new Map(
-        courseAndRecordPairs
-            .map(({ course }) => course)
-            .filter((course): course is NonNullable<typeof course> => course !== undefined)
-            .map(course => [course, courseToStatus.get(course) ?? RegistrationStatus.Registered])
-    ));
-
-    const setAllCourseStatus = (status: RegistrationStatus12) => {
-        setCourseToStatus(new Map(
-            courseAndRecordPairs
-                .map(({ course }) => course)
-                .filter((course): course is NonNullable<typeof course> => course !== undefined)
-                .map(course => [course, status])
-        ));
-    }
+    const setAllCourseStatus = useCallback((status: RegistrationStatus12) => {
+        const nextCourseToStatus = new Map();
+        for (const { course } of courseAndRecordPairs) {
+            if (course !== undefined && isRegistrable({ course, courseToStatus: nextCourseToStatus })) {
+                nextCourseToStatus.set(course, status);
+            }
+        }
+        setCourseToStatus(nextCourseToStatus);
+    }, [courseAndRecordPairs, setCourseToStatus]);
+    const setAllCourseStatusToRegistered = useCallback(() => setAllCourseStatus(RegistrationStatus.Registered), [setAllCourseStatus]);
+    const setAllCourseStatusToAcquired = useCallback(() => setAllCourseStatus(RegistrationStatus.Acquired), [setAllCourseStatus]);
 
     return (
         <Modal size="xl" show={show} onHide={onCancel}>
@@ -229,13 +234,13 @@ const Modal1: React.FC<{
                 <ButtonGroup className="mb-3">
                     <Button
                         variant="outline-primary"
-                        onClick={() => setAllCourseStatus(RegistrationStatus.Registered)}
+                        onClick={setAllCourseStatusToRegistered}
                     >
                         すべて履修する
                     </Button>
                     <Button
                         variant="outline-success"
-                        onClick={() => setAllCourseStatus(RegistrationStatus.Acquired)}
+                        onClick={setAllCourseStatusToAcquired}
                     >
                         すべて修得済み
                     </Button>
@@ -251,7 +256,7 @@ const Modal1: React.FC<{
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onCancel}>戻る</Button>
-                <Button onClick={handleOKClick}>OK</Button>
+                <Button onClick={onSubmit}>OK</Button>
             </Modal.Footer>
         </Modal>
     );
@@ -390,7 +395,7 @@ const CollectivelyCourseSetView: React.FC<{
     const [page, setPage] = useState<0 | 1 | 2 | undefined>();
     const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly CourseAndRecordPair[]>();
     const [codeColumnIndex, setCodeColumnIndex] = useState<number>();
-    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>()
+    const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>(new Map());
 
     return (
         <>
@@ -401,6 +406,13 @@ const CollectivelyCourseSetView: React.FC<{
                 onCancel={() => setPage(undefined)}
                 onSubmit={
                     ({ courseAndRecordPairs, codeColumnIndex }) => {
+                        const nextCourseToStatus = new Map(courseToStatus);
+                        for (const { course } of courseAndRecordPairs) {
+                            if (course !== undefined && !nextCourseToStatus.has(course) && isRegistrable({ course, courseToStatus: nextCourseToStatus })) {
+                                nextCourseToStatus.set(course, RegistrationStatus.Registered);
+                            }
+                        }
+                        setCourseToStatus(nextCourseToStatus);
                         setCourseAndRecordPairs(courseAndRecordPairs);
                         setCodeColumnIndex(codeColumnIndex);
                         setPage(1);
@@ -413,13 +425,10 @@ const CollectivelyCourseSetView: React.FC<{
                         courseAndRecordPairs={courseAndRecordPairs}
                         codeColumnIndex={codeColumnIndex}
                         show={page === 1}
+                        courseToStatus={courseToStatus}
+                        setCourseToStatus={setCourseToStatus}
                         onCancel={() => setPage(0)}
-                        onSubmit={
-                            (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => {
-                                setCourseToStatus(courseToStatus);
-                                setPage(2);
-                            }
-                        }
+                        onSubmit={() => setPage(2)}
                     />
                 )
             }
