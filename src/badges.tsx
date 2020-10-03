@@ -13,6 +13,17 @@ export const CourseRegistrationStatusBadge: React.FC<{ status: RegistrationStatu
     }
 }
 
+export const RequirementRegistrationStatusBadge: React.FC<{ status: RegistrationStatus }> = ({ status }) => {
+    switch (status) {
+        case RegistrationStatus.Acquired:
+            return (<Badge variant="success">修得OK</Badge>);
+        case RegistrationStatus.Registered:
+            return (<Badge variant="primary">履修OK</Badge>);
+        default:
+            return (<Badge variant="secondary">不足</Badge>);
+    }
+}
+
 export const DisabledCourseBadge: React.FC<{ id: string }> = ({ id }) => (
     <OverlayTrigger
         overlay={
