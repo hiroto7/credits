@@ -109,10 +109,10 @@ const Table1: React.FC<{
                                         <td style={{ textAlign: 'center' }}>
                                             <OverlayTrigger
                                                 overlay={
-                                                    <Tooltip id={`record${recordIndex}-tooltip`}>この科目は見つかりません。</Tooltip>
+                                                    <Tooltip id={`record${recordIndex}-tooltip`}>この科目は定義されていないため、このツールでは利用できません。</Tooltip>
                                                 }
                                             >
-                                                <Badge variant="secondary">?</Badge>
+                                                <Badge variant="secondary">未定義</Badge>
                                             </OverlayTrigger>
                                         </td>
                                         {tds}
@@ -323,15 +323,17 @@ const Modal0: React.FC<{
             </Modal.Header>
             <Modal.Body>
                 <p>
-                    ひとつの列に履修 / 修得する科目の番号が記述されたCSVデータを用意します。
+                    ひとつの列に科目番号が記述されたCSVデータを用意してください。
+                    次のようなCSVデータを使用できます。
                 </p>
                 <ul>
-                    <li>TWINS の [成績照会] 画面からダウンロードしたCSVファイルをそのまま使用できます。</li>
-                    <li>科目番号のみを各行に記述したデータも使用できます。</li>
+                    <li>TWINS の [成績照会] 画面からダウンロードしたCSVファイル</li>
+                    <li>各行に科目番号のみを記述したデータ</li>
                 </ul>
                 <p>
-                    用意したデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
+                    用意したデータをテキストボックスに貼り付けるか、ファイルとして読み込んでください。
                 </p>
+
                 <Form.Group>
                     <Form.Label>CSV / 科目番号のリスト</Form.Label>
                     <Form.Control

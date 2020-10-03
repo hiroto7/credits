@@ -52,8 +52,8 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
                                         <Tooltip id="tooltip1">
                                             {
                                                 currentRequirement === undefined ?
-                                                    'この科目はどの科目群にも割り当てられていません。' :
-                                                    'この科目はほかの科目群に割り当てられています。'
+                                                    'この科目はどの科目群にも割り当てられていないため、合計単位数の計算に含まれません。' :
+                                                    'この科目はほかの科目群に割り当てられているため、ここでは合計単位数の計算に含まれません。'
                                             }
                                         </Tooltip>
                                     }

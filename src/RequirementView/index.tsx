@@ -5,8 +5,8 @@ import getValueFromModal, { useModals } from '../getValueFromModal';
 import Plan, { getNextStatus, RegisteredCreditCounts, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from '../Requirements';
-import CourseMovementConfirmationModal from './CourseMovementConfirmationModal';
 import InnerRequirementView from './InnerRequirementView';
+import ReassignmentConfirmationModal from './ReassignmentConfirmationModal';
 
 const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }: {
     requirement: Requirements,
@@ -28,7 +28,7 @@ const RequirementView = ({ requirement, plan, filterType, lockTarget, onChange }
         } else if (
             currentRequirement !== undefined &&
             !await getValueFromModal(
-                CourseMovementConfirmationModal,
+                ReassignmentConfirmationModal,
                 { currentRequirement, plan },
                 setModalsAndCount
             )
