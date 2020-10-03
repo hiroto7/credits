@@ -1,10 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Accordion, Alert, Badge, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
+import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
 import { AssignmentsFindButton } from './AssignmentsFindView';
+import { RequirementRegistrationStatusBadge } from './badges';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
@@ -25,9 +26,9 @@ const StatusAlert: React.FC<{
 
     return (
         <Alert variant={variant} className="d-flex align-items-center">
-            <Badge variant={variant} className="mr-2">
-                {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
-            </Badge>
+            <div className="mr-2">
+                <RequirementRegistrationStatusBadge status={status} />
+            </div>
             現在の
             {
                 status === RegistrationStatus.Acquired ? '修得状況は要件を満たしています。' :
