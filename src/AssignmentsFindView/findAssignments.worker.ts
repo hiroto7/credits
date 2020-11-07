@@ -75,19 +75,17 @@ function* f1(
             yield* courseLists;
         }
         // }
-    } else {
-        if (acquiredCreditsCountSum < requiredCreditsCount.max) {
-            for (const [index, course] of acquiredCourses.entries()) {
-                const slicedCourseList = acquiredCourses.slice(index + 1);
-                const courseLists = f0(
-                    requiredCreditsCount,
-                    slicedCourseList,
-                    acquiredCreditsCountSum + course.creditCount,
-                    [...selectedCourses, course],
-                    Math.min(selectedCreditsCountMin, course.creditCount),
-                )
-                yield* courseLists;
-            }
+    } else if (acquiredCreditsCountSum < requiredCreditsCount.max) {
+        for (const [index, course] of acquiredCourses.entries()) {
+            const slicedCourseList = acquiredCourses.slice(index + 1);
+            const courseLists = f0(
+                requiredCreditsCount,
+                slicedCourseList,
+                acquiredCreditsCountSum + course.creditCount,
+                [...selectedCourses, course],
+                Math.min(selectedCreditsCountMin, course.creditCount),
+            )
+            yield* courseLists;
         }
     }
 }
