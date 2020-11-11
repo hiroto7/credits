@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dropdown } from 'react-bootstrap';
+import React, { useCallback } from 'react';
+import { Form, InputGroup } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
 import Plan, { RegisteredCreditCounts } from '../Plan';
@@ -19,41 +19,22 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
     const selectedOptionName = requirement.getSelectedOptionName(plan.selectionNameToOptionName);
     const selectedRequirement = requirement.getSelectedRequirement(plan.selectionNameToOptionName);
 
-    const handleOptionClick = (newOptionName: string) => {
-        if (selectedOptionName !== newOptionName) {
-            onSelectionChange(requirement.name, newOptionName);
-        }
-    };
+    const handleSelectionChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        onSelectionChange(requirement.name, e.target.value);
+    }, [onSelectionChange, requirement.name]);
 
     return (
         <>
-            <Dropdown>
-                <Dropdown.Toggle id="" variant="secondary" disabled={filterType === FilterType.Valid}>
-                    <span
-                        style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}
-                    >
-                        {requirement.name}
-                        <> : </>
-                        <strong>{selectedOptionName}</strong>
-                    </span>
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu style={{ zIndex: 1100 }}>
+            <InputGroup>
+                <InputGroup.Prepend>
+                    <InputGroup.Text>{requirement.name}</InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control as="select" custom value={selectedOptionName} onChange={handleSelectionChange}>
                     {
-                        requirement.options.map(option => (
-                            <Dropdown.Item key={option.name}
-                                active={option.name === selectedOptionName}
-                                onClick={() => handleOptionClick(option.name)}
-                            >
-                                {option.name}
-                            </Dropdown.Item>
-                        ))
+                        requirement.options.map(option => (<option key={option.name}>{option.name}</option>))
                     }
-                </Dropdown.Menu>
-            </Dropdown>
+                </Form.Control>
+            </InputGroup>
             {
                 selectedRequirement === undefined ? (<></>) : (
                     <div className="mt-3">
