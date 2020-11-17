@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Accordion, Button, ButtonToolbar, Card, Col, Form } from 'react-bootstrap';
+import { Button, ButtonToolbar, Card, Col, Collapse, Form } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
 import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
@@ -121,7 +121,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (newOthersCount: RegisteredCreditCounts) => void,
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [open, setOpen] = useState(false);
     const [showsInput, setShowsInput] = useState(false);
 
     const courses = requirement.courses.filter(course =>
@@ -131,56 +131,54 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
 
     return (
         <>
-            <Accordion activeKey={isOpen ? '0' : ''}>
-                <div className={`bg-white ${isOpen ? 'sticky-top' : ''}`}>
-                    <RequirementSummaryView requirement={requirement} plan={plan} />
-                    {
-                        courses.length === 0 ?
-                            requirement.allowsOthers ? (
-                                showsInput ? (<></>) : (
-                                    <Button block className="mt-3" variant="secondary" onClick={() => setShowsInput(true)}>
-                                        単位数を入力
-                                    </Button>
-                                )
-                            ) : (
-                                    <Button block className="mt-3" variant="outline-secondary" disabled>
-                                        {filterType === FilterType.None ? '' : '履修する'}科目はありません
-                                    </Button>
-                                ) : (
-                                <Button
-                                    block className="mt-3"
-                                    onClick={() => setIsOpen(!isOpen)}
-                                    variant={isOpen ? 'primary' : 'outline-secondary'}
-                                >
-                                    {filterType === FilterType.None ? '' : '履修する'}科目を{isOpen ? '非' : ''}表示
+            <div className={`bg-white ${open ? 'sticky-top' : ''}`}>
+                <RequirementSummaryView requirement={requirement} plan={plan} />
+                {
+                    courses.length === 0 ?
+                        requirement.allowsOthers ? (
+                            showsInput ? (<></>) : (
+                                <Button block className="mt-3" variant="secondary" onClick={() => setShowsInput(true)}>
+                                    単位数を入力
                                 </Button>
                             )
-                    }
-                </div>
+                        ) : (
+                                <Button block className="mt-3" variant="outline-secondary" disabled>
+                                    {filterType === FilterType.None ? '' : '履修する'}科目はありません
+                                </Button>
+                            ) : (
+                            <Button
+                                block className="mt-3"
+                                onClick={() => setOpen(!open)}
+                                variant={open ? 'primary' : 'outline-secondary'}
+                            >
+                                {filterType === FilterType.None ? '' : '履修する'}科目を{open ? '非' : ''}表示
+                            </Button>
+                        )
+                }
+            </div>
+            {
+                showsInput ? (
+                    <div className="mt-3">
+                        <OthersCountInput
+                            currentOthersCount={plan.requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }}
+                            onReturn={onOthersCountsChange} onHide={() => setShowsInput(false)}
+                        />
+                    </div>
+                ) : (<></>)
+            }
+            <Collapse in={open}>
                 {
-                    showsInput ? (
+                    courses.length === 0 ? (<></>) : (
                         <div className="mt-3">
-                            <OthersCountInput
-                                currentOthersCount={plan.requirementToOthersCount.get(requirement) || { acquired: 0, registered: 0 }}
-                                onReturn={onOthersCountsChange} onHide={() => setShowsInput(false)}
+                            <CourseList
+                                courses={courses} plan={plan}
+                                requirement={requirement} lockTarget={lockTarget}
+                                onCourseClick={course => onCourseClick(course, requirement)}
                             />
                         </div>
-                    ) : (<></>)
+                    )
                 }
-                <Accordion.Collapse eventKey="0">
-                    {
-                        courses.length === 0 ? (<></>) : (
-                            <div className="mt-3">
-                                <CourseList
-                                    courses={courses} plan={plan}
-                                    requirement={requirement} lockTarget={lockTarget}
-                                    onCourseClick={course => onCourseClick(course, requirement)}
-                                />
-                            </div>
-                        )
-                    }
-                </Accordion.Collapse>
-            </Accordion>
+            </Collapse>
         </>
     );
 }
