@@ -177,9 +177,9 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                     </div>
                 ) : (<></>)
             }
-            <Collapse in={open} onExiting={onCollapseExiting}>
+            <Collapse in={open && courses.length !== 0} onExiting={onCollapseExiting}>
                 {
-                    courses.length === 0 ? (<></>) : (
+                    <div>
                         <div className="mt-3">
                             <CourseList
                                 courses={courses} plan={plan}
@@ -187,7 +187,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                                 onCourseClick={course => onCourseClick(course, requirement)}
                             />
                         </div>
-                    )
+                    </div>
                 }
             </Collapse>
         </div>
