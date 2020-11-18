@@ -7,6 +7,7 @@ import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
+import styles from './RequirementWithCoursesView.module.css';
 
 const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     currentOthersCount: RegisteredCreditCounts,
@@ -130,7 +131,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     ).filter(course => filterType !== FilterType.Valid || requirement === plan.courseToRequirement.get(course));
 
     const onCollapseExiting = useCallback((e: HTMLElement) => {
-        const root = e.closest('.requirement-with-courses-view');
+        const root = e.closest(`.${styles.RequirementWithCoursesView}`);
         if (root === null) { throw new Error(); }
         const rect = root.getBoundingClientRect();
         const sticky = root.getElementsByClassName('sticky-top')[0];
@@ -143,7 +144,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     }, []);
 
     return (
-        <div className="requirement-with-courses-view">
+        <div className={styles.RequirementWithCoursesView}>
             <div className="sticky-top">
                 <RequirementSummaryView requirement={requirement} plan={plan} />
                 {
