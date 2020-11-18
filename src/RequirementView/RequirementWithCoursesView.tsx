@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, ButtonToolbar, Card, Col, Collapse, Form } from 'react-bootstrap';
 import Course from '../Course';
 import FilterType from '../FilterType';
@@ -129,6 +129,17 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
         (plan.courseToStatus.has(course) && plan.courseToStatus.get(course) !== RegistrationStatus.Unregistered)
     ).filter(course => filterType !== FilterType.Valid || requirement === plan.courseToRequirement.get(course));
 
+    const onCollapseExiting = useCallback((e: HTMLElement) => {
+        const root = e.closest('.requirement-with-courses-view');
+        if (root === null) { throw new Error(); }
+        const sticky = root.children[0];
+        const rootRect = root.getBoundingClientRect();
+        const stickyRect = sticky.getBoundingClientRect();
+        window.scrollTo({
+            top: window.scrollY + rootRect.top - stickyRect.top,
+        });
+    }, []);
+
     return (
         <div className="requirement-with-courses-view">
             <div className="sticky-top">
@@ -166,7 +177,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                     </div>
                 ) : (<></>)
             }
-            <Collapse in={open}>
+            <Collapse in={open} onExiting={onCollapseExiting}>
                 {
                     courses.length === 0 ? (<></>) : (
                         <div className="mt-3">
