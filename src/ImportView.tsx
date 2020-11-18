@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Form, Modal } from "react-bootstrap";
+import React, { useCallback, useState } from 'react';
+import { Button, ButtonToolbar, Form, Modal } from "react-bootstrap";
 import Course from "./Course";
 import getValueFromModal, { useModals } from './getValueFromModal';
 import Plan, { emptyPlan, fromJSON, toJSON } from "./Plan";
@@ -15,10 +15,10 @@ const ImportConfirmationModal = ({ onReturn, onExited }: {
     return (
         <Modal show={show} onHide={() => { setShow(false); onReturn(false); }} onExited={onExited}>
             <Modal.Header closeButton>
-                <Modal.Title>インポート</Modal.Title>
+                <Modal.Title>バックアップの復元</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                インポートすると現在の設定状態は失われますが、よろしいですか？
+                復元すると現在の作業内容は失われますが、よろしいですか？
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => { setShow(false); onReturn(false); }}>いいえ</Button>
@@ -41,12 +41,26 @@ const ImportView: React.FC<{
     const nextPlan = json && safely(fromJSON, json, { codeToCourse, idToRequirement });
     const isInvalid = nextPlan === undefined;
 
-    const handleJSONChange = (nextJSON: string) => {
+    const handleJSONChange = useCallback((nextJSON: string) => {
         setJSONText(nextJSON);
         setValidated(true);
-    }
+    }, []);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.item(0);
+        if (file === null || file === undefined) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+            if (typeof reader.result === 'string') {
+                handleJSONChange(reader.result);
+            }
+        });
+        reader.readAsText(file);
+    }, [handleJSONChange]);
+
+    const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (
             nextPlan === undefined ||
@@ -55,7 +69,7 @@ const ImportView: React.FC<{
             return;
         }
         onSubmit(nextPlan);
-    };
+    }, [nextPlan, onSubmit, setModalsAndCount]);
 
     return (
         <>
@@ -77,31 +91,19 @@ const ImportView: React.FC<{
                     />
                     <Form.Control.Feedback type="invalid">JSONの形式が不正です</Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>JSONファイル</Form.Label>
-                    <Form.File
-                        custom
-                        label="Choose file"
-                        accept=".json,application/json"
-                        id="json-file-input"
-                        onChange={
-                            (event: React.ChangeEvent<HTMLInputElement>) => {
-                                const file = event.target.files?.item(0);
-                                if (file === null || file === undefined) {
-                                    return;
-                                }
-                                const reader = new FileReader();
-                                reader.addEventListener('load', () => {
-                                    if (typeof reader.result === 'string') {
-                                        handleJSONChange(reader.result);
-                                    }
-                                });
-                                reader.readAsText(file);
-                            }
-                        }
-                    />
-                </Form.Group>
-                <Button type="submit" disabled={isInvalid}>インポート</Button>
+                <ButtonToolbar>
+                    <Button type="submit" disabled={isInvalid}>復元</Button>
+                    <Button as="label" variant="secondary" className="mb-0">
+                        JSONファイルを読み込む
+                        <input
+                            type="file"
+                            className="d-none"
+                            accept=".json,application/json"
+                            id="json-file-input"
+                            onChange={handleFileChange}
+                        />
+                    </Button>
+                </ButtonToolbar>
             </Form>
         </>
     );
