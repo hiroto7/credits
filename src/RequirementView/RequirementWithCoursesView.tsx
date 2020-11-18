@@ -130,8 +130,8 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     ).filter(course => filterType !== FilterType.Valid || requirement === plan.courseToRequirement.get(course));
 
     return (
-        <>
-            <div className={`bg-white ${open ? 'sticky-top' : ''}`}>
+        <div className="requirement-with-courses-view">
+            <div className="sticky-top">
                 <RequirementSummaryView requirement={requirement} plan={plan} />
                 {
                     courses.length === 0 ?
@@ -179,7 +179,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                     )
                 }
             </Collapse>
-        </>
+        </div>
     );
 }
 
