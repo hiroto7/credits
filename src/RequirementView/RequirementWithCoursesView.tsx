@@ -7,6 +7,7 @@ import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
+import styles from './RequirementWithCoursesView.module.css';
 
 const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     currentOthersCount: RegisteredCreditCounts,
@@ -130,18 +131,20 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     ).filter(course => filterType !== FilterType.Valid || requirement === plan.courseToRequirement.get(course));
 
     const onCollapseExiting = useCallback((e: HTMLElement) => {
-        const root = e.closest('.requirement-with-courses-view');
+        const root = e.closest(`.${styles.RequirementWithCoursesView}`);
         if (root === null) { throw new Error(); }
-        const sticky = root.children[0];
-        const rootRect = root.getBoundingClientRect();
-        const stickyRect = sticky.getBoundingClientRect();
-        window.scrollTo({
-            top: window.scrollY + rootRect.top - stickyRect.top,
-        });
+        const rect = root.getBoundingClientRect();
+        const sticky = root.getElementsByClassName('sticky-top')[0];
+        const stickyTop = parseInt(getComputedStyle(sticky).getPropertyValue('--top'));
+        if (rect.top < stickyTop) {
+            window.scrollTo({
+                top: window.scrollY + rect.top - stickyTop,
+            });
+        }
     }, []);
 
     return (
-        <div className="requirement-with-courses-view">
+        <div className={styles.RequirementWithCoursesView}>
             <div className="sticky-top">
                 <RequirementSummaryView requirement={requirement} plan={plan} />
                 {
@@ -177,9 +180,9 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                     </div>
                 ) : (<></>)
             }
-            <Collapse in={open} onExiting={onCollapseExiting}>
+            <Collapse in={open && courses.length !== 0} onExiting={onCollapseExiting}>
                 {
-                    courses.length === 0 ? (<></>) : (
+                    <div>
                         <div className="mt-3">
                             <CourseList
                                 courses={courses} plan={plan}
@@ -187,7 +190,7 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
                                 onCourseClick={course => onCourseClick(course, requirement)}
                             />
                         </div>
-                    )
+                    </div>
                 }
             </Collapse>
         </div>
