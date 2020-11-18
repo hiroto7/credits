@@ -132,12 +132,14 @@ const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan,
     const onCollapseExiting = useCallback((e: HTMLElement) => {
         const root = e.closest('.requirement-with-courses-view');
         if (root === null) { throw new Error(); }
-        const sticky = root.children[0];
-        const rootRect = root.getBoundingClientRect();
-        const stickyRect = sticky.getBoundingClientRect();
-        window.scrollTo({
-            top: window.scrollY + rootRect.top - stickyRect.top,
-        });
+        const rect = root.getBoundingClientRect();
+        const sticky = root.getElementsByClassName('sticky-top')[0];
+        const stickyTop = parseInt(getComputedStyle(sticky).getPropertyValue('--top'));
+        if (rect.top < stickyTop) {
+            window.scrollTo({
+                top: window.scrollY + rect.top - stickyTop,
+            });
+        }
     }, []);
 
     return (
