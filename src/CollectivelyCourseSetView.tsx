@@ -311,10 +311,24 @@ const Modal0: React.FC<{
                 codeColumnIndex === undefined ? '科目がひとつも見つかりません' :
                     undefined;
 
-    const handleCSVChange = (nextCSV: string) => {
+    const handleCSVChange = useCallback((nextCSV: string) => {
         setCSV(nextCSV);
         setValidated(true);
-    }
+    }, []);
+
+    const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.item(0);
+        if (file === null || file === undefined) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+            if (typeof reader.result === 'string') {
+                handleCSVChange(reader.result);
+            }
+        });
+        reader.readAsText(file);
+    }, [handleCSVChange]);
 
     return (
         <Modal size="lg" show={show} onHide={onHide}>
@@ -350,30 +364,16 @@ const Modal0: React.FC<{
                     />
                     <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>CSVファイル</Form.Label>
-                    <Form.File
-                        custom
+                <Button as="label" variant="secondary" className="mb-0">
+                    CSVファイルを読み込む
+                        <input
+                        type="file"
+                        className="d-none"
                         accept=".csv,text/csv,text/plain"
                         id="csv-file-input"
-                        label="Choose file"
-                        onChange={
-                            (event: React.ChangeEvent<HTMLInputElement>) => {
-                                const file = event.target.files?.item(0);
-                                if (file === null || file === undefined) {
-                                    return;
-                                }
-                                const reader = new FileReader();
-                                reader.addEventListener('load', () => {
-                                    if (typeof reader.result === 'string') {
-                                        handleCSVChange(reader.result);
-                                    }
-                                });
-                                reader.readAsText(file);
-                            }
-                        }
+                        onChange={handleFileChange}
                     />
-                </Form.Group>
+                </Button>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onHide}>キャンセル</Button>

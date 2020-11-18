@@ -141,17 +141,20 @@ function* constructAssignments(requirements: readonly RequirementWithCourses[], 
         return { requirement, generator };
     });
 
-    const pickedRequirementAndCombinations = pickRequirementWithFewestCombinations(requirementAndGeneratorPairs);
+    const {
+        requirement: pickedRequirement,
+        combinations: pickedCombinations
+    } = pickRequirementWithFewestCombinations(requirementAndGeneratorPairs);
 
-    for (const courses of pickedRequirementAndCombinations.combinations) {
+    for (const combination of pickedCombinations) {
         const plan0: Plan = {
             ...plan,
             courseToRequirement: new Map([
                 ...plan.courseToRequirement,
-                ...courses.map(course => [course, pickedRequirementAndCombinations.requirement] as const),
+                ...combination.map(course => [course, pickedRequirement] as const),
             ])
         };
-        const plans = constructAssignments(requirements.filter(requirement => requirement !== pickedRequirementAndCombinations.requirement), plan0)
+        const plans = constructAssignments(requirements.filter(requirement => requirement !== pickedRequirement), plan0)
         yield* plans;
     }
 }
