@@ -20,7 +20,9 @@ const ExportView: React.FC<{ plan: Plan }> = ({ plan }) => {
     }, [jsonText]);
 
     return (
-        <Form>
+        <>
+            <h5>バックアップの保存</h5>
+            <p>作業内容のバックアップを保存するには、次のJSONデータを保存してください。</p>
             <Form.Group>
                 <Form.Label>JSON</Form.Label>
                 <Form.Control
@@ -29,8 +31,8 @@ const ExportView: React.FC<{ plan: Plan }> = ({ plan }) => {
                     onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
                 />
             </Form.Group>
-            <Button as='a' href={url} download>保存</Button>
-        </Form>
+            <Button as='a' href={url} download>JSONファイルとして保存</Button>
+        </>
     );
 }
 

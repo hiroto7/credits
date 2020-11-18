@@ -150,34 +150,13 @@ const RequirementWithConfiguration: React.FC<{
                             </Tab.Pane>
                             <Tab.Pane eventKey="backup">
                                 <p>作業内容はブラウザに自動保存されますが、別にバックアップをとれます。</p>
-                                <Tab.Container defaultActiveKey="export">
-                                    <Card>
-                                        <Card.Header>
-                                            <Nav variant="tabs">
-                                                <Nav.Item>
-                                                    <Nav.Link eventKey="export">バックアップの取得</Nav.Link>
-                                                </Nav.Item>
-                                                <Nav.Item>
-                                                    <Nav.Link eventKey="import">バックアップの復元</Nav.Link>
-                                                </Nav.Item>
-                                            </Nav>
-                                        </Card.Header>
-                                        <Card.Body>
-                                            <Tab.Content>
-                                                <Tab.Pane eventKey="export">
-                                                    <ExportView plan={plan} />
-                                                </Tab.Pane>
-                                                <Tab.Pane eventKey="import">
-                                                    <ImportView
-                                                        onSubmit={setPlan}
-                                                        codeToCourse={codeToCourse}
-                                                        idToRequirement={idToRequirement}
-                                                    />
-                                                </Tab.Pane>
-                                            </Tab.Content>
-                                        </Card.Body>
-                                    </Card>
-                                </Tab.Container>
+                                <ExportView plan={plan} />
+                                <hr />
+                                <ImportView
+                                    onSubmit={setPlan}
+                                    codeToCourse={codeToCourse}
+                                    idToRequirement={idToRequirement}
+                                />
                             </Tab.Pane>
                         </Tab.Content>
                     </Card.Body>

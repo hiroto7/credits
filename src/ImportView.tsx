@@ -74,10 +74,10 @@ const ImportView: React.FC<{
     return (
         <>
             {modals}
+            <h5>バックアップの復元</h5>
             <p>
-                保存したJSONデータをテキストボックスに貼り付けるか、ファイルとして読み込みます。
-                次に [インポート] ボタンを押します。
-                <strong>現在の作業内容は失われます。</strong>
+                保存したJSONデータをテキストボックスに貼り付けるか、ファイルとして読み込んでください。
+                [復元] ボタンを押すと、<strong>現在の作業内容は失われ</strong>、入力されたバックアップが復元されます。
             </p>
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
