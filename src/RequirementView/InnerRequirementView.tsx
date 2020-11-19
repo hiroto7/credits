@@ -1,8 +1,9 @@
 import React from 'react';
-import Course from "../Course";
-import FilterType from '../FilterType';
-import Plan, { RegisteredCreditCounts } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type Course from "../Course";
+import type FilterType from '../FilterType';
+import type Plan from '../Plan';
+import type { RegisteredCreditCounts } from '../Plan';
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import Requirements, { RequirementWithChildren, RequirementWithCourses } from "../Requirements";
 import RequirementWithChildrenView from './RequirementWithChildrenView';
 import RequirementWithCoursesView from './RequirementWithCoursesView';

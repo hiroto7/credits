@@ -3,9 +3,10 @@ import { Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import AssignmentsFindWorker from 'worker-loader!./findAssignments.worker';
 import { RequirementRegistrationStatusBadge } from '../badges';
-import Course from '../Course';
+import type Course from '../Course';
 import Plan, { fromJSON, PlanJSON, toJSON } from '../Plan';
-import Requirements, { RequirementWithCourses } from '../Requirements';
+import type Requirements from '../Requirements';
+import type { RequirementWithCourses } from '../Requirements';
 
 const AssignmentsFindView: React.FC<{
     show: boolean,

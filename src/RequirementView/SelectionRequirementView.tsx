@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
-import Course from '../Course';
-import FilterType from '../FilterType';
-import Plan, { RegisteredCreditCounts } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import { RequirementWithCourses, SelectionRequirement } from '../Requirements';
+import type Course from '../Course';
+import type FilterType from '../FilterType';
+import type Plan from '../Plan';
+import type { RegisteredCreditCounts } from '../Plan';
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type { RequirementWithCourses, SelectionRequirement } from '../Requirements';
 import InnerRequirementView from './InnerRequirementView';
 
 const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {

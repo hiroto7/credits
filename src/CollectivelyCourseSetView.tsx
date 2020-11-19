@@ -3,10 +3,11 @@ import React, { useCallback, useState } from 'react';
 import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import AssignmentsFindView from './AssignmentsFindView';
 import { CourseRegistrationStatusBadge, DisabledCourseBadge } from './badges';
-import Course from './Course';
+import type Course from './Course';
 import Plan, { getNextStatus, isRegistrable, RegistrationStatus } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import Requirements, { RequirementWithCourses } from './Requirements';
+import type Requirements from './Requirements';
+import type { RequirementWithCourses } from './Requirements';
 import safely from './safely';
 
 const placeholder = `

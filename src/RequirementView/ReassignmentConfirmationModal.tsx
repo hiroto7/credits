@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
-import Plan from "../Plan";
-import { RequirementWithCourses } from "../Requirements";
+import type Plan from "../Plan";
+import type { RequirementWithCourses } from "../Requirements";
 import { RequirementSummaryView } from "./RequirementSummaryView";
 
 const ReassignmentConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {

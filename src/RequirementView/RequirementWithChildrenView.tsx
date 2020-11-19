@@ -1,10 +1,11 @@
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
-import Course from '../Course';
-import FilterType from '../FilterType';
-import Plan, { RegisteredCreditCounts } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
+import type Course from '../Course';
+import type FilterType from '../FilterType';
+import type Plan from '../Plan';
+import type { RegisteredCreditCounts } from '../Plan';
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
 import InnerRequirementView from './InnerRequirementView';
 import { RequirementSummaryView } from './RequirementSummaryView';
 

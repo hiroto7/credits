@@ -1,10 +1,11 @@
 import React from 'react';
-import Course from '../Course';
-import FilterType from '../FilterType';
+import type Course from '../Course';
+import type FilterType from '../FilterType';
 import getValueFromModal, { useModals } from '../getValueFromModal';
 import Plan, { getNextStatus, RegisteredCreditCounts, RegistrationStatus } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import Requirements, { RequirementWithCourses } from '../Requirements';
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type Requirements from '../Requirements';
+import type { RequirementWithCourses } from '../Requirements';
 import InnerRequirementView from './InnerRequirementView';
 import ReassignmentConfirmationModal from './ReassignmentConfirmationModal';
 

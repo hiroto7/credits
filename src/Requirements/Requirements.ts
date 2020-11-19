@@ -1,6 +1,6 @@
-import Course from "../Course";
+import type Course from "../Course";
 import Plan, { RegisteredCreditCounts, RegistrationStatus } from "../Plan";
-import { RequirementWithChildrenJSON, RequirementWithCoursesJSON, SelectionRequirementJSON } from './RequirementsJSON';
+import type { RequirementWithChildrenJSON, RequirementWithCoursesJSON, SelectionRequirementJSON } from './RequirementsJSON';
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;

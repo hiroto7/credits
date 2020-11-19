@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { Button, ButtonToolbar, Card, Col, Collapse, Form } from 'react-bootstrap';
-import Course from '../Course';
+import type Course from '../Course';
 import FilterType from '../FilterType';
 import Plan, { RegisteredCreditCounts, RegistrationStatus } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import { RequirementWithCourses } from '../Requirements';
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type { RequirementWithCourses } from '../Requirements';
 import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
 import styles from './RequirementWithCoursesView.module.css';

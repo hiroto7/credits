@@ -1,7 +1,8 @@
 import React from 'react';
 import { RequirementRegistrationStatusBadge } from '../badges';
-import Plan from '../Plan';
-import Requirements, { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
+import type Plan from '../Plan';
+import type Requirements from '../Requirements';
+import type { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 

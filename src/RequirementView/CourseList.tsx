@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
 import { Badge, ListGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CourseRegistrationStatusBadge, DisabledCourseBadge } from '../badges';
-import Course from "../Course";
+import type Course from "../Course";
 import Plan, { getNextStatus, isRegistrable, RegistrationStatus } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import Requirements, { RequirementWithCourses } from "../Requirements";
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type Requirements from "../Requirements";
+import type { RequirementWithCourses } from "../Requirements";
 
 const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
     course: Course,

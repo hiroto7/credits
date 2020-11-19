@@ -14,7 +14,8 @@ import ImportView from './ImportView';
 import Plan, { emptyPlan, fromJSON, PlanJSON, RegistrationStatus, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryPairs from './requirementInstances';
-import Requirements, { RequirementWithCourses } from './Requirements';
+import type Requirements from './Requirements';
+import type { RequirementWithCourses } from './Requirements';
 import RequirementView from './RequirementView';
 
 const StatusAlert: React.FC<{
