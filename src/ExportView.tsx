@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, Button, Card, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import Plan, { toJSON } from "./Plan";
 
-const ExportView = ({ plan, eventKey }: {
-    plan: Plan,
-    eventKey: string,
-}) => {
+const ExportView: React.FC<{ plan: Plan }> = ({ plan }) => {
     const jsonText = JSON.stringify(toJSON(plan));
     const [url, setURL] = useState<string | undefined>();
     useEffect(() => {
@@ -16,28 +13,19 @@ const ExportView = ({ plan, eventKey }: {
     }, [jsonText]);
 
     return (
-        <Card>
-            <Card.Header>
-                <Accordion.Toggle eventKey={eventKey} variant="link" as={Button}>
-                    エクスポート
-                </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey={eventKey}>
-                <Card.Body>
-                    <Form>
-                        <Form.Group>
-                            <Form.Label>JSON</Form.Label>
-                            <Form.Control
-                                readOnly className="input-monospace"
-                                value={jsonText}
-                                onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
-                            />
-                        </Form.Group>
-                        <Button as='a' href={url} download>保存</Button>
-                    </Form>
-                </Card.Body>
-            </Accordion.Collapse>
-        </Card>
+        <>
+            <h5>バックアップの保存</h5>
+            <p>作業内容のバックアップを保存するには、次のJSONデータを保存してください。</p>
+            <Form.Group>
+                <Form.Label>JSON</Form.Label>
+                <Form.Control
+                    readOnly className="input-monospace"
+                    value={jsonText}
+                    onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
+                />
+            </Form.Group>
+            <Button as='a' href={url} download>JSONファイルとして保存</Button>
+        </>
     );
 }
 

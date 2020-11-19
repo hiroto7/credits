@@ -23,6 +23,14 @@ export enum RegistrationStatus {
     Acquired = 2,
 }
 
+export const isRegistrable = ({ course, courseToStatus }: {
+    course: Course,
+    courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
+}) => ![...courseToStatus].some(
+    ([course1, status]) =>
+        course1 !== course && course1.title === course.title && status !== RegistrationStatus.Unregistered
+);
+
 export const getNextStatus = ({ currentStatus, lockTarget }: {
     currentStatus: RegistrationStatus,
     lockTarget: RegistrationStatusLockTarget,
