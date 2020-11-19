@@ -2,7 +2,7 @@ import Course from "../Course";
 import Plan, { fromJSON, PlanJSON, RegisteredCreditCounts, RegistrationStatus, toJSON } from "../Plan";
 import Requirements, { getRequirementAndDictionaryFromJSON, Range, RequirementsJSON, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "../Requirements";
 
-function* f0(
+function* simplyEnumerateCourseCombinations(
     requiredCreditsCount: Range,
     unselectedCourses: readonly Course[],
     selectedCreditsCountSum: number,
@@ -17,20 +17,20 @@ function* f0(
     }
     if (selectedCreditsCountSum < requiredCreditsCount.max) {
         for (const [index, course] of unselectedCourses.entries()) {
-            const slicedCourseList = unselectedCourses.slice(index + 1);
-            const courseLists = f0(
+            const slicedUnselectedList = unselectedCourses.slice(index + 1);
+            const courseCombinations = simplyEnumerateCourseCombinations(
                 requiredCreditsCount,
-                slicedCourseList,
+                slicedUnselectedList,
                 selectedCreditsCountSum + course.creditCount,
                 [...selectedCourses, course],
                 Math.min(selectedCreditsCountMin, course.creditCount),
             )
-            yield* courseLists;
+            yield* courseCombinations;
         }
     }
 }
 
-function* f1(
+function* enumerateCourseCombinations(
     requiredCreditsCount: Range,
     registeredCourses: readonly Course[],
     acquiredCourses: readonly Course[],
@@ -50,70 +50,68 @@ function* f1(
     }
     if (registeredCreditsCountSum < requiredCreditsCount.max) {
         for (const [index, course] of registeredCourses.entries()) {
-            const slicedCourseList = registeredCourses.slice(index + 1);
-            const courseLists = f0(
+            const slicedUnselectedList = registeredCourses.slice(index + 1);
+            const courseCombinations = simplyEnumerateCourseCombinations(
                 requiredCreditsCount,
-                slicedCourseList,
+                slicedUnselectedList,
                 registeredCreditsCountSum + course.creditCount,
                 [...selectedCourses, course],
                 Math.min(selectedCreditsCountMin, course.creditCount),
             )
-            yield* courseLists;
+            yield* courseCombinations;
         }
-        // if (acquiredCreditsCountSum < requiredCreditsCount.max) {
+        // if (acquiredCreditsCountSum < requiredCreditsCount.max) { // Always true
         for (const [index, course] of acquiredCourses.entries()) {
-            const slicedCourseList = acquiredCourses.slice(index + 1);
-            const courseLists = f1(
+            const slicedUnselectedList = acquiredCourses.slice(index + 1);
+            const courseCombinations = enumerateCourseCombinations(
                 requiredCreditsCount,
                 registeredCourses,
-                slicedCourseList,
+                slicedUnselectedList,
                 registeredCreditsCountSum + course.creditCount,
                 acquiredCreditsCountSum + course.creditCount,
                 [...selectedCourses, course],
                 Math.min(selectedCreditsCountMin, course.creditCount),
             )
-            yield* courseLists;
+            yield* courseCombinations;
         }
         // }
-    } else {
-        if (acquiredCreditsCountSum < requiredCreditsCount.max) {
-            for (const [index, course] of acquiredCourses.entries()) {
-                const slicedCourseList = acquiredCourses.slice(index + 1);
-                const courseLists = f0(
-                    requiredCreditsCount,
-                    slicedCourseList,
-                    acquiredCreditsCountSum + course.creditCount,
-                    [...selectedCourses, course],
-                    Math.min(selectedCreditsCountMin, course.creditCount),
-                )
-                yield* courseLists;
-            }
+    } else if (acquiredCreditsCountSum < requiredCreditsCount.max) {
+        for (const [index, course] of acquiredCourses.entries()) {
+            const slicedUnselectedList = acquiredCourses.slice(index + 1);
+            const courseCombinations = simplyEnumerateCourseCombinations(
+                requiredCreditsCount,
+                slicedUnselectedList,
+                acquiredCreditsCountSum + course.creditCount,
+                [...selectedCourses, course],
+                Math.min(selectedCreditsCountMin, course.creditCount),
+            )
+            yield* courseCombinations;
         }
     }
 }
 
-const pickRequirementWithFewestCombinations = (array: readonly {
+const pickRequirementWithFewestCombinations = (requirementAndGeneratorPairs: readonly {
     requirement: RequirementWithCourses,
     generator: Generator<readonly Course[], void, undefined>,
 }[]): {
     requirement: RequirementWithCourses,
-    courseLists: readonly (readonly Course[])[],
+    combinations: readonly (readonly Course[])[],
 } => {
-    const array1: readonly {
+    const withCombinationArray: readonly {
         requirement: RequirementWithCourses,
         generator: Generator<readonly Course[], void, undefined>,
-        courseLists: (readonly Course[])[],
-    }[] = array.map(({ requirement, generator }) => ({
+        combinations: (readonly Course[])[],
+    }[] = requirementAndGeneratorPairs.map(({ requirement, generator }) => ({
         requirement, generator,
-        courseLists: [],
+        combinations: [],
     }));
     while (true) {
-        for (const { requirement, generator, courseLists } of array1) {
+        for (const { requirement, generator, combinations } of withCombinationArray) {
             const result = generator.next();
             if (result.done) {
-                return { requirement, courseLists };
+                return { requirement, combinations };
             } else {
-                courseLists.push(result.value);
+                combinations.push(result.value);
             }
         }
     }
@@ -125,13 +123,13 @@ function* constructAssignments(requirements: readonly RequirementWithCourses[], 
         return;
     }
 
-    const t0: readonly {
+    const requirementAndGeneratorPairs: readonly {
         requirement: RequirementWithCourses,
         generator: Generator<readonly Course[], void, undefined>,
     }[] = requirements.map(requirement => {
         const registeredCourses = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && plan.courseToStatus.get(course) === RegistrationStatus.Registered);
         const acquiredCourses = requirement.courses.filter(course => plan.courseToRequirement.get(course) === undefined && plan.courseToStatus.get(course) === RegistrationStatus.Acquired);
-        const generator = f1(
+        const generator = enumerateCourseCombinations(
             requirement.creditCount,
             registeredCourses,
             acquiredCourses,
@@ -143,17 +141,20 @@ function* constructAssignments(requirements: readonly RequirementWithCourses[], 
         return { requirement, generator };
     });
 
-    const t1 = pickRequirementWithFewestCombinations(t0);
+    const {
+        requirement: pickedRequirement,
+        combinations: pickedCombinations
+    } = pickRequirementWithFewestCombinations(requirementAndGeneratorPairs);
 
-    for (const courses of t1.courseLists) {
+    for (const combination of pickedCombinations) {
         const plan0: Plan = {
             ...plan,
             courseToRequirement: new Map([
                 ...plan.courseToRequirement,
-                ...courses.map(course => [course, t1.requirement] as const),
+                ...combination.map(course => [course, pickedRequirement] as const),
             ])
         };
-        const plans = constructAssignments(requirements.filter(requirement => requirement !== t1.requirement), plan0)
+        const plans = constructAssignments(requirements.filter(requirement => requirement !== pickedRequirement), plan0)
         yield* plans;
     }
 }

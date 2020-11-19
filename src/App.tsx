@@ -1,126 +1,168 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Accordion, Alert, Container, Dropdown, Form, Navbar } from 'react-bootstrap';
+import { Alert, ButtonToolbar, Card, Container, Dropdown, Form, Nav, Navbar, Tab } from 'react-bootstrap';
 import { HashRouter, Link, Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { useLocalStorage } from 'react-use';
 import './App.css';
 import { AssignmentsFindButton } from './AssignmentsFindView';
+import { RequirementRegistrationStatusBadge } from './badges';
 import CollectivelyCourseSetView from './CollectivelyCourseSetView';
 import codeToCourse from './courses';
 import ExportView from './ExportView';
 import FilterType from './FilterType';
 import ImportView from './ImportView';
-import Plan, { emptyPlan, fromJSON, PlanJSON, toJSON } from './Plan';
+import Plan, { emptyPlan, fromJSON, PlanJSON, RegistrationStatus, toJSON } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
 import requirementAndDictionaryPairs from './requirementInstances';
 import Requirements, { RequirementWithCourses } from './Requirements';
 import RequirementView from './RequirementView';
 
+const StatusAlert: React.FC<{
+    requirement: Requirements,
+    plan: Plan,
+}> = ({ requirement, plan }) => {
+    const status = requirement.getStatus(plan);
+    const variant = status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary';
+
+    return (
+        <Alert variant={variant} className="d-flex align-items-center">
+            <div className="mr-2">
+                <RequirementRegistrationStatusBadge status={status} />
+            </div>
+            現在の
+            {
+                status === RegistrationStatus.Acquired ? '修得状況は要件を満たしています。' :
+                    status === RegistrationStatus.Registered ? '履修状況は要件を満たしていますが、修得状況は要件を満たしていません。' :
+                        '履修状況は要件を満たしていません。'
+            }
+        </Alert>
+    );
+}
+
 const RequirementWithConfiguration: React.FC<{
     requirement: Requirements,
-    nameToRequirement: ReadonlyMap<string, RequirementWithCourses>,
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>,
     plan: Plan,
     setPlan: (nextPlan: Plan) => void,
-}> = ({ requirement, nameToRequirement, plan, setPlan }) => {
+}> = ({ requirement, idToRequirement, plan, setPlan }) => {
     const [filterType, setFilterType] = useState(FilterType.None);
     const { lockTarget, setLockTarget } = useLockTarget(filterType);
 
     return (
         <>
-            <Accordion className="mb-3">
-                <ExportView eventKey="0" plan={plan} />
-                <ImportView
-                    eventKey="1"
-                    onSubmit={setPlan}
-                    codeToCourse={codeToCourse}
-                    idToRequirement={nameToRequirement}
-                />
-            </Accordion>
-            <div className="mb-3">
-                <CollectivelyCourseSetView
-                    requirement={requirement}
-                    codeToCourse={codeToCourse}
-                    idToRequirement={nameToRequirement}
-                    plan={plan}
-                    onSubmit={setPlan}
-                />
-            </div>
-            <div className="mb-3">
-                <AssignmentsFindButton
-                    requirement={requirement}
-                    idToRequirement={nameToRequirement}
-                    codeToCourse={codeToCourse}
-                    plan={plan}
-                    onSubmit={setPlan}
-                />
-            </div>
-            <Form.Group>
-                <Form.Label>履修状態のロック</Form.Label>
-                {
-                    [
-                        {
-                            label: "ロックしない",
-                            lockTarget: RegistrationStatusLockTarget.None,
-                            disabled: filterType !== FilterType.None,
-                        },
-                        {
-                            label: "[履修する] と [修得済み] の間の変更のみ許可",
-                            lockTarget: RegistrationStatusLockTarget.Unregistered,
-                        },
-                        {
-                            label: "[履修しない] と [履修する] の間の変更のみ許可",
-                            lockTarget: RegistrationStatusLockTarget.Acquired,
-                            disabled: filterType !== FilterType.None,
-                        },
-                        {
-                            label: "すべてロックする",
-                            lockTarget: RegistrationStatusLockTarget.All,
-                        },
-                    ].map(({ label, disabled, lockTarget: lockTarget1 }) => (
-                        <Form.Check
-                            custom type="radio"
-                            id={`lockTargetCheck${lockTarget1}`}
-                            label={label} key={lockTarget1}
-                            disabled={disabled}
-                            checked={lockTarget === lockTarget1}
-                            onChange={() => setLockTarget(lockTarget1)}
-                        />
-                    ))
-                }
-            </Form.Group>
-            <Form.Group>
-                <Form.Check
-                    custom
-                    id="filterTypeCheck0"
-                    label="履修する科目のみ表示する"
-                    checked={filterType !== FilterType.None}
-                    onChange={
-                        () => {
-                            if (filterType === FilterType.None) {
-                                setFilterType(FilterType.Registered);
-                            } else {
-                                setFilterType(FilterType.None);
-                            }
-                        }
-                    }
-                />
-                <Form.Check
-                    custom
-                    id="filterTypeCheck1"
-                    label="単位数の計算に含まれる科目のみ表示する"
-                    checked={filterType === FilterType.Valid}
-                    onChange={
-                        () => {
-                            if (filterType === FilterType.Valid) {
-                                setFilterType(FilterType.Registered);
-                            } else {
-                                setFilterType(FilterType.Valid);
-                            }
-                        }
-                    }
-                />
-            </Form.Group>
-            <hr />
+            <Tab.Container defaultActiveKey="general">
+                <Card className="mb-3">
+                    <Card.Header>
+                        <Nav variant="tabs">
+                            <Nav.Item>
+                                <Nav.Link eventKey="general">一般</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="backup">バックアップ</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                    </Card.Header>
+                    <Card.Body>
+                        <Tab.Content>
+                            <Tab.Pane eventKey="general">
+                                <Form.Group>
+                                    <Form.Label>履修状況のロック</Form.Label>
+                                    {
+                                        [
+                                            {
+                                                label: "ロックしない",
+                                                lockTarget: RegistrationStatusLockTarget.None,
+                                                disabled: filterType !== FilterType.None,
+                                            },
+                                            {
+                                                label: "[履修する] と [修得済み] の間の変更のみ許可",
+                                                lockTarget: RegistrationStatusLockTarget.Unregistered,
+                                            },
+                                            {
+                                                label: "[履修しない] と [履修する] の間の変更のみ許可",
+                                                lockTarget: RegistrationStatusLockTarget.Acquired,
+                                                disabled: filterType !== FilterType.None,
+                                            },
+                                            {
+                                                label: "すべてロックする",
+                                                lockTarget: RegistrationStatusLockTarget.All,
+                                            },
+                                        ].map(({ label, disabled, lockTarget: lockTarget1 }) => (
+                                            <Form.Check
+                                                custom type="radio"
+                                                id={`lockTargetCheck${lockTarget1}`}
+                                                label={label} key={lockTarget1}
+                                                disabled={disabled}
+                                                checked={lockTarget === lockTarget1}
+                                                onChange={() => setLockTarget(lockTarget1)}
+                                            />
+                                        ))
+                                    }
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Check
+                                        custom
+                                        id="filterTypeCheck0"
+                                        label="履修する科目のみ表示"
+                                        checked={filterType !== FilterType.None}
+                                        onChange={
+                                            () => {
+                                                if (filterType === FilterType.None) {
+                                                    setFilterType(FilterType.Registered);
+                                                } else {
+                                                    setFilterType(FilterType.None);
+                                                }
+                                            }
+                                        }
+                                    />
+                                    <Form.Check
+                                        custom
+                                        id="filterTypeCheck1"
+                                        label="単位数の計算に含まれる科目のみ表示"
+                                        checked={filterType === FilterType.Valid}
+                                        onChange={
+                                            () => {
+                                                if (filterType === FilterType.Valid) {
+                                                    setFilterType(FilterType.Registered);
+                                                } else {
+                                                    setFilterType(FilterType.Valid);
+                                                }
+                                            }
+                                        }
+                                    />
+                                </Form.Group>
+                                <ButtonToolbar>
+                                    <CollectivelyCourseSetView
+                                        requirement={requirement}
+                                        codeToCourse={codeToCourse}
+                                        idToRequirement={idToRequirement}
+                                        plan={plan}
+                                        onSubmit={setPlan}
+                                    />
+                                    <AssignmentsFindButton
+                                        requirement={requirement}
+                                        idToRequirement={idToRequirement}
+                                        codeToCourse={codeToCourse}
+                                        plan={plan}
+                                        onSubmit={setPlan}
+                                    />
+                                </ButtonToolbar>
+                            </Tab.Pane>
+                            <Tab.Pane eventKey="backup">
+                                <p>作業内容はブラウザに自動保存されますが、別にバックアップをとれます。</p>
+                                <ExportView plan={plan} />
+                                <hr />
+                                <ImportView
+                                    onSubmit={setPlan}
+                                    codeToCourse={codeToCourse}
+                                    idToRequirement={idToRequirement}
+                                />
+                            </Tab.Pane>
+                        </Tab.Content>
+                    </Card.Body>
+                </Card>
+            </Tab.Container>
+            <StatusAlert requirement={requirement} plan={plan} />
             <div className="mb-3">
                 <RequirementView
                     requirement={requirement}
@@ -132,24 +174,16 @@ const RequirementWithConfiguration: React.FC<{
     );
 }
 
-const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
-    const { plan, setPlan } = usePlan(selectedId);
-
-    const {
-        requirement,
-        idToRequirement: nameToRequirement,
-        name: selectedName,
-    } = requirementAndDictionaryPairs.get(selectedId) ?? {};
-    if (requirement === undefined || nameToRequirement === undefined || selectedName === undefined) {
-        return (<Redirect to="/" />);
-    }
+const InnerMain: React.FC<{
+    requirement: Requirements;
+    idToRequirement: ReadonlyMap<string, RequirementWithCourses>;
+    requirementId: string;
+    requirementName: string;
+}> = ({ requirement, idToRequirement, requirementId, requirementName }) => {
+    const { plan, setPlan } = usePlan(requirementId);
 
     return (
         <>
-            <Alert variant="danger" className="my-3">
-                このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
-                <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
-            </Alert>
             <Dropdown className="mb-3">
                 <Dropdown.Toggle id="department-dropdown" variant="secondary">
                     <span
@@ -160,14 +194,14 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     >
                         学類
                     <> : </>
-                        <strong>{selectedName}</strong>
+                        <strong>{requirementName}</strong>
                     </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {
                         [...requirementAndDictionaryPairs.values()].map(
                             ({ id, name }) => (
-                                <Dropdown.Item as={Link} to={`/${id}`} active={id === selectedId} key={id}>
+                                <Dropdown.Item as={Link} to={`/${id}`} active={id === requirementId} key={id}>
                                     {name}
                                 </Dropdown.Item>
                             )
@@ -175,7 +209,7 @@ const InnerMain: React.FC<{ selectedId: string }> = ({ selectedId }) => {
                     }
                 </Dropdown.Menu>
             </Dropdown>
-            <RequirementWithConfiguration requirement={requirement} nameToRequirement={nameToRequirement} plan={plan} setPlan={setPlan} />
+            <RequirementWithConfiguration requirement={requirement} idToRequirement={idToRequirement} plan={plan} setPlan={setPlan} />
         </>
     );
 }
@@ -184,9 +218,25 @@ const Main: React.FC = () => {
     const { requirementId }: { requirementId: string } = useParams();
     if (requirementId === undefined) {
         return (<Redirect to="/" />);
-    } else {
-        return (<InnerMain selectedId={requirementId} />);
     }
+
+    const {
+        requirement,
+        idToRequirement,
+        name: requirementName,
+    } = requirementAndDictionaryPairs.get(requirementId) ?? {};
+    if (requirement === undefined || idToRequirement === undefined || requirementName === undefined) {
+        return (<Redirect to="/" />);
+    }
+
+    return (
+        <InnerMain
+            requirement={requirement}
+            idToRequirement={idToRequirement}
+            requirementId={requirementId}
+            requirementName={requirementName}
+        />
+    );
 }
 
 const App: React.FC = () => (
@@ -195,6 +245,10 @@ const App: React.FC = () => (
             <Navbar.Brand>卒業要件を満たしたい</Navbar.Brand>
         </Navbar>
         <Container>
+            <Alert variant="danger" className="my-3">
+                このツールの結果を利用する場合、必ず履修要覧や支援室などでその結果が正しいことを確認するようにしてください。
+                <strong>科目や要件の定義が誤っていることや、実際には認められない履修の組み合わせが存在することがあります。</strong>
+            </Alert>
             <Switch>
                 <Route path="/:requirementId">
                     <Main />
@@ -238,12 +292,12 @@ const usePlanMap = () => {
         } else {
             try {
                 const storedPlanEntries = storedJSON.map(([requirementName, planJSON]) => {
-                    const nameToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
-                    if (nameToRequirement === undefined) {
+                    const idToRequirement = requirementAndDictionaryPairs.get(requirementName)?.idToRequirement;
+                    if (idToRequirement === undefined) {
                         return undefined;
                     } else {
                         try {
-                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement: nameToRequirement })] as const;
+                            return [requirementName, fromJSON(planJSON, { codeToCourse, idToRequirement })] as const;
                         } catch {
                             return undefined;
                         }

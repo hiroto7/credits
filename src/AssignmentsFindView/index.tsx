@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Badge, Button, ListGroup, Modal, Spinner } from "react-bootstrap";
+import { Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import AssignmentsFindWorker from 'worker-loader!./findAssignments.worker';
+import { RequirementRegistrationStatusBadge } from '../badges';
 import Course from '../Course';
-import Plan, { fromJSON, PlanJSON, RegistrationStatus, toJSON } from '../Plan';
+import Plan, { fromJSON, PlanJSON, toJSON } from '../Plan';
 import Requirements, { RequirementWithCourses } from '../Requirements';
 
 const AssignmentsFindView: React.FC<{
@@ -126,9 +127,7 @@ const AssignmentsFindView: React.FC<{
                                                         <> </>
                                                         <strong className="text-primary">{creditsCounts.registered}</strong>
                                                     </div>
-                                                    <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
-                                                        {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
-                                                    </Badge>
+                                                    <RequirementRegistrationStatusBadge status={status} />
                                                 </div>
                                                 {
                                                     [...plan1.selectionNameToOptionName].map(([selectionName, optionName]) => (
@@ -193,7 +192,7 @@ export const AssignmentsFindButton: React.FC<{
                 selectsAutomatically={false}
                 additionalInformation={
                     <p>
-                        先に<b>履修状態の設定</b>と<b>単位数の入力</b>を行っておいてください。
+                        先に<b>履修状況の設定</b>と<b>単位数の入力</b>を行っておいてください。
                     </p>
                 }
                 cancelButtonLabel="キャンセル"

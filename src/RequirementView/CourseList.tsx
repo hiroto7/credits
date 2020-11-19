@@ -1,17 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Badge, ListGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { CourseRegistrationStatusBadge, DisabledCourseBadge } from '../badges';
 import Course from "../Course";
-import Plan, { getNextStatus, RegistrationStatus } from '../Plan';
+import Plan, { getNextStatus, isRegistrable, RegistrationStatus } from '../Plan';
 import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import Requirements, { RequirementWithCourses } from "../Requirements";
-
-const isRegistrable = ({ course, courseToStatus }: {
-    course: Course,
-    courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
-}) => ![...courseToStatus].some(
-    ([course1, status]) =>
-        course1 !== course && course1.title === course.title && status !== RegistrationStatus.Unregistered
-);
 
 const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
     course: Course,
@@ -23,17 +16,21 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
     const status = plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered;
     const currentRequirement = plan.courseToRequirement.get(course);
     const isRegisteredButInvalid = status !== RegistrationStatus.Unregistered && currentRequirement !== newRequirement;
-    const disabled = !isRegistrable({
+    const isRegistrable0 = isRegistrable({
         course,
         courseToStatus: plan.courseToStatus
     });
-    const action = getNextStatus({ currentStatus: status, lockTarget }) !== status || isRegisteredButInvalid;
+    const action = (getNextStatus({ currentStatus: status, lockTarget }) !== status && isRegistrable0) || isRegisteredButInvalid;
+    const handleClick = useCallback(() => {
+        if (isRegistrable0) {
+            onClick();
+        }
+    }, [isRegistrable0, onClick]);
 
     return (
         <ListGroup.Item
             action={action}
-            onClick={onClick}
-            disabled={disabled}
+            onClick={handleClick}
             variant={
                 isRegisteredButInvalid ? 'dark' :
                     status === RegistrationStatus.Acquired ? 'success' :
@@ -55,8 +52,8 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
                                         <Tooltip id="tooltip1">
                                             {
                                                 currentRequirement === undefined ?
-                                                    'この科目はどの科目群にも割り当てられていません。' :
-                                                    'この科目はほかの科目群に割り当てられています。'
+                                                    'この科目はどの科目群にも割り当てられていないため、合計単位数の計算に含まれません。' :
+                                                    'この科目はほかの科目群に割り当てられているため、ここでは合計単位数の計算に含まれません。'
                                             }
                                         </Tooltip>
                                     }
@@ -70,9 +67,11 @@ const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
                             ) :
                             (<></>)
                     }
-                    <Badge variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
-                        {status === RegistrationStatus.Acquired ? '修得済み' : status === RegistrationStatus.Registered ? '履修する' : '履修しない'}
-                    </Badge>
+                    {
+                        isRegistrable0 ?
+                            (<CourseRegistrationStatusBadge status={status} />) :
+                            (<DisabledCourseBadge id="tooltip2" />)
+                    }
                     <div><span className="text-muted">単位数</span> <strong>{course.creditCount}</strong></div>
                 </div>
             </div>
