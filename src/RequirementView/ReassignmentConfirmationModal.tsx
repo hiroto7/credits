@@ -4,7 +4,7 @@ import Plan from "../Plan";
 import { RequirementWithCourses } from "../Requirements";
 import { RequirementSummaryView } from "./RequirementSummaryView";
 
-const CourseMovementConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {
+const ReassignmentConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {
     currentRequirement: RequirementWithCourses,
     plan: Plan,
     onReturn: (value: boolean) => void,
@@ -35,4 +35,4 @@ const CourseMovementConfirmationModal = ({ currentRequirement, plan, onReturn, o
     );
 };
 
-export default CourseMovementConfirmationModal;
+export default ReassignmentConfirmationModal;

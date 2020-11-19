@@ -1,6 +1,6 @@
 import React from 'react';
-import { Badge } from 'react-bootstrap';
-import Plan, { RegistrationStatus } from '../Plan';
+import { RequirementRegistrationStatusBadge } from '../badges';
+import Plan from '../Plan';
 import Requirements, { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
@@ -61,9 +61,9 @@ export const RequirementSummaryView = ({ requirement, plan }: {
         <>
             <h5 className="d-flex justify-content-between align-items-center">
                 <div>{requirement.name}</div>
-                <Badge className="ml-2 flex-shrink-0" variant={status === RegistrationStatus.Acquired ? 'success' : status === RegistrationStatus.Registered ? 'primary' : 'secondary'}>
-                    {status === RegistrationStatus.Acquired ? '修得OK' : status === RegistrationStatus.Registered ? '履修OK' : '不足'}
-                </Badge>
+                <div className="ml-2 flex-shrink-0" >
+                    <RequirementRegistrationStatusBadge status={status} />
+                </div>
             </h5>
             <div>
                 {requirement.description === undefined ? (<></>) : (<div className="text-muted">{requirement.description}</div>)}
