@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import type Plan from "../Plan";
 import type { RequirementWithCourses } from "../Requirements";
 import { RequirementSummaryView } from "./RequirementSummaryView";
 
-const ReassignmentConfirmationModal = ({ currentRequirement, plan, onReturn, onExited }: {
+const ReassignmentConfirmationModal: React.FC<{
     currentRequirement: RequirementWithCourses,
     plan: Plan,
     onReturn: (value: boolean) => void,
     onExited: () => void,
-}) => {
+}> = ({ currentRequirement, plan, onReturn, onExited }) => {
     const [show, setShow] = useState(true);
 
     return (

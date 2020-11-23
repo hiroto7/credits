@@ -1,4 +1,3 @@
-import React from 'react';
 import type Course from '../Course';
 import type FilterType from '../FilterType';
 import getValueFromModal, { useModals } from '../getValueFromModal';

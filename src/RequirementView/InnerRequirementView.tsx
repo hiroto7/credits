@@ -1,4 +1,3 @@
-import React from 'react';
 import type Course from "../Course";
 import type FilterType from '../FilterType';
 import type Plan from '../Plan';
@@ -9,7 +8,7 @@ import RequirementWithChildrenView from './RequirementWithChildrenView';
 import RequirementWithCoursesView from './RequirementWithCoursesView';
 import SelectionRequirementView from './SelectionRequirementView';
 
-const InnerRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const InnerRequirementView: React.FC<{
     requirement: Requirements,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
@@ -17,7 +16,7 @@ const InnerRequirementView = ({ requirement, filterType, lockTarget, plan, onCou
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
-}) => {
+}> = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }) => {
     if (requirement instanceof RequirementWithChildren) {
         return (
             <RequirementWithChildrenView

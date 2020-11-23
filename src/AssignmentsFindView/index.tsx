@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import AssignmentsFindWorker from 'worker-loader!./findAssignments.worker';

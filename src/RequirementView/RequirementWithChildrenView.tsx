@@ -1,4 +1,3 @@
-import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 import type Course from '../Course';
 import type FilterType from '../FilterType';
@@ -9,7 +8,7 @@ import type { RequirementWithChildren, RequirementWithCourses } from '../Require
 import InnerRequirementView from './InnerRequirementView';
 import { RequirementSummaryView } from './RequirementSummaryView';
 
-const RequirementWithChildrenView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const RequirementWithChildrenView: React.FC<{
     requirement: RequirementWithChildren,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
@@ -17,24 +16,24 @@ const RequirementWithChildrenView = ({ requirement, filterType, lockTarget, plan
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
-}) => (
-        <>
-            <RequirementSummaryView requirement={requirement} plan={plan} />
-            <ListGroup className="mt-3">
-                {
-                    requirement.children.map(child => (
-                        <ListGroup.Item key={child.id}>
-                            <InnerRequirementView
-                                requirement={child} plan={plan}
-                                filterType={filterType} lockTarget={lockTarget}
-                                onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
-                                onOthersCountsChange={onOthersCountsChange}
-                            />
-                        </ListGroup.Item>
-                    ))
-                }
-            </ListGroup>
-        </>
-    );
+}> = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }) => (
+    <>
+        <RequirementSummaryView requirement={requirement} plan={plan} />
+        <ListGroup className="mt-3">
+            {
+                requirement.children.map(child => (
+                    <ListGroup.Item key={child.id}>
+                        <InnerRequirementView
+                            requirement={child} plan={plan}
+                            filterType={filterType} lockTarget={lockTarget}
+                            onCourseClick={onCourseClick} onSelectionChange={onSelectionChange}
+                            onOthersCountsChange={onOthersCountsChange}
+                        />
+                    </ListGroup.Item>
+                ))
+            }
+        </ListGroup>
+    </>
+);
 
 export default RequirementWithChildrenView;

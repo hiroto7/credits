@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Badge, ListGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CourseRegistrationStatusBadge, DisabledCourseBadge } from '../badges';
 import type Course from "../Course";
@@ -7,13 +7,13 @@ import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
 import type Requirements from "../Requirements";
 import type { RequirementWithCourses } from "../Requirements";
 
-const CourseListItem = ({ course, onClick, newRequirement, plan, lockTarget }: {
+const CourseListItem: React.FC<{
     course: Course,
     newRequirement: Requirements,
     plan: Plan,
     lockTarget: RegistrationStatusLockTarget,
     onClick: () => void,
-}) => {
+}> = ({ course, onClick, newRequirement, plan, lockTarget }) => {
     const status = plan.courseToStatus.get(course) ?? RegistrationStatus.Unregistered;
     const currentRequirement = plan.courseToRequirement.get(course);
     const isRegisteredButInvalid = status !== RegistrationStatus.Unregistered && currentRequirement !== newRequirement;
@@ -87,19 +87,19 @@ const CourseList = ({ requirement, courses, plan, onCourseClick, lockTarget }: {
     lockTarget: RegistrationStatusLockTarget
     onCourseClick: (course: Course) => void,
 }) => (
-        <ListGroup>
-            {
-                courses.map((course: Course) => (
-                    <CourseListItem
-                        key={course.code}
-                        course={course} plan={plan}
-                        newRequirement={requirement}
-                        lockTarget={lockTarget}
-                        onClick={() => onCourseClick(course)}
-                    />
-                ))
-            }
-        </ListGroup>
-    );
+    <ListGroup>
+        {
+            courses.map((course: Course) => (
+                <CourseListItem
+                    key={course.code}
+                    course={course} plan={plan}
+                    newRequirement={requirement}
+                    lockTarget={lockTarget}
+                    onClick={() => onCourseClick(course)}
+                />
+            ))
+        }
+    </ListGroup>
+);
 
 export default CourseList;

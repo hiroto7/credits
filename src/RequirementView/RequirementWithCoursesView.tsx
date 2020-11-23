@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, ButtonToolbar, Card, Col, Collapse, Form } from 'react-bootstrap';
 import type Course from '../Course';
 import FilterType from '../FilterType';
@@ -9,11 +9,11 @@ import CourseList from './CourseList';
 import { RequirementSummaryView } from './RequirementSummaryView';
 import styles from './RequirementWithCoursesView.module.css';
 
-const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
+const OthersCountInput: React.FC<{
     currentOthersCount: RegisteredCreditCounts,
     onReturn: (newOthersCount: RegisteredCreditCounts) => void,
     onHide: () => void,
-}) => {
+}> = ({ currentOthersCount, onReturn, onHide }) => {
     const [acquired, setAcquired] = useState<number | undefined>();
     const [registeredExcludingAcquired, setRegisteredExcludingAcquired] = useState<number | undefined>();
     const [registeredIncludingAcquired, setRegisteredIncludingAcquired] = useState<number | undefined>();
@@ -114,14 +114,14 @@ const OthersCountInput = ({ currentOthersCount, onReturn, onHide }: {
     )
 }
 
-const RequirementWithCoursesView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange }: {
+const RequirementWithCoursesView: React.FC<{
     requirement: RequirementWithCourses,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
     plan: Plan,
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (newOthersCount: RegisteredCreditCounts) => void,
-}) => {
+}> = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange }) => {
     const [open, setOpen] = useState(false);
     const [showsInput, setShowsInput] = useState(false);
 

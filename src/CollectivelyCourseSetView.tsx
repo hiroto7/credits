@@ -1,5 +1,5 @@
 import parse from 'csv-parse/lib/sync';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import AssignmentsFindView from './AssignmentsFindView';
 import { CourseRegistrationStatusBadge, DisabledCourseBadge } from './badges';
