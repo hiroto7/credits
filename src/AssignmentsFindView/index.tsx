@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import AssignmentsFindWorker from 'worker-loader!./findAssignments.worker';
 import { RequirementRegistrationStatusBadge } from '../badges';
-import Course from '../Course';
+import type Course from '../Course';
 import Plan, { fromJSON, PlanJSON, toJSON } from '../Plan';
-import Requirements, { RequirementWithCourses } from '../Requirements';
+import type Requirements from '../Requirements';
+import type { RequirementWithCourses } from '../Requirements';
 
 const AssignmentsFindView: React.FC<{
     show: boolean,
@@ -28,7 +29,7 @@ const AssignmentsFindView: React.FC<{
             if (selectsAutomatically) {
                 if (plans === undefined) {
                     onCancel();
-                } else if (plans.length === 1) {
+                } else if (plans[0] !== undefined && plans.length === 1) {
                     onSubmit(plans[0]);
                 } else {
                     setIsLoading(false);

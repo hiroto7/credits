@@ -1,6 +1,6 @@
-import Course from "../Course";
+import type Course from "../Course";
 import Plan, { RegisteredCreditCounts, RegistrationStatus } from "../Plan";
-import { RequirementWithChildrenJSON, RequirementWithCoursesJSON, SelectionRequirementJSON } from './RequirementsJSON';
+import type { RequirementWithChildrenJSON, RequirementWithCoursesJSON, SelectionRequirementJSON } from './RequirementsJSON';
 
 type Requirements = RequirementWithChildren | RequirementWithCourses | SelectionRequirement;
 export default Requirements;
@@ -174,12 +174,12 @@ export class SelectionRequirement extends Requirement implements SelectionRequir
     constructor({ id, name, options: options0 }: SelectionRequirementInit) {
         super({ id, name });
         this.name = name;
-        const options = [...options0]
+        const options = [...options0];
         this.options = options;
         this.optionNameToRequirement = new Map(options.map(({ name, requirement }) => [name, requirement]));
     }
     getSelectedOptionName(selectionNameToOptionName: ReadonlyMap<string, string>) {
-        const selectedOptionName = selectionNameToOptionName.get(this.name) || this.options[0].name;
+        const selectedOptionName = selectionNameToOptionName.get(this.name) ?? this.options[0]!.name;
         return selectedOptionName;
     }
     getSelectedRequirement(selectionNameToOptionName: ReadonlyMap<string, string>) {

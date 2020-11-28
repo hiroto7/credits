@@ -1,6 +1,6 @@
-import Course from "./Course";
+import type Course from "./Course";
 import RegistrationStatusLockTarget from "./RegistrationStatusLockTarget";
-import { RequirementWithCourses } from "./Requirements";
+import type { RequirementWithCourses } from "./Requirements";
 
 export interface RegisteredCreditCounts {
     acquired: number;

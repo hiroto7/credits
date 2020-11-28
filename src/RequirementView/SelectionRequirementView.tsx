@@ -1,13 +1,14 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
-import Course from '../Course';
-import FilterType from '../FilterType';
-import Plan, { RegisteredCreditCounts } from '../Plan';
-import RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
-import { RequirementWithCourses, SelectionRequirement } from '../Requirements';
+import type Course from '../Course';
+import type FilterType from '../FilterType';
+import type Plan from '../Plan';
+import type { RegisteredCreditCounts } from '../Plan';
+import type RegistrationStatusLockTarget from '../RegistrationStatusLockTarget';
+import type { RequirementWithCourses, SelectionRequirement } from '../Requirements';
 import InnerRequirementView from './InnerRequirementView';
 
-const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }: {
+const SelectionRequirementView: React.FC<{
     requirement: SelectionRequirement,
     filterType: FilterType,
     lockTarget: RegistrationStatusLockTarget,
@@ -15,7 +16,7 @@ const SelectionRequirementView = ({ requirement, filterType, lockTarget, plan, o
     onCourseClick: (course: Course, requirement: RequirementWithCourses) => void,
     onOthersCountsChange: (requirement: RequirementWithCourses, newOthersCount: RegisteredCreditCounts) => void,
     onSelectionChange: (selectionName: string, newOptionName: string) => void,
-}) => {
+}> = ({ requirement, filterType, lockTarget, plan, onCourseClick, onOthersCountsChange, onSelectionChange }) => {
     const selectedOptionName = requirement.getSelectedOptionName(plan.selectionNameToOptionName);
     const selectedRequirement = requirement.getSelectedRequirement(plan.selectionNameToOptionName);
 

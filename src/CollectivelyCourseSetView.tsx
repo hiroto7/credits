@@ -1,12 +1,13 @@
 import parse from 'csv-parse/lib/sync';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Badge, Button, ButtonGroup, Form, Modal, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import AssignmentsFindView from './AssignmentsFindView';
 import { CourseRegistrationStatusBadge, DisabledCourseBadge } from './badges';
-import Course from './Course';
+import type Course from './Course';
 import Plan, { getNextStatus, isRegistrable, RegistrationStatus } from './Plan';
 import RegistrationStatusLockTarget from './RegistrationStatusLockTarget';
-import Requirements, { RequirementWithCourses } from './Requirements';
+import type Requirements from './Requirements';
+import type { RequirementWithCourses } from './Requirements';
 import safely from './safely';
 
 const placeholder = `
@@ -21,7 +22,7 @@ const Table1: React.FC<{
     codeColumnIndex: number,
     titleColumnIndex: number | undefined,
     creditsCountColumnIndex: number | undefined,
-    courseAndRecordPairs: readonly CourseAndRecordPair[],
+    courseAndRecordPairs: readonly [CourseAndRecordPair, ...CourseAndRecordPair[]],
     courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
     setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
 }> = ({ codeColumnIndex, titleColumnIndex, creditsCountColumnIndex, courseAndRecordPairs, courseToStatus, setCourseToStatus }) => {
@@ -32,9 +33,13 @@ const Table1: React.FC<{
 
     const firstRecordIsHeader =
         firstCourse === undefined &&
-        firstRecord[codeColumnIndex].trim() === '科目番号' &&
-        (titleColumnIndex === undefined || firstRecord[titleColumnIndex].trim() === '科目名') &&
-        (creditsCountColumnIndex === undefined || firstRecord[creditsCountColumnIndex].trim() === '単位数');
+        firstRecord[codeColumnIndex]!.trim() === '科目番号' &&
+        (titleColumnIndex === undefined || firstRecord[titleColumnIndex]!.trim() === '科目名') &&
+        (creditsCountColumnIndex === undefined || firstRecord[creditsCountColumnIndex]!.trim() === '単位数');
+
+    const courseAndRecordPairsWithoutHeader: readonly CourseAndRecordPair[] = firstRecordIsHeader ?
+        courseAndRecordPairs.slice(1) :
+        courseAndRecordPairs;
 
     return (
         <Table
@@ -56,7 +61,7 @@ const Table1: React.FC<{
             </thead>
             <tbody>
                 {
-                    (firstRecordIsHeader ? courseAndRecordPairs.slice(1) : courseAndRecordPairs).map(
+                    courseAndRecordPairsWithoutHeader.map(
                         ({ course, record }, recordIndex) => {
                             const getTdContent = <T,>(index: number | undefined, mapCourse: (course: Course) => T, mapRecord: (recordValue: string) => T) => {
                                 const recordValue = index === undefined ? undefined : record[index];
@@ -160,14 +165,18 @@ const Table1: React.FC<{
 }
 
 interface CourseAndRecordPair {
-    course: Course | undefined;
-    record: readonly string[];
+    readonly course: Course | undefined;
+    readonly record: readonly string[];
 }
 
-const getColumnIndex = <T,>(courseAndRecordPairs: readonly CourseAndRecordPair[], mapCourse: (course: Course) => T, mapRecord: (recordValue: string) => T) =>
+const getColumnIndex = <T,>(
+    courseAndRecordPairs: readonly [CourseAndRecordPair, ...CourseAndRecordPair[]],
+    mapCourse: (course: Course) => T,
+    mapRecord: (recordValue: string) => T
+) =>
     courseAndRecordPairs[0].record
         .map((_, index) => courseAndRecordPairs.reduce((count, { course, record }) => {
-            const recordValue = record[index];
+            const recordValue = record[index]!;
             if (course !== undefined && mapRecord(recordValue) === mapCourse(course)) {
                 return count + 1;
             } else {
@@ -193,7 +202,7 @@ const getColumnIndex = <T,>(courseAndRecordPairs: readonly CourseAndRecordPair[]
 
 const Modal1: React.FC<{
     codeColumnIndex: number,
-    courseAndRecordPairs: readonly CourseAndRecordPair[],
+    courseAndRecordPairs: readonly [CourseAndRecordPair, ...CourseAndRecordPair[]],
     show: boolean,
     courseToStatus: ReadonlyMap<Course, RegistrationStatus>,
     setCourseToStatus: (courseToStatus: ReadonlyMap<Course, RegistrationStatus>) => void,
@@ -267,7 +276,7 @@ const Modal0: React.FC<{
     show: boolean,
     onCancel: () => void,
     onSubmit: ({ courseAndRecordPairs, codeColumnIndex }: {
-        courseAndRecordPairs: readonly CourseAndRecordPair[],
+        courseAndRecordPairs: readonly [CourseAndRecordPair, ...CourseAndRecordPair[]],
         codeColumnIndex: number,
     }) => void,
 }> = ({ codeToCourse, show, onCancel: onHide, onSubmit }) => {
@@ -275,34 +284,30 @@ const Modal0: React.FC<{
     const [validated, setValidated] = useState(false);
 
     const records: readonly (readonly string[])[] | undefined = safely(parse, csv);
-    const { courseAndRecordPairs, index: codeColumnIndex } = (
-        records === undefined || records.length === 0 ? undefined : records[0]
-            .map((_, index) => records.reduce(({ count, courseAndRecordPairs }, record) => {
-                const code = record[index];
-                const course = codeToCourse.get(code.trim());
-                return {
-                    count: course === undefined ? count : count + 1,
-                    courseAndRecordPairs: [...courseAndRecordPairs, { record, course }],
-                };
-            }, { count: 0, courseAndRecordPairs: new Array<CourseAndRecordPair>() }))
-            .reduce<{
-                count: number;
-                courseAndRecordPairs: readonly CourseAndRecordPair[] | undefined;
-                index: number | undefined;
-            }>((previous, current, index) => {
-                if (current.count > previous.count) {
-                    return { ...current, index };
-                } else {
-                    return previous;
-                }
-            }, {
-                count: 0,
-                courseAndRecordPairs: undefined,
-                index: undefined,
-            })
-    ) ?? {
+    const { courseAndRecordPairs, codeColumnIndex } = records?.[0]?.reduce<{
+        definedCoursesCount: number;
+        courseAndRecordPairs: readonly [CourseAndRecordPair, ...CourseAndRecordPair[]] | undefined;
+        codeColumnIndex: number | undefined;
+    }>((previous, _, index) => {
+        const courseAndRecordPairs = records.map(record => {
+            const code = record[index]!;
+            const course = codeToCourse.get(code.trim());
+            return { record, course };
+        }) as [CourseAndRecordPair, ...CourseAndRecordPair[]];
+        const definedCoursesCount = courseAndRecordPairs.filter(({ course }) => course !== undefined).length;
+
+        return definedCoursesCount > previous.definedCoursesCount ? {
+            definedCoursesCount,
+            courseAndRecordPairs,
+            codeColumnIndex: index,
+        } : previous;
+    }, {
+        definedCoursesCount: 0,
         courseAndRecordPairs: undefined,
-        index: undefined,
+        codeColumnIndex: undefined,
+    }) ?? {
+        courseAndRecordPairs: undefined,
+        codeColumnIndex: undefined,
     };
 
     const feedback =
@@ -395,7 +400,7 @@ const CollectivelyCourseSetView: React.FC<{
     onSubmit: (plan: Plan) => void,
 }> = ({ codeToCourse, requirement, idToRequirement, plan, onSubmit }) => {
     const [page, setPage] = useState<0 | 1 | 2 | undefined>();
-    const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly CourseAndRecordPair[]>();
+    const [courseAndRecordPairs, setCourseAndRecordPairs] = useState<readonly [CourseAndRecordPair, ...CourseAndRecordPair[]]>();
     const [codeColumnIndex, setCodeColumnIndex] = useState<number>();
     const [courseToStatus, setCourseToStatus] = useState<ReadonlyMap<Course, RegistrationStatus>>(new Map());
 

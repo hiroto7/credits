@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Form } from "react-bootstrap";
 import Plan, { toJSON } from "./Plan";
 

@@ -1,15 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, ButtonToolbar, Form, Modal } from "react-bootstrap";
-import Course from "./Course";
+import type Course from "./Course";
 import getValueFromModal, { useModals } from './getValueFromModal';
 import Plan, { emptyPlan, fromJSON, toJSON } from "./Plan";
-import { RequirementWithCourses } from "./Requirements";
+import type { RequirementWithCourses } from "./Requirements";
 import safely from './safely';
 
-const ImportConfirmationModal = ({ onReturn, onExited }: {
+const ImportConfirmationModal: React.FC<{
     onReturn: (value: boolean) => void,
     onExited: () => void
-}) => {
+}> = ({ onReturn, onExited }) => {
     const [show, setShow] = useState(true);
 
     return (

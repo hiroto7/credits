@@ -1,6 +1,6 @@
-import Course from "../Course";
+import type Course from "../Course";
 import Requirements, { Range, RequirementWithChildren, RequirementWithCourses, SelectionRequirement } from "./Requirements";
-import RequirementsJSON from "./RequirementsJSON";
+import type RequirementsJSON from "./RequirementsJSON";
 
 interface RequirementAndDictionary {
     readonly requirement: Requirements;

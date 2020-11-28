@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { RegistrationStatus } from "./Plan";
 

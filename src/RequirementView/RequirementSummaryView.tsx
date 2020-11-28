@@ -1,11 +1,11 @@
-import React from 'react';
 import { RequirementRegistrationStatusBadge } from '../badges';
-import Plan from '../Plan';
-import Requirements, { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
+import type Plan from '../Plan';
+import type Requirements from '../Requirements';
+import type { RequirementWithChildren, RequirementWithCourses } from '../Requirements';
 
 const CreditsCountLabelDelimiter = () => (<span className="text-muted"> / </span>)
 
-const ExceededCreditsCountLabel = ({ creditsCount }: { creditsCount: number }) => (
+const ExceededCreditsCountLabel: React.FC<{ creditsCount: number }> = ({ creditsCount }) => (
     <>
         <span className="text-muted">(</span>
         +{creditsCount}
@@ -13,10 +13,10 @@ const ExceededCreditsCountLabel = ({ creditsCount }: { creditsCount: number }) =
     </>
 );
 
-const CreditsCountLabels = ({ requirement, plan }: {
+const CreditsCountLabels: React.FC<{
     requirement: Requirements,
     plan: Plan,
-}) => {
+}> = ({ requirement, plan }) => {
     const creditsCount = requirement.getRegisteredCreditCounts(plan, false);
     const exceededCreditsCount = requirement.getRegisteredCreditCounts(plan, true);
     const requiredCreditsCount = requirement.getRequiredCreditCount(plan.selectionNameToOptionName);
@@ -52,10 +52,10 @@ const CreditsCountLabels = ({ requirement, plan }: {
     )
 };
 
-export const RequirementSummaryView = ({ requirement, plan }: {
+export const RequirementSummaryView: React.FC<{
     requirement: RequirementWithChildren | RequirementWithCourses,
     plan: Plan,
-}) => {
+}> = ({ requirement, plan }) => {
     const status = requirement.getStatus(plan);
     return (
         <>
