@@ -29,7 +29,7 @@ const AssignmentsFindView: React.FC<{
             if (selectsAutomatically) {
                 if (plans === undefined) {
                     onCancel();
-                } else if (plans.length === 1) {
+                } else if (plans[0] !== undefined && plans.length === 1) {
                     onSubmit(plans[0]);
                 } else {
                     setIsLoading(false);

@@ -135,6 +135,7 @@ const RequirementWithCoursesView: React.FC<{
         if (root === null) { throw new Error(); }
         const rect = root.getBoundingClientRect();
         const sticky = root.getElementsByClassName('sticky-top')[0];
+        if (sticky === undefined) { throw new Error(); }
         const stickyTop = parseInt(getComputedStyle(sticky).getPropertyValue('--top'));
         if (rect.top < stickyTop) {
             window.scrollTo({

@@ -222,7 +222,7 @@ function* findAssignments0(requirement: Requirements, plan: Plan): Generator<rea
 }
 
 function* enumerateOptionsSelections0(requirements: readonly Requirements[], selectionNameToOptionName: ReadonlyMap<string, string>): Generator<ReadonlyMap<string, string>, void, unknown> {
-    if (requirements.length === 0) {
+    if (requirements[0] === undefined) {
         yield selectionNameToOptionName;
     } else {
         const firstRequirement = requirements[0];
