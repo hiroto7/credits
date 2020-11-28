@@ -174,31 +174,19 @@ const getColumnIndex = <T,>(
     mapCourse: (course: Course) => T,
     mapRecord: (recordValue: string) => T
 ) =>
-    courseAndRecordPairs[0].record
-        .map((_, index) => courseAndRecordPairs.reduce((count, { course, record }) => {
+    courseAndRecordPairs[0].record.reduce<{
+        count: number,
+        index: number | undefined,
+    }>((previous, _, index) => {
+        const count = courseAndRecordPairs.filter(({ course, record }) => {
             const recordValue = record[index]!;
-            if (course !== undefined && mapRecord(recordValue) === mapCourse(course)) {
-                return count + 1;
-            } else {
-                return count;
-            }
-        }, 0))
-        .reduce<{
-            count: number,
-            index: number | undefined,
-        }>((previous, current, index) => {
-            if (current > previous.count) {
-                return {
-                    count: current,
-                    index,
-                }
-            } else {
-                return previous;
-            }
-        }, {
-            count: 0,
-            index: undefined,
-        }).index;
+            return course !== undefined && mapRecord(recordValue) === mapCourse(course);
+        }).length;
+        return count > previous.count ? { count, index } : previous;
+    }, {
+        count: 0,
+        index: undefined,
+    }).index;
 
 const Modal1: React.FC<{
     codeColumnIndex: number,
