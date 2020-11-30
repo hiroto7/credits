@@ -1,18 +1,18 @@
-.RequirementWithCoursesView>div:first-child {
-    --top: 12px;
-    top: var(--top);
+.RequirementWithCoursesView > div:first-child {
+  --top: 12px;
+  top: var(--top);
 }
 
-.RequirementWithCoursesView>div:first-child::before {
-    --margin-x: -20px;
-    --margin-y: calc(-1 * var(--top));
-    backdrop-filter: blur(8px);
-    background-color: #ffffff80;
-    border-radius: .25rem;
-    content: '';
-    height: calc(100% - 2 * var(--margin-y));
-    margin: var(--margin-y) var(--margin-x);
-    position: absolute;
-    width: calc(100% - 2 * var(--margin-x));
-    z-index: -1;
+.RequirementWithCoursesView > div:first-child::before {
+  --margin-x: -20px;
+  --margin-y: calc(-1 * var(--top));
+  backdrop-filter: blur(8px);
+  background-color: #ffffff80;
+  border-radius: 0.25rem;
+  content: "";
+  height: calc(100% - 2 * var(--margin-y));
+  margin: var(--margin-y) var(--margin-x);
+  position: absolute;
+  width: calc(100% - 2 * var(--margin-x));
+  z-index: -1;
 }
