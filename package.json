@@ -14,6 +14,9 @@
     "bootstrap": "^4.5.3",
     "csv-parse": "^4.14.1",
     "gh-pages": "^3.1.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.5.2",
+    "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.1",
@@ -30,7 +33,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },
   "eslintConfig": {
     "extends": [
@@ -57,5 +61,13 @@
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
       "^.+\\.worker(\\.(js|jsx|ts|tsx))?$": "<rootDir>/__mocks__/workerMock.js"
     }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"
   }
 }

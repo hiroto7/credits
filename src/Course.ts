@@ -1,5 +1,5 @@
 export default interface Course {
-    title: string;
-    code: string;
-    creditCount: number;
+  title: string;
+  code: string;
+  creditCount: number;
 }

@@ -1,25 +1,25 @@
 .list-group-item:focus {
-    outline: none;
+  outline: none;
 }
 
-.badge+.badge {
-    margin-left: .5em;
+.badge + .badge {
+  margin-left: 0.5em;
 }
 
 .btn-toolbar {
-    gap: .5em;
+  gap: 0.5em;
 }
 
 .dropdown-toggle {
-    align-items: center;
-    display: flex;
-    max-width: 100%;
+  align-items: center;
+  display: flex;
+  max-width: 100%;
 }
 
 .dropdown-toggle::after {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .input-monospace {
-    font-family: var(--font-family-monospace);
+  font-family: var(--font-family-monospace);
 }

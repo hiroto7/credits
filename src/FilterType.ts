@@ -1,7 +1,7 @@
 enum FilterType {
-    None,
-    Registered,
-    Valid,
+  None,
+  Registered,
+  Valid,
 }
 
 export default FilterType;
