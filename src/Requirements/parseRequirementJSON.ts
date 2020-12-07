@@ -20,7 +20,7 @@ const numberOrRangeToRange = (numberOrRange: number | Range): Range =>
       }
     : numberOrRange;
 
-const getInnerRequirementAndDictionaryFromJSON = (
+const parseInnerRequirementJSON = (
   json: RequirementsJSON,
   codeToCourse: ReadonlyMap<string, Course>,
   requirementNameToCount: Map<string, number>
@@ -45,15 +45,11 @@ const getInnerRequirementAndDictionaryFromJSON = (
     });
     return {
       requirement,
-      idToRequirement: new Map([[requirement.id, requirement]]),
+      idToRequirement: new Map([[id, requirement]]),
     };
   } else if ("children" in json) {
     const requirementAndDictionaryPairs = json.children.map((child) =>
-      getInnerRequirementAndDictionaryFromJSON(
-        child,
-        codeToCourse,
-        requirementNameToCount
-      )
+      parseInnerRequirementJSON(child, codeToCourse, requirementNameToCount)
     );
     const requirement = new RequirementWithChildren({
       id,
@@ -76,12 +72,9 @@ const getInnerRequirementAndDictionaryFromJSON = (
       ),
     };
   } else {
-    const optionAndDictionaryArray = json.options.map((optionJSON) => {
+    const optionAndDictionaryPairs = json.options.map((optionJSON) => {
       if ("requirement" in optionJSON) {
-        const {
-          requirement,
-          idToRequirement,
-        } = getInnerRequirementAndDictionaryFromJSON(
+        const { requirement, idToRequirement } = parseInnerRequirementJSON(
           optionJSON.requirement,
           codeToCourse,
           requirementNameToCount
@@ -91,10 +84,7 @@ const getInnerRequirementAndDictionaryFromJSON = (
           idToRequirement,
         };
       } else {
-        const {
-          requirement,
-          idToRequirement,
-        } = getInnerRequirementAndDictionaryFromJSON(
+        const { requirement, idToRequirement } = parseInnerRequirementJSON(
           optionJSON,
           codeToCourse,
           requirementNameToCount
@@ -108,12 +98,12 @@ const getInnerRequirementAndDictionaryFromJSON = (
     const requirement = new SelectionRequirement({
       id,
       name: json.name,
-      options: optionAndDictionaryArray.map(({ option }) => option),
+      options: optionAndDictionaryPairs.map(({ option }) => option),
     });
     return {
       requirement,
       idToRequirement: new Map(
-        optionAndDictionaryArray.flatMap(({ idToRequirement }) => [
+        optionAndDictionaryPairs.flatMap(({ idToRequirement }) => [
           ...idToRequirement.entries(),
         ])
       ),
@@ -121,9 +111,9 @@ const getInnerRequirementAndDictionaryFromJSON = (
   }
 };
 
-const getRequirementAndDictionaryFromJSON = (
+const parseRequirementJSON = (
   json: RequirementsJSON,
   codeToCourse: ReadonlyMap<string, Course>
-) => getInnerRequirementAndDictionaryFromJSON(json, codeToCourse, new Map());
+) => parseInnerRequirementJSON(json, codeToCourse, new Map());
 
-export default getRequirementAndDictionaryFromJSON;
+export default parseRequirementJSON;

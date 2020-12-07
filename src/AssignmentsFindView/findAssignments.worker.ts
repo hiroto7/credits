@@ -7,7 +7,7 @@ import Plan, {
   toJSON,
 } from "../Plan";
 import Requirements, {
-  getRequirementAndDictionaryFromJSON,
+  parseRequirementJSON,
   Range,
   RequirementsJSON,
   RequirementWithChildren,
@@ -361,7 +361,7 @@ globalThis.addEventListener("message", (event) => {
     codeToCourse: ReadonlyMap<string, Course>;
   } = event.data;
 
-  const { requirement, idToRequirement } = getRequirementAndDictionaryFromJSON(
+  const { requirement, idToRequirement } = parseRequirementJSON(
     requirementJSON,
     codeToCourse
   );

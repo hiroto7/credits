@@ -1,4 +1,4 @@
-export { default as getRequirementAndDictionaryFromJSON } from "./getRequirementAndDictionaryFromJSON";
+export { default as parseRequirementJSON } from "./parseRequirementJSON";
 export {
   RequirementWithChildren,
   RequirementWithCourses,
