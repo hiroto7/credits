@@ -1,3 +1,4 @@
+import { strict as assert } from "assert";
 import { useCallback, useState } from "react";
 import {
   Button,
@@ -182,14 +183,10 @@ const RequirementWithCoursesView: React.FC<{
 
   const onCollapseExiting = useCallback((e: HTMLElement) => {
     const root = e.closest(`.${styles.RequirementWithCoursesView}`);
-    if (root === null) {
-      throw new Error();
-    }
+    assert(root !== null);
     const rect = root.getBoundingClientRect();
     const sticky = root.getElementsByClassName("sticky-top")[0];
-    if (sticky === undefined) {
-      throw new Error();
-    }
+    assert(sticky !== undefined);
     const stickyTop = parseInt(
       getComputedStyle(sticky).getPropertyValue("--top")
     );
